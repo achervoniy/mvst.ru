@@ -1,0 +1,27 @@
+{
+  "extends": "next/core-web-vitals",
+  "rules": {
+    "no-unused-vars": "error",
+    "import/order": [
+      "error",
+      {
+        "newlines-between": "always",
+        "groups": ["builtin", "external", "internal", "parent", "sibling", "index", "unknown"],
+        "pathGroups": [
+          { "pattern": "**/*.{css,scss}", "group": "unknown", "position": "after" },
+          { "pattern": "{.,..}/**/*.{css,scss}", "group": "unknown", "position": "after" },
+          { "pattern": "@/constants/*", "group": "internal", "position": "after" },
+          { "pattern": "@/shared/*", "group": "internal" },
+          { "pattern": "@/features/**/*", "group": "internal", "position": "after" },
+          { "pattern": "@/lib/*", "group": "internal", "position": "after" },
+          { "pattern": "@/ui/*", "group": "internal", "position": "after" },
+          { "pattern": "@/ui/assets/*", "group": "internal", "position": "after" }
+        ],
+        "alphabetize": {
+          "order": "asc",
+          "caseInsensitive": true
+        }
+      }
+    ]
+  }
+}
