@@ -1,0 +1,50 @@
+stages:
+- Test
+- Artifact
+- Container
+- Deploy
+
+variables:
+  FROM: 'apps/front/must'
+  ENV: 'dev'
+
+#test_code:
+#  stage: Test
+#  image: repo.int.tsum.com:443/nodejs18:prod
+#  script:
+#  - npm install
+#  - npm run test:code
+
+test_lint:
+  stage: Test
+  image: repo.int.tsum.com:443/nodejs18:prod
+  script:
+  - npm install
+  - npm run test:lint
+
+test_tsc:
+  stage: Test
+  image: repo.int.tsum.com:443/nodejs18:prod
+  script:
+  - npm install
+  - npm run test:tsc
+
+include:
+  project: 'sysadmin/docker/nomad'
+  file: 'include-ci/apps/front/must.yml'
+
+.build_script:
+  image: repo.int.tsum.com:443/nodejs18:prod
+  stage: Artifact
+  script:
+  - npm install --frozen-lockfile
+  - CI=false npm run build
+  - /bin/tar -czf ./artifact.tar.gz ./.next ./node_modules ./package.json
+  needs:
+  - test_lint
+#  - test_code
+  - test_tsc
+  artifacts:
+    paths:
+    - artifact.tar.gz
+    expire_in: 7 day
