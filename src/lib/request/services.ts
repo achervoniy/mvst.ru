@@ -65,7 +65,7 @@ export function createBaseServices(): BaseServices {
     api: {
       tsum: withInterceptors(
         axios.create({
-          baseURL: `//${runtimeConfig.API_DOMAIN}`,
+          baseURL: typeof window === 'undefined' ? runtimeConfig.SSR_API_DOMAIN : `//${runtimeConfig.API_DOMAIN}`,
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
