@@ -4,9 +4,6 @@ module.exports = {
       max_memory_restart: '300M',
       name: 'must',
       script: 'node_modules/next/dist/bin/next',
-      env: {
-        NODE_ENV: 'production',
-      },
       autorestart: true,
       max_restarts: 3,
       stop_exit_codes: [0],
