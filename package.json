@@ -13,12 +13,15 @@
   },
   "dependencies": {
     "@effector/next": "^0.7.0",
+    "@farfetched/core": "^0.12.4",
     "@withease/factories": "^1.0.5",
     "axios": "^1.7.2",
     "classnames": "^2.5.1",
     "effector": "^23.2.2",
     "effector-react": "^23.2.1",
     "next": "14.2.5",
+    "next-nprogress-bar": "^2.3.13",
+    "patronum": "^2.2.0",
     "react": "^18",
     "react-dom": "^18"
   },

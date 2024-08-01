@@ -1,7 +1,14 @@
 {
   "extends": "next/core-web-vitals",
   "rules": {
-    "no-unused-vars": "error",
+    "no-unused-vars": [
+      "error",
+      {
+        "varsIgnorePattern": "^_",
+        "ignoreRestSiblings": true,
+        "argsIgnorePattern": "^_"
+      }
+    ],
     "import/order": [
       "error",
       {

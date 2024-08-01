@@ -1,0 +1,41 @@
+import { allSettled, fork, serialize } from 'effector';
+import { redirect } from 'next/navigation';
+
+import { createHooks } from '@/shared/pageRouting';
+
+import { $redirect } from './Redirect';
+import { $baseServices, createBaseServices } from './request';
+import { pageStatusField } from './status';
+
+type Props = {
+  pageHooks: ReturnType<typeof createHooks>;
+};
+
+export type PageProps = { params: Record<string, string>; searchParams: Record<string, string> };
+
+export function createRSC({ pageHooks }: Props) {
+  return async ({ params, searchParams }: PageProps) => {
+    const scope = fork({
+      values: new Map().set($baseServices, createBaseServices()),
+    });
+
+    await allSettled(pageHooks.__.enter, {
+      scope,
+      params: {
+        url: '',
+        query: searchParams,
+        params,
+      },
+    });
+
+    await allSettled(pageHooks.__.load, { scope });
+
+    const values = serialize(scope, { ignore: [$baseServices] });
+
+    return {
+      values,
+      onRedirected: scope.getState($redirect) ? () => redirect(scope.getState($redirect)?.to!) : undefined,
+      is404: scope.getState(pageStatusField.$value) === 404,
+    };
+  };
+}

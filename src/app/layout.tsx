@@ -1,6 +1,8 @@
 import { EffectorNext } from '@effector/next';
 import type { Metadata } from 'next';
 
+import { ProgressBar } from '@/ui/index';
+
 export const metadata: Metadata = {
   title: 'Must',
   description: 'Must description',
@@ -14,7 +16,10 @@ export default function RootLayout({ children }: Props) {
   return (
     <html lang="ru">
       <EffectorNext>
-        <body>{children}</body>
+        <body>
+          {children}
+          <ProgressBar />
+        </body>
       </EffectorNext>
     </html>
   );
