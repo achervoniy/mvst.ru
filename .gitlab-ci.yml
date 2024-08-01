@@ -39,7 +39,7 @@ include:
   script:
   - npm install --frozen-lockfile
   - CI=false npm run build
-  - /bin/tar -czf ./artifact.tar.gz ./.next ./node_modules ./package.json
+  - /bin/tar -czf ./artifact.tar.gz ./.next ./node_modules ./package.json ./ecosystem.config.js
   needs:
   - test_lint
 #  - test_code
