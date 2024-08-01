@@ -12,7 +12,7 @@ module.exports = {
       kill_timeout: 5000,
       restart_delay: 1000,
       exec_mode: 'cluster',
-      instances: 'max',
+      instances: 4,
     },
   ],
 };
