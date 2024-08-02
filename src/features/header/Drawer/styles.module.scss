@@ -27,24 +27,6 @@
 
   .title {
     text-transform: uppercase;
-  }
-
-  .actions {
-    display: flex;
-    gap: 16px;
-    justify-content: center;
-    margin-top: 32px;
-    padding: 0 24px;
-
-    a {
-      border-radius: 4px;
-      background: $Core-Champagne;
-      color: $Core-Dark-brown;
-      display: flex;
-      min-height: 40px;
-      justify-content: center;
-      align-items: center;
-      flex: 1 0 0;
-    }
+    margin-bottom: 32px;
   }
 }

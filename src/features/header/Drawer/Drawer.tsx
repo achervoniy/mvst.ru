@@ -1,9 +1,10 @@
 import Link from 'next/link';
 import Drawer from 'react-modern-drawer';
+import 'react-modern-drawer/dist/index.css';
+
+import { InAppActions } from '@/shared/ui';
 
 import { usePopupState } from '@/lib/hooks';
-
-import 'react-modern-drawer/dist/index.css';
 
 import { Typography } from '@/ui/index';
 
@@ -44,14 +45,7 @@ export function MobileDrawer({ popup }: Props) {
           Купить на сайте tsum.ru или в приложении ЦУМа
         </Typography>
 
-        <div className={st.actions}>
-          <a>
-            <Typography font="paragraph/bold">Скачать приложение</Typography>
-          </a>
-          <a>
-            <Typography font="paragraph/bold">Перейти на сайт</Typography>
-          </a>
-        </div>
+        <InAppActions />
       </div>
     </Drawer>
   );

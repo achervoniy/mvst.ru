@@ -1,0 +1,17 @@
+.callToBuy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding-top: 32px;
+
+  img {
+    height: 298px;
+    width: auto;
+    object-fit: contain;
+  }
+}
+
+.title {
+  text-transform: uppercase;
+}

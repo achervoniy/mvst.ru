@@ -4,7 +4,7 @@ import { useUnit } from 'effector-react';
 
 import { HOME_PAGE_VIDEO_URL } from '@/constants/runtimeConfig';
 
-import { Banner, ProductsCarousel } from '@/features/home';
+import { Banner, CallToBuy, ProductsCarousel } from '@/features/home';
 
 import { catalogQuery } from './model';
 
@@ -37,6 +37,8 @@ export function HomePage() {
           <ProductsCarousel products={menList} />
         </>
       )}
+
+      <CallToBuy />
     </div>
   );
 }
