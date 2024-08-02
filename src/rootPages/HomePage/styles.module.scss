@@ -14,5 +14,10 @@
     left: 0;
     object-position: 50% 50%;
     height: 100%;
+
+    @include desktop() {
+      width: 100%;
+      object-fit: cover;
+    }
   }
 }
