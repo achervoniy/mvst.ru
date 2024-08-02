@@ -1,5 +1,7 @@
 import { CatalogProduct } from '@/shared/api/catalog';
 
+import { transformPrice } from '@/lib/currency';
+
 import { Typography } from '@/ui/index';
 
 import st from './styles.module.scss';
@@ -20,11 +22,11 @@ export function ProductsCarousel({ products }: Props) {
             target="_blank"
           >
             <img loading="lazy" src={product.photos[0]?.middle} alt={product.title} />
-            <Typography font="body/regular" align="center">
+            <Typography font="body/regular" align="center" className={st.title}>
               {product.title}
             </Typography>
             <Typography font="body/regular" align="center">
-              450 000₽
+              {transformPrice(product.skuList[0]?.price_original)}
             </Typography>
           </a>
         );

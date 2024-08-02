@@ -3,35 +3,37 @@
 @mixin font-face($family, $font-path) {
 	@font-face {
 		font-family: $family;
-		src: url('./assets/fonts' + $font-path + '.otf') format('opentype');
-
+		src: url('./assets/fonts' + $font-path + '.ttf') format('truetype');
+		// src: url('./assets/fonts' + $font-path + '.eot?#iefix') format('embedded-opentype'),
+		// 	url('./assets/fonts' + $font-path + '.woff') format('woff'),
+		// 	url('./assets/fonts' + $font-path + '.ttf') format('truetype');
 		@content;
 	}
 }
 
-@include font-face('Circe', '/Circe_Regular') {
+@include font-face('Circe', '/TSUMCirce-Regular') {
 	font-weight: normal;
 	font-style: normal;
 	font-display: swap;
 }
 
-@include font-face('Circe', '/Circe_Extra_Light') {
+@include font-face('Circe', '/TSUMCirce-Light') {
 	font-weight: 300;
 	font-style: normal;
 	font-display: swap;
 }
 
-@include font-face('Circe', '/Circe_Bold') {
-	font-weight: 500;
-	font-style: normal;
-	font-display: swap;
-}
-
-@include font-face('Circe', '/Circe_Extra_Bold') {
+@include font-face('Circe', '/TSUMCirce-Bold') {
 	font-weight: bold;
 	font-style: normal;
 	font-display: swap;
 }
+
+// @include font-face('Circe', '/Circe-ExtraBold') {
+// 	font-weight: bold;
+// 	font-style: normal;
+// 	font-display: swap;
+// }
 
 h1,
 h2,

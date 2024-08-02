@@ -1,4 +1,5 @@
 import ArrowRight from './icons/ArrowRight.svg?react';
+import CloseIcon from './icons/CloseIcon.svg?react';
 import LogoFull from './icons/LogoFull.svg?react';
 import NavIcon from './icons/NavIcon.svg?react';
 import VkIcon from './icons/Tg.svg?react';
@@ -10,4 +11,5 @@ export const Icons = {
   VkIcon,
   TgIcon,
   ArrowRight,
+  CloseIcon,
 };

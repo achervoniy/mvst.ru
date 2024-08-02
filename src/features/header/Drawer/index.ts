@@ -1,1 +1,3 @@
-export * from './Drawer';
+import { MobileDrawer } from './Drawer';
+
+export default MobileDrawer;

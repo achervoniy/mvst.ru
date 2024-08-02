@@ -1,6 +1,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
+import { LOOK_SLUGS } from '@/constants/runtimeConfig';
+
 import { Typography } from '@/ui/index';
 
 // @ts-ignore
@@ -16,7 +18,10 @@ type Props = {
 
 export function Banner({ gender }: Props) {
   return (
-    <Link className={st.banner} href={gender === 'f' ? '/collection/must-lookbook' : '/collection/must-lookbook-men'}>
+    <Link
+      className={st.banner}
+      href={gender === 'f' ? `/collection/${LOOK_SLUGS.women}` : `/collection/${LOOK_SLUGS.men}`}
+    >
       <Image src={gender === 'f' ? f : m} alt="" />
 
       <div className={st.footer}>

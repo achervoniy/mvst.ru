@@ -4,7 +4,7 @@ import { useUnit } from 'effector-react';
 
 import { HOME_PAGE_VIDEO_URL } from '@/constants/runtimeConfig';
 
-import { Banner, CallToBuy, ProductsCarousel } from '@/features/home';
+import { AboutMust, Banner, BoutiqueList, CallToBuy, ProductsCarousel } from '@/features/home';
 
 import { catalogQuery } from './model';
 
@@ -13,8 +13,8 @@ import st from './styles.module.scss';
 export function HomePage() {
   const catalog = useUnit(catalogQuery.$data);
 
-  const menList = catalog?.men?.list ?? [];
-  const womenList = catalog?.women?.list ?? [];
+  const menList = (catalog?.men?.list ?? []).slice(0, 4);
+  const womenList = (catalog?.women?.list ?? []).slice(0, 4);
 
   return (
     <div className={st.page}>
@@ -38,7 +38,9 @@ export function HomePage() {
         </>
       )}
 
+      <BoutiqueList />
       <CallToBuy />
+      <AboutMust />
     </div>
   );
 }

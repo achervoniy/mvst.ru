@@ -1,0 +1,64 @@
+.BoutiqueList {
+  :global(.swiper-pagination) {
+    position: relative;
+    margin-top: 17px;
+    bottom: 0px;
+
+    @include desktop() {
+      display: none;
+    }
+
+    :global(.swiper-pagination-bullet-active) {
+      opacity: 1 !important;
+    }
+
+    :global(.swiper-pagination-bullet) {
+      background: #444;
+      opacity: 0.47;
+      width: 6px;
+      height: 6px;
+    }
+  }
+}
+
+.slide {
+  width: calc(100% - 10%);
+
+  &:not(:last-child) {
+    margin-right: 6px;
+  }
+
+  img {
+    height: 272px;
+    width: 100%;
+    margin-bottom: 8px;
+  }
+
+  .boutiqueTitle {
+    color: $Core-Light-brass;
+  }
+
+  .footer {
+    padding-left: 24px;
+  }
+}
+
+.head {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  margin-bottom: 8px;
+  min-height: 48px;
+
+  .title {
+    text-transform: uppercase;
+    color: $Core-Burnt-umber;
+  }
+
+  .counter {
+    position: absolute;
+    color: $Core-Light-brass;
+    right: 25px;
+  }
+}

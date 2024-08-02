@@ -1,0 +1,21 @@
+.aboutMust {
+  padding: 0 24px;
+}
+
+.head {
+  display: flex;
+  justify-content: center;
+  position: relative;
+  align-items: center;
+  margin-bottom: 8px;
+  min-height: 48px;
+
+  .title {
+    text-transform: uppercase;
+    color: $Core-Burnt-umber;
+  }
+}
+
+.text {
+  color: $Core-Wild-tobacco;
+}

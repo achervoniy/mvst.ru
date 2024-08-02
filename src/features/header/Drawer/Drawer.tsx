@@ -4,6 +4,8 @@ import 'react-modern-drawer/dist/index.css';
 
 import { InAppActions } from '@/shared/ui';
 
+import { LOOK_SLUGS } from '@/constants/runtimeConfig';
+
 import { usePopupState } from '@/lib/hooks';
 
 import { Typography } from '@/ui/index';
@@ -19,33 +21,35 @@ type Props = {
 export function MobileDrawer({ popup }: Props) {
   return (
     <Drawer open={popup.isOpen} onClose={popup.closePopup} direction="left" size="100vw" duration={200}>
-      <ul className={st.nav}>
-        <li>
-          <Link href="/collection/must-lookbook" onClick={popup.closePopup}>
-            <Typography font="paragraph/regular">Женская коллекция</Typography>
+      <div className={st.drawer}>
+        <ul className={st.nav}>
+          <li>
+            <Link href={`/collection/${LOOK_SLUGS.women}`} onClick={popup.closePopup}>
+              <Typography font="paragraph/regular">Женская коллекция</Typography>
+              <Icon name="ArrowRight" />
+            </Link>
+          </li>
+          <li>
+            <Link href={`/collection/${LOOK_SLUGS.men}`} onClick={popup.closePopup}>
+              <Typography font="paragraph/regular">Мужская коллекция</Typography>
+              <Icon name="ArrowRight" />
+            </Link>
+          </li>
+          <li>
+            <Typography font="paragraph/regular" onClick={popup.closePopup}>
+              Наши бутики
+            </Typography>
             <Icon name="ArrowRight" />
-          </Link>
-        </li>
-        <li>
-          <Link href="/collection/must-lookbook-men" onClick={popup.closePopup}>
-            <Typography font="paragraph/regular">Мужская коллекция</Typography>
-            <Icon name="ArrowRight" />
-          </Link>
-        </li>
-        <li>
-          <Typography font="paragraph/regular" onClick={popup.closePopup}>
-            Наши бутики
+          </li>
+        </ul>
+
+        <div className={st.footer}>
+          <Typography font="leading/h2" align="center" className={st.title}>
+            Купить на сайте tsum.ru или в приложении ЦУМа
           </Typography>
-          <Icon name="ArrowRight" />
-        </li>
-      </ul>
 
-      <div className={st.footer}>
-        <Typography font="leading/h2" align="center" className={st.title}>
-          Купить на сайте tsum.ru или в приложении ЦУМа
-        </Typography>
-
-        <InAppActions />
+          <InAppActions />
+        </div>
       </div>
     </Drawer>
   );

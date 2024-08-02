@@ -1,3 +1,9 @@
+.drawer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
 .nav {
   display: flex;
   flex-direction: column;
@@ -23,11 +29,13 @@
 }
 
 .footer {
-  margin-top: 84px;
+  margin-top: auto;
+  padding-bottom: 32px;
 
   .title {
     text-transform: uppercase;
     margin-bottom: 32px;
     padding: 0 24px;
+    color: $Core-Dark-brown;
   }
 }
