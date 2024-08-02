@@ -1,13 +1,15 @@
 import { EffectorNext } from '@effector/next';
 import type { Metadata } from 'next';
-import Head from 'next/head';
 
 import { MainTemplate } from '@/shared/ui';
 
 import { Footer } from '@/features/footer';
 import { Header } from '@/features/header';
 
+import { ViewportProvider } from '@/lib/useViewport';
+
 import { ProgressBar, MediaContextProvider, mediaStyle } from '@/ui/index';
+
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
@@ -26,17 +28,20 @@ type Props = Readonly<{
 export default function RootLayout({ children }: Props) {
   return (
     <html lang="ru">
-      <Head>
+      <head>
         <style type="text/css">{mediaStyle}</style>
-      </Head>
+      </head>
+
       <EffectorNext>
         <MediaContextProvider disableDynamicMediaQueries>
-          <body>
-            <MainTemplate header={<Header />} footer={<Footer />}>
-              {children}
-            </MainTemplate>
-            <ProgressBar />
-          </body>
+          <ViewportProvider>
+            <body>
+              <MainTemplate header={<Header />} footer={<Footer />}>
+                {children}
+              </MainTemplate>
+              <ProgressBar />
+            </body>
+          </ViewportProvider>
         </MediaContextProvider>
       </EffectorNext>
     </html>

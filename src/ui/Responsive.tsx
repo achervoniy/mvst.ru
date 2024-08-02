@@ -16,6 +16,7 @@ const AppMedia = createMedia({
 
 // Generate CSS to be injected into the head
 export const mediaStyle = AppMedia.createMediaStyle();
+
 export const { Media, MediaContextProvider } = AppMedia;
 
 const TabletAndBelow: React.FC<Props> = ({ children, className }) => {

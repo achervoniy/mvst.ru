@@ -1,4 +1,6 @@
+import cn from 'classnames';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import Drawer from 'react-modern-drawer';
 import 'react-modern-drawer/dist/index.css';
 
@@ -18,30 +20,52 @@ type Props = {
   popup: ReturnType<typeof usePopupState>;
 };
 
+export function Nav({ onLink }: { onLink?: () => void }) {
+  const pathname = usePathname();
+
+  return (
+    <ul className={st.nav}>
+      <li
+        className={cn(st.item, {
+          [st.active]: pathname === `/collection/${LOOK_SLUGS.women}`,
+        })}
+      >
+        <Link href={`/collection/${LOOK_SLUGS.women}`} onClick={onLink}>
+          <Typography font="paragraph/regular">Женская коллекция</Typography>
+          <Icon name="ArrowRight" />
+        </Link>
+      </li>
+      <li
+        className={cn(st.item, {
+          [st.active]: pathname === `/collection/${LOOK_SLUGS.men}`,
+        })}
+      >
+        <Link href={`/collection/${LOOK_SLUGS.men}`} onClick={onLink}>
+          <Typography font="paragraph/regular">Мужская коллекция</Typography>
+          <Icon name="ArrowRight" />
+        </Link>
+      </li>
+      <li className={st.item}>
+        <Typography font="paragraph/regular" onClick={onLink}>
+          Наши бутики
+        </Typography>
+        <Icon name="ArrowRight" />
+      </li>
+      <li className={st.item}>
+        <Typography font="paragraph/regular" onClick={onLink}>
+          О бренде
+        </Typography>
+        <Icon name="ArrowRight" />
+      </li>
+    </ul>
+  );
+}
+
 export function MobileDrawer({ popup }: Props) {
   return (
     <Drawer open={popup.isOpen} onClose={popup.closePopup} direction="left" size="100vw" duration={200}>
       <div className={st.drawer}>
-        <ul className={st.nav}>
-          <li>
-            <Link href={`/collection/${LOOK_SLUGS.women}`} onClick={popup.closePopup}>
-              <Typography font="paragraph/regular">Женская коллекция</Typography>
-              <Icon name="ArrowRight" />
-            </Link>
-          </li>
-          <li>
-            <Link href={`/collection/${LOOK_SLUGS.men}`} onClick={popup.closePopup}>
-              <Typography font="paragraph/regular">Мужская коллекция</Typography>
-              <Icon name="ArrowRight" />
-            </Link>
-          </li>
-          <li>
-            <Typography font="paragraph/regular" onClick={popup.closePopup}>
-              Наши бутики
-            </Typography>
-            <Icon name="ArrowRight" />
-          </li>
-        </ul>
+        <Nav onLink={popup.closePopup} />
 
         <div className={st.footer}>
           <Typography font="leading/h2" align="center" className={st.title}>
