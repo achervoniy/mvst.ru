@@ -3,7 +3,9 @@ import Link from 'next/link';
 
 import { Typography } from '@/ui/index';
 
+// @ts-ignore
 import f from './home-banner-f.jpg';
+// @ts-ignore
 import m from './home-banner-m.jpg';
 
 import st from './styles.module.scss';
