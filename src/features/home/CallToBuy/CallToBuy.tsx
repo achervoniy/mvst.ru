@@ -4,6 +4,7 @@ import { InAppActions } from '@/shared/ui';
 
 import { Typography } from '@/ui/index';
 
+// @ts-ignore
 import app from './app.jpg';
 
 import st from './styles.module.scss';
