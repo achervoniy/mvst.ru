@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 
 import { Typography } from '@/ui/index';
 
@@ -13,7 +14,7 @@ type Props = {
 
 export function Banner({ gender }: Props) {
   return (
-    <div className={st.banner}>
+    <Link className={st.banner} href={gender === 'f' ? '/collection/must-lookbook' : '/collection/must-lookbook-men'}>
       <Image src={gender === 'f' ? f : m} alt="" />
 
       <div className={st.footer}>
@@ -24,6 +25,6 @@ export function Banner({ gender }: Props) {
           Подробнее
         </Typography>
       </div>
-    </div>
+    </Link>
   );
 }

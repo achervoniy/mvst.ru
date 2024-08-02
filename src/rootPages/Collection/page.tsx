@@ -1,13 +1,12 @@
 'use client';
 
 import { useUnit } from 'effector-react';
-import Link from 'next/link';
 
 import { landingQuery, pageHooks } from './model';
 
 import st from './styles.module.scss';
 
-export function FashionShow() {
+export function CollectionPage() {
   const landing = useUnit(landingQuery);
   const params = useUnit(pageHooks.$params);
 
@@ -22,7 +21,6 @@ export function FashionShow() {
       <pre>
         <code>{JSON.stringify(params)}</code>
       </pre>
-      <Link href={`/fashion/test?q=${Math.ceil(Math.random() * 1000)}`}>to random</Link>
     </div>
   );
 }

@@ -7,7 +7,7 @@ import { createHooks } from '@/shared/pageRouting';
 
 import { pageStatusField } from '@/lib/status';
 
-export const pageHooks = invoke(() => createHooks({ pageName: 'FashionShow' }));
+export const pageHooks = invoke(() => createHooks({ pageName: 'Collection' }));
 
 export const landingQuery = createQuery({
   handler: async ({ slug }: { slug: string }) => {

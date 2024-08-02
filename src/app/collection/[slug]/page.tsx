@@ -1,7 +1,7 @@
 import { EffectorNext } from '@effector/next';
 import { notFound } from 'next/navigation';
 
-import { FashionShow as Page, pageHooks } from '@/rootPages/FashionShow';
+import { CollectionPage as Page, pageHooks } from '@/rootPages/Collection';
 
 import { type PageProps, createRSC } from '@/lib/rsc';
 

@@ -1,3 +1,9 @@
-export function Button() {
-  return <button>action</button>;
+import { ReactNode } from 'react';
+
+type Props = {
+  children: ReactNode;
+};
+
+export function Button({ children }: Props) {
+  return <button>{children}</button>;
 }

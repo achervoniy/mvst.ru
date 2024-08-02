@@ -1,12 +1,30 @@
+'use client';
+import cn from 'classnames';
+import Link from 'next/link';
+
+import { usePopupState } from '@/lib/hooks';
+
 import { Icon } from '@/ui/assets/Icon';
+
+import { MobileDrawer } from './Drawer';
 
 import st from './styles.module.scss';
 
-export function Header() {
+type Props = { className?: string };
+
+export function Header({ className }: Props) {
+  const popup = usePopupState();
+
   return (
-    <div className={st.header}>
-      <Icon name="NavIcon" />
-      <Icon name="LogoFull" className={st.logo} />
-    </div>
+    <>
+      <header className={cn(st.header, className)}>
+        <Icon name="NavIcon" onClick={popup.togglePopup} />
+        <Link href="/" className={st.logo}>
+          <Icon name="LogoFull" />
+        </Link>
+      </header>
+
+      <MobileDrawer popup={popup} />
+    </>
   );
 }
