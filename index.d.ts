@@ -9,3 +9,11 @@ declare module '*.svg?react' {
 
 // eslint-disable-next-line no-unused-vars
 declare type Nullable<T> = T | null;
+
+declare module '*.jpg' {
+  import * as Next from 'next/image';
+
+  const content: Next.StaticImageData;
+
+  export default content;
+}
