@@ -1,22 +1,17 @@
-import Link from 'next/link';
+import { EffectorNext } from '@effector/next';
 
-import { Button } from '@/ui/index';
+import { HomePage as Page, pageHooks } from '@/rootPages/HomePage';
 
-import styles from './page.module.css';
+import { type PageProps, createRSC } from '@/lib/rsc';
 
-const slug = ['must-lookbook', 'must-lookbook-men'];
+const rsc = createRSC({ pageHooks });
 
-export default function Home() {
+export default async function HomePage(props: PageProps) {
+  const result = await rsc(props);
+
   return (
-    <main className={styles.main}>
-      <div style={{ display: 'flex', flexDirection: 'column' }}>
-        {slug.map(s => (
-          <Link href={`/fashion/${s}`} key={s}>
-            to {s}
-          </Link>
-        ))}
-      </div>
-      <Button />
-    </main>
+    <EffectorNext values={result.values}>
+      <Page />
+    </EffectorNext>
   );
 }

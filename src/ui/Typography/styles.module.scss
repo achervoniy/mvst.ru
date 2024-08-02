@@ -1,0 +1,52 @@
+@import '@/ui/themes/config.scss';
+
+.typography {
+
+	&.leading-display {
+		@include leading-display()
+	}
+
+	&.leading-h1 {
+		@include leading-h1()
+	}
+
+	&.leading-h2 {
+		@include leading-h2()
+	}
+
+	&.paragraph-bold {
+		@include paragraph-bold()
+	}
+
+	&.paragraph-regular {
+		@include paragraph-regular()
+	}
+
+	&.body-bold {
+		@include body-bold()
+	}
+
+	&.body-regular {
+		@include body-regular()
+	}
+
+	&.bold {
+		font-weight: bold;
+	}
+
+	&.underline {
+		text-decoration: underline;
+	}
+
+	&.left {
+		text-align: left;
+	}
+
+	&.right {
+		text-align: right;
+	}
+
+	&.center {
+		text-align: center;
+	}
+}

@@ -1,0 +1,46 @@
+@import "./responsive.scss";
+
+@mixin font-face($family, $font-path) {
+	@font-face {
+		font-family: $family;
+		src: url('./assets/fonts' + $font-path + '.otf') format('opentype');
+
+		@content;
+	}
+}
+
+@include font-face('Circe', '/Circe_Regular') {
+	font-weight: normal;
+	font-style: normal;
+	font-display: swap;
+}
+
+@include font-face('Circe', '/Circe_Extra_Light') {
+	font-weight: 300;
+	font-style: normal;
+	font-display: swap;
+}
+
+@include font-face('Circe', '/Circe_Bold') {
+	font-weight: 500;
+	font-style: normal;
+	font-display: swap;
+}
+
+@include font-face('Circe', '/Circe_Extra_Bold') {
+	font-weight: bold;
+	font-style: normal;
+	font-display: swap;
+}
+
+h1,
+h2,
+h4 {
+	font-family: Circe
+}
+
+body {
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	font-family: Circe
+}

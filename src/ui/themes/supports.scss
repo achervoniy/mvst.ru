@@ -1,0 +1,5 @@
+@mixin is-supports-wepb {
+  @supports (background-image: -webkit-image-set(url('./assets/1x1.webp') 1x)) {
+    @content;
+  }
+}

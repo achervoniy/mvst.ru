@@ -1,0 +1,46 @@
+@import '@/ui/themes/config.scss';
+
+@mixin maxWidth {
+  width: 100%;
+  max-width: $max-width-desktop;
+  margin: 0 auto;
+}
+
+.container {
+  display: grid;
+  min-height: 100vh;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr auto;
+  grid-template-columns: 100%;
+  gap: 0px 0px;
+  grid-template-areas:
+    'header'
+    'content'
+    'footer';
+}
+
+.header {
+  grid-area: header;
+  position: sticky;
+  top: 0px;
+  z-index: $z-regular;
+  background-color: $Core-Pure-white;
+}
+
+.content {
+  @include maxWidth();
+  grid-area: content;
+}
+
+.footer {
+  grid-area: footer;
+  background-color: $Core-Champagne;
+  margin-top: 32px;
+  position: relative;
+  z-index: $z-minor + 1;
+  padding: 8px 24px;
+
+  @include desktop() {
+    margin-top: 72px;
+  }
+}

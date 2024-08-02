@@ -5,6 +5,8 @@ import { sample } from 'effector';
 import { fetchLanding } from '@/shared/api';
 import { createHooks } from '@/shared/pageRouting';
 
+import { pageStatusField } from '@/lib/status';
+
 export const pageHooks = invoke(() => createHooks({ pageName: 'FashionShow' }));
 
 export const landingQuery = createQuery({
@@ -16,3 +18,4 @@ export const landingQuery = createQuery({
 });
 
 sample({ clock: pageHooks.entered, fn: ({ params }) => ({ slug: params.slug }), target: landingQuery.start });
+sample({ clock: landingQuery.finished.failure, fn: () => 404, target: pageStatusField.change });

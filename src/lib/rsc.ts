@@ -13,10 +13,12 @@ type Props = {
 
 export type PageProps = { params: Record<string, string>; searchParams: Record<string, string> };
 
+const baseServices = createBaseServices();
+
 export function createRSC({ pageHooks }: Props) {
   return async ({ params, searchParams }: PageProps) => {
     const scope = fork({
-      values: new Map().set($baseServices, createBaseServices()),
+      values: new Map().set($baseServices, baseServices),
     });
 
     await allSettled(pageHooks.__.enter, {

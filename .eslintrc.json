@@ -1,6 +1,8 @@
 {
-  "extends": "next/core-web-vitals",
+  "extends": ["next/core-web-vitals", "plugin:effector/react", "plugin:effector/recommended"],
+  "plugins": ["effector"],
   "rules": {
+    "effector/keep-options-order": "error",
     "no-unused-vars": [
       "error",
       {

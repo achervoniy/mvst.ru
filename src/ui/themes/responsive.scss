@@ -1,0 +1,40 @@
+@use "sass:map";
+
+$breakpoints: (
+  xxs: 352px,
+  xs: 600px,
+  sm: 768px,
+  md: 1024px,
+  lg: 1184px,
+  xl: 1440px
+);
+
+@mixin media-breakpoint-down($key, $offset: 0) {
+  @media (max-width: (map.get($breakpoints, $key) + $offset)) {
+    @content;
+  }
+}
+
+@mixin media-breakpoint-up($key, $offset: 0) {
+  @media (min-width: (map.get($breakpoints, $key) + $offset)) {
+    @content;
+  }
+}
+
+@mixin desktop() {
+  @include media-breakpoint-up(md) {
+    @content;
+  }
+}
+
+@mixin retina() {
+
+  @media only screen and (-webkit-min-device-pixel-ratio: 2),
+  only screen and (min--moz-device-pixel-ratio: 2),
+  only screen and (-o-min-device-pixel-ratio: 2 / 1),
+  only screen and (min-device-pixel-ratio: 2),
+  only screen and (min-resolution: 192dpi),
+  only screen and (min-resolution: 2dppx) {
+    @content;
+  }
+}
