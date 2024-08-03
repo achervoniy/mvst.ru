@@ -4,7 +4,7 @@ import st from './styles.module.scss';
 
 export function AboutMust() {
   return (
-    <div className={st.aboutMust}>
+    <div className={st.aboutMust} id="must">
       <div className={st.head}>
         <Typography font="leading/h2" className={st.title} align="center">
           О Бренде

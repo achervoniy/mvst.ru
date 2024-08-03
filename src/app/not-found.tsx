@@ -1,8 +1,5 @@
-export default function NotFound() {
-  return (
-    <div>
-      <h2>404</h2>
-      <p>Could not find requested resource</p>
-    </div>
-  );
+import { NotFound } from '@/ui/index';
+
+export default function NotFoundPage() {
+  return <NotFound />;
 }

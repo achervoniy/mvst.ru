@@ -37,11 +37,11 @@
 .productsRow {
   display: flex;
   flex-direction: column;
+  gap: 8px;
 
   @include desktop() {
     grid-column: 1 / 3;
     flex-direction: row;
-    gap: 8px;
     display: grid;
     grid-template-columns: repeat(2, minmax(164px, 1fr));
 

@@ -1,0 +1,16 @@
+.slide {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  img {
+    height: 871px;
+    object-fit: cover;
+    width: 100%;
+  }
+
+  @include desktop() {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(164px, 1fr));
+  }
+}

@@ -2,6 +2,7 @@
 import cn from 'classnames';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 import { usePopupState } from '@/lib/hooks';
 import { useViewport } from '@/lib/useViewport';
@@ -21,13 +22,34 @@ const MobileDrawer = dynamic(() => import('./Drawer'), { ssr: false });
 export function Header({ className }: Props) {
   const popup = usePopupState();
   const { isTabletAndBelow } = useViewport();
+  const pathname = usePathname();
+
+  const isCollectionPage = pathname.startsWith('/collection/');
+
+  const backIcon = isCollectionPage ? 'ArrowBack' : popup.isOpen ? 'CloseIcon' : 'NavIcon';
+
+  const onIconClicked = (e: MouseEvent) => {
+    if (isCollectionPage) {
+      return;
+    }
+
+    e.preventDefault();
+    popup.togglePopup();
+  };
 
   return (
     <>
-      <header className={cn(st.header, className)}>
+      <header
+        className={cn(st.header, className, {
+          [st.isCollectionPage]: isCollectionPage,
+        })}
+      >
         <Responsive.TabletAndBelow className={st.responsive}>
           <div className={st.content}>
-            <Icon name={popup.isOpen ? 'CloseIcon' : 'NavIcon'} onClick={popup.togglePopup} />
+            {/* @ts-ignore */}
+            <Link href="/" onClick={onIconClicked}>
+              <Icon name={backIcon} />
+            </Link>
             <Link href="/" className={st.logo}>
               <Icon name="LogoFull" />
             </Link>

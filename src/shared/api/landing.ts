@@ -1,6 +1,8 @@
 import { createBaseRequest } from '@/lib/request';
 
-export const fetchLanding = createBaseRequest<{ slug: string }, any>({
+import { LooksResponse } from './catalog';
+
+export const fetchLanding = createBaseRequest<{ slug: string }, LooksResponse>({
   method: 'GET',
   url: ({ slug }) => `/v1/landing/${slug}`,
 });

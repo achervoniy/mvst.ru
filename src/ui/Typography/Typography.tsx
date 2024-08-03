@@ -13,7 +13,7 @@ export type BaseFont =
   | 'body/regular';
 
 type Props = {
-  children: ReactNode;
+  children?: ReactNode;
   className?: string;
   size?: 'medium' | 'normal';
   bold?: boolean;
@@ -21,6 +21,12 @@ type Props = {
   onClick?: (_event: React.MouseEvent<Element, MouseEvent>) => void;
   font: BaseFont;
   align?: 'center' | 'left' | 'right';
+  dangerouslySetInnerHTML?:
+    | {
+        __html: string | TrustedHTML;
+      }
+    | undefined;
+  as?: 'p' | 'h1' | 'h2';
 };
 
 export function Typography({
@@ -32,28 +38,28 @@ export function Typography({
   onClick,
   font,
   align,
+  dangerouslySetInnerHTML,
+  as = 'p',
 }: Props) {
-  return (
-    <p
-      {...(onClick
-        ? {
-            onClick,
-            role: 'presentation',
-          }
-        : {})}
-      className={cn(
-        st.typography,
-        st[size],
-        st[decoration],
-        st[font.replace('/', '-')],
-        align && st[align],
-        className,
-        {
-          [st.bold]: bold,
-        },
-      )}
-    >
-      {children}
-    </p>
-  );
+  const props = {
+    ...(onClick
+      ? {
+          onClick,
+          role: 'presentation',
+        }
+      : {}),
+    className: cn(st.typography, st[size], st[decoration], st[font.replace('/', '-')], align && st[align], className, {
+      [st.bold]: bold,
+    }),
+    ...(dangerouslySetInnerHTML ? { dangerouslySetInnerHTML } : { children }),
+  };
+
+  switch (as) {
+    case 'h1':
+      return <h1 {...props} />;
+    case 'h2':
+      return <h1 {...props} />;
+    default:
+      return <p {...props} />;
+  }
 }

@@ -3,6 +3,8 @@
   padding: 0px 64px 0px 24px;
   margin-bottom: 8px;
 
+  &.isCollectionPage {}
+
   @include desktop() {
     padding: 48px 0px 24px 0px;
     height: auto;
@@ -25,6 +27,8 @@
 
 .logo {
   margin: 0 auto;
+  display: flex;
+  align-items: center;
 }
 
 .responsive {

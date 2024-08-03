@@ -1,3 +1,4 @@
+import ArrowBack from './icons/ArrowBack.svg?react';
 import ArrowRight from './icons/ArrowRight.svg?react';
 import CarouselArrow from './icons/CarouselArrow.svg?react';
 import CloseIcon from './icons/CloseIcon.svg?react';
@@ -16,4 +17,5 @@ export const Icons = {
   ArrowRight,
   CloseIcon,
   CarouselArrow,
+  ArrowBack,
 };

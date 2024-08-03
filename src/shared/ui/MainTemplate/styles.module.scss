@@ -46,5 +46,12 @@
 
   @include desktop() {
     margin-top: 72px;
+    height: 152px;
+    display: flex;
+    align-items: center;
+
+    >div {
+      flex: 1;
+    }
   }
 }

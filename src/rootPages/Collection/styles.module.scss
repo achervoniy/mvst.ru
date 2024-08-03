@@ -1,3 +1,31 @@
-.test {
-  color: red;
+.head {
+  height: 72px;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-bottom: 16px;
+  display: none;
+
+  @include desktop() {
+    display: flex;
+  }
+}
+
+.counter {
+  position: absolute;
+  color: $Core-Light-brass;
+  right: 25px;
+}
+
+.lookDescription {
+  margin-top: 40px;
+  padding: 0 24px;
+
+  b {
+    color: $Core-Light-brass;
+  }
+
+  @include desktop() {
+    padding: 0 150px;
+  }
 }
