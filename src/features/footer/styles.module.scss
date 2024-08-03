@@ -4,6 +4,16 @@
   flex-direction: column;
   align-items: center;
   gap: 16px;
+
+  @include desktop() {
+    flex-direction: row;
+  }
+}
+
+.private {
+  @include desktop() {
+    margin-right: auto;
+  }
 }
 
 .socials {

@@ -1,8 +1,17 @@
+import cn from 'classnames';
+import chunk from 'lodash-es/chunk';
+import { useMemo, useRef } from 'react';
+import { Swiper as SwiperInstance } from 'swiper';
+import { Navigation, Pagination } from 'swiper/modules';
+import { Swiper, SwiperSlide } from 'swiper/react';
+
 import { CatalogProduct } from '@/shared/api/catalog';
 
 import { transformPrice } from '@/lib/currency';
 
 import { Typography } from '@/ui/index';
+
+import { Icon } from '@/ui/assets/Icon';
 
 import st from './styles.module.scss';
 
@@ -11,26 +20,58 @@ type Props = {
 };
 
 export function ProductsCarousel({ products }: Props) {
+  const slides = useMemo(() => chunk(products, 4), [products]);
+
+  const prevBtnRef = useRef<SVGSVGElement>(null);
+  const nextBtnRef = useRef<SVGSVGElement>(null);
+
+  const onBeforeInit = (swiper: SwiperInstance) => {
+    if (swiper.params.navigation && typeof swiper.params.navigation !== 'boolean') {
+      // @ts-ignore
+      swiper.params.navigation.prevEl = prevBtnRef.current;
+      // @ts-ignore
+      swiper.params.navigation.nextEl = nextBtnRef.current;
+    }
+  };
+
   return (
-    <div className={st.carousel}>
-      {products.map(product => {
-        return (
-          <a
-            key={product.id}
-            className={st.product}
-            href={`https://www.tsum.ru/product/${product.slug}/`}
-            target="_blank"
-          >
-            <img loading="lazy" src={product.photos[0]?.middle} alt={product.title} />
-            <Typography font="body/regular" align="center" className={st.title}>
-              {product.title}
-            </Typography>
-            <Typography font="body/regular" align="center">
-              {transformPrice(product.skuList[0]?.price_original)}
-            </Typography>
-          </a>
-        );
-      })}
+    <div className={st.swiper}>
+      <Icon name="CarouselArrow" className={st.arrow} ref={nextBtnRef} />
+      <Icon name="CarouselArrow" className={cn(st.arrow, st.left)} ref={prevBtnRef} />
+
+      <Swiper
+        navigation
+        onBeforeInit={onBeforeInit}
+        pagination={{ clickable: true, dynamicBullets: true, dynamicMainBullets: 5 }}
+        spaceBetween={6}
+        slidesPerView={1}
+        modules={[Navigation, Pagination]}
+      >
+        {slides.map(items => (
+          <SwiperSlide key={items[0].id} className={st.slide}>
+            {items.map(product => {
+              return (
+                <a
+                  key={product.id}
+                  className={st.product}
+                  href={`https://www.tsum.ru/product/${product.slug}/`}
+                  target="_blank"
+                >
+                  <img loading="lazy" src={product.photos[0]?.middle} alt={product.title} />
+                  <Icon name="ShortLogo" className={st.logo} />
+
+                  <Typography font="body/regular" align="center" className={st.title}>
+                    {product.title}
+                  </Typography>
+                  <Typography font="body/regular" align="center">
+                    {transformPrice(product.skuList[0]?.price_original)}
+                  </Typography>
+                </a>
+              );
+            })}
+          </SwiperSlide>
+        ))}
+      </Swiper>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 .aboutMust {
   padding: 0 24px;
+  grid-column: 1 / 3;
 }
 
 .head {
@@ -14,8 +15,17 @@
     text-transform: uppercase;
     color: $Core-Burnt-umber;
   }
+
+  @include desktop() {
+    min-height: 56px;
+  }
 }
 
 .text {
   color: $Core-Wild-tobacco;
+  text-align: center;
+}
+
+.intro {
+  color: $Core-Light-brass;
 }

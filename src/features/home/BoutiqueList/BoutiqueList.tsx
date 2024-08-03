@@ -1,9 +1,13 @@
+import cn from 'classnames';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import { Swiper as SwiperInstance } from 'swiper';
 import { Navigation, Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
 import { Typography } from '@/ui/index';
+
+import { Icon } from '@/ui/assets/Icon';
 
 import { boutiqueList } from './schema';
 
@@ -13,6 +17,17 @@ const SLIDES_LEN = 6;
 
 export function BoutiqueList() {
   const [activeIndex, setActiveIndex] = useState(1);
+  const prevBtnRef = useRef<SVGSVGElement>(null);
+  const nextBtnRef = useRef<SVGSVGElement>(null);
+
+  const onBeforeInit = (swiper: SwiperInstance) => {
+    if (swiper.params.navigation && typeof swiper.params.navigation !== 'boolean') {
+      // @ts-ignore
+      swiper.params.navigation.prevEl = prevBtnRef.current;
+      // @ts-ignore
+      swiper.params.navigation.nextEl = nextBtnRef.current;
+    }
+  };
 
   return (
     <div className={st.BoutiqueList}>
@@ -25,11 +40,21 @@ export function BoutiqueList() {
         </Typography>
       </div>
 
+      <Icon name="CarouselArrow" className={st.arrow} ref={nextBtnRef} />
+      <Icon name="CarouselArrow" className={cn(st.arrow, st.left)} ref={prevBtnRef} />
       <Swiper
+        navigation
+        pagination={{ clickable: true }}
+        onBeforeInit={onBeforeInit}
         spaceBetween={6}
         slidesPerView={1.1}
+        breakpoints={{
+          1024: {
+            slidesPerView: 3,
+            spaceBetween: 24,
+          },
+        }}
         modules={[Navigation, Pagination]}
-        pagination
         onSlideChange={swiper => setActiveIndex(swiper.activeIndex + 1)}
       >
         {boutiqueList.map(boutique => (

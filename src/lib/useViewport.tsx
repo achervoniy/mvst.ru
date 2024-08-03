@@ -13,7 +13,7 @@ const ViewportCtx = createContext<{
 } | null>(null);
 
 export function ViewportProvider({ children }: { children: ReactNode }) {
-  const [width, setWidth] = useState<number>(() => global?.innerWidth ?? 0);
+  const [width, setWidth] = useState<number>(0);
 
   useEffect(() => {
     const setter = () => setWidth(window?.innerWidth ?? 0);

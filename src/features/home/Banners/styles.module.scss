@@ -21,4 +21,10 @@
     color: $Core-Pure-white;
     padding-bottom: 16px;
   }
+
+
+  @include desktop() {
+    flex: 1;
+    height: 757px;
+  }
 }

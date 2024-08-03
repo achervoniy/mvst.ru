@@ -30,6 +30,10 @@
 .content {
   @include maxWidth();
   grid-area: content;
+
+  @include desktop() {
+    padding: 0 20px;
+  }
 }
 
 .footer {

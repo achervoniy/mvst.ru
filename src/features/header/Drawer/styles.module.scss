@@ -42,7 +42,11 @@
     li.item {
       height: 56px;
       padding: 0px;
-      border-bottom: none;
+      border-bottom: 2px solid transparent;
+
+      &:hover {
+        border-bottom: 2px solid $Core-Light-brass
+      }
 
       &.active {
         border-bottom: 2px solid $Core-Light-brass

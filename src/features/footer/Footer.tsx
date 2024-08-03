@@ -7,7 +7,7 @@ import st from './styles.module.scss';
 export function Footer() {
   return (
     <div className={st.footer}>
-      <Typography font="paragraph/regular" align="center">
+      <Typography font="paragraph/regular" align="center" className={st.private}>
         © Все права защищены 2024
       </Typography>
       <Typography font="paragraph/regular" align="center" decoration="underline">

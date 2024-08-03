@@ -1,5 +1,6 @@
 'use client';
 
+import cn from 'classnames';
 import { useUnit } from 'effector-react';
 
 import { HOME_PAGE_VIDEO_URL } from '@/constants/runtimeConfig';
@@ -13,8 +14,8 @@ import st from './styles.module.scss';
 export function HomePage() {
   const catalog = useUnit(catalogQuery.$data);
 
-  const menList = (catalog?.men?.list ?? []).slice(0, 4);
-  const womenList = (catalog?.women?.list ?? []).slice(0, 4);
+  const menList = catalog?.men?.list ?? [];
+  const womenList = catalog?.women?.list ?? [];
 
   return (
     <div className={st.page}>
@@ -25,17 +26,17 @@ export function HomePage() {
       </div>
 
       {womenList.length > 0 && (
-        <>
+        <div className={st.productsRow}>
           <Banner gender="f" />
           <ProductsCarousel products={womenList} />
-        </>
+        </div>
       )}
 
       {menList.length > 0 && (
-        <>
+        <div className={cn(st.productsRow, st.reverse)}>
           <Banner gender="m" />
           <ProductsCarousel products={menList} />
-        </>
+        </div>
       )}
 
       <BoutiqueList />
