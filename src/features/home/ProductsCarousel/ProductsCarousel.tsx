@@ -17,9 +17,10 @@ import st from './styles.module.scss';
 
 type Props = {
   products: CatalogProduct[];
+  className?: string;
 };
 
-export function ProductsCarousel({ products }: Props) {
+export function ProductsCarousel({ products, className }: Props) {
   const slides = useMemo(() => chunk(products, 4), [products]);
 
   const prevBtnRef = useRef<SVGSVGElement>(null);
@@ -35,7 +36,7 @@ export function ProductsCarousel({ products }: Props) {
   };
 
   return (
-    <div className={st.swiper}>
+    <div className={cn(st.swiper, className)}>
       <Icon name="CarouselArrow" className={st.arrow} ref={nextBtnRef} />
       <Icon name="CarouselArrow" className={cn(st.arrow, st.left)} ref={prevBtnRef} />
 

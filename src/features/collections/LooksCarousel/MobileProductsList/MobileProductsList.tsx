@@ -19,24 +19,30 @@ export function MobileProductsList({ activeSlideIndex, looks }: Props) {
   }
 
   return (
-    <div className={st.MobileProductsList}>
-      {activeLook.products.map(product => (
-        <a
-          key={product.id}
-          href={`https://www.tsum.ru/product/${product.slug}/`}
-          target="_blank"
-          className={st.product}
-        >
-          <img loading="lazy" src={product.photos[0]?.middle} alt={product.title} />
+    <div className={st.wrapper}>
+      <Typography font="leading/h2" className={st.title}>
+        В этом образе
+      </Typography>
 
-          <Typography font="body/regular" align="center" className={st.title}>
-            {product.title}
-          </Typography>
-          <Typography font="body/regular" align="center">
-            {transformPrice(product.skuList[0]?.price_original)}
-          </Typography>
-        </a>
-      ))}
+      <div className={st.MobileProductsList}>
+        {activeLook.products.map(product => (
+          <a
+            key={product.id}
+            href={`https://www.tsum.ru/product/${product.slug}/`}
+            target="_blank"
+            className={st.product}
+          >
+            <img loading="lazy" src={product.photos[0]?.middle} alt={product.title} />
+
+            <Typography font="body/regular" align="center" className={st.title}>
+              {product.title}
+            </Typography>
+            <Typography font="body/regular" align="center">
+              {transformPrice(product.skuList[0]?.price_original)}
+            </Typography>
+          </a>
+        ))}
+      </div>
     </div>
   );
 }

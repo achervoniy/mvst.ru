@@ -1,11 +1,14 @@
-import { ReactNode, useState } from 'react';
+import cn from 'classnames';
+import { ReactNode, useRef, useState } from 'react';
 import { Swiper as SwiperInstance } from 'swiper';
-import { FreeMode, Mousewheel, Pagination, Thumbs } from 'swiper/modules';
+import { Navigation, Pagination, Thumbs } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
 import { CatalogProduct, LooksBlock } from '@/shared/api/catalog';
 
 import { Responsive } from '@/ui/index';
+
+import { Icon } from '@/ui/assets/Icon';
 
 import { LookSlideDesktop } from './LookSlide';
 import { MobileProductsList } from './MobileProductsList';
@@ -21,6 +24,17 @@ type Props = {
 
 export function LooksCarousel({ block, activeSlideIndex, onSlideChanged, productCarousel }: Props) {
   const [thumbsSwiper, setThumbsSwiper] = useState<SwiperInstance | null>(null);
+  const prevBtnRef = useRef<SVGSVGElement>(null);
+  const nextBtnRef = useRef<SVGSVGElement>(null);
+
+  const onBeforeInit = (swiper: SwiperInstance) => {
+    if (swiper.params.navigation && typeof swiper.params.navigation !== 'boolean') {
+      // @ts-ignore
+      swiper.params.navigation.prevEl = prevBtnRef.current;
+      // @ts-ignore
+      swiper.params.navigation.nextEl = nextBtnRef.current;
+    }
+  };
 
   return (
     <>
@@ -40,21 +54,26 @@ export function LooksCarousel({ block, activeSlideIndex, onSlideChanged, product
             ))}
           </Swiper>
 
-          <Swiper
-            mousewheel
-            freeMode
-            onSwiper={setThumbsSwiper}
-            spaceBetween={24}
-            slidesPerView={8}
-            modules={[Thumbs, Mousewheel, FreeMode]}
-            className={st.thumbSlider}
-          >
-            {block.looks.map(look => (
-              <SwiperSlide key={look.fileId} className={st.thumbSlide}>
-                <img src={look.filePath} />
-              </SwiperSlide>
-            ))}
-          </Swiper>
+          <div className={st.thumbWrapper}>
+            <Icon name="CarouselArrow" className={st.arrow} ref={nextBtnRef} />
+            <Icon name="CarouselArrow" direction="left" className={cn(st.arrow, st.left)} ref={prevBtnRef} />
+
+            <Swiper
+              onBeforeInit={onBeforeInit}
+              navigation
+              onSwiper={setThumbsSwiper}
+              spaceBetween={24}
+              slidesPerView={8}
+              modules={[Thumbs, Navigation]}
+              className={st.thumbSlider}
+            >
+              {block.looks.map(look => (
+                <SwiperSlide key={look.fileId} className={st.thumbSlide}>
+                  <img src={look.filePath} />
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
         </div>
       </Responsive.Desktop>
 

@@ -1,5 +1,6 @@
 'use client';
 import cn from 'classnames';
+import { useUnit } from 'effector-react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -7,11 +8,12 @@ import { usePathname } from 'next/navigation';
 import { usePopupState } from '@/lib/hooks';
 import { useViewport } from '@/lib/useViewport';
 
-import { Responsive } from '@/ui/index';
+import { Responsive, Typography } from '@/ui/index';
 
 import { Icon } from '@/ui/assets/Icon';
 
 import { DesktopHeader } from './DesktopHeader';
+import { $collectionCounter } from './model';
 
 import st from './styles.module.scss';
 
@@ -23,6 +25,7 @@ export function Header({ className }: Props) {
   const popup = usePopupState();
   const { isTabletAndBelow } = useViewport();
   const pathname = usePathname();
+  const counter = useUnit($collectionCounter);
 
   const isCollectionPage = pathname.startsWith('/collection/');
 
@@ -53,6 +56,12 @@ export function Header({ className }: Props) {
             <Link href="/" className={st.logo}>
               <Icon name="LogoFull" />
             </Link>
+
+            {counter && isCollectionPage && (
+              <Typography font="paragraph/regular" className={st.counter}>
+                {counter.current} / {counter.length}
+              </Typography>
+            )}
           </div>
         </Responsive.TabletAndBelow>
 

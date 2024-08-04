@@ -21,10 +21,22 @@
 
 .thumbSlider {
   margin-top: 24px;
+
+  :global(.swiper-button-lock),
+  :global(.swiper-button-next),
+  :global(.swiper-button-prev) {
+    display: none;
+  }
+
+  :global(.swiper-slide) {
+    &:not(:last-child) {
+      margin-right: 24px
+    }
+  }
 }
 
 .thumbSlide {
-  width: calc(100% / 8);
+  width: calc(100% / 9);
 
   img {
     width: 100%;
@@ -48,4 +60,26 @@
     width: 100%;
     object-fit: cover;
   }
+}
+
+.arrow {
+  position: absolute;
+  z-index: 2;
+  right: 23px;
+  left: initial;
+  top: calc(132px / 2);
+  cursor: pointer;
+
+  &:global(.swiper-button-disabled) {
+    cursor: not-allowed;
+  }
+
+  &.left {
+    left: 23px;
+    right: initial;
+  }
+}
+
+.thumbWrapper {
+  position: relative;
 }

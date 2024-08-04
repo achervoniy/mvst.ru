@@ -13,7 +13,9 @@ export function NotFound() {
       <Typography font="leading/display" className={st.code}>
         404
       </Typography>
-      <Typography font="paragraph/regular">Вы перешли по неправильной ссылке или страница была удалена.</Typography>
+      <Typography font="paragraph/regular" align="center">
+        Вы перешли по неправильной ссылке или страница была удалена.
+      </Typography>
       <Link href="/">Вернуться на главную</Link>
     </div>
   );

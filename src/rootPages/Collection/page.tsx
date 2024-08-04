@@ -1,9 +1,10 @@
 'use client';
 
 import { useUnit } from 'effector-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { LooksCarousel } from '@/features/collections';
+import { changeCollectionCounter } from '@/features/header';
 import { ProductsCarousel } from '@/features/home';
 
 import { Typography } from '@/ui/index';
@@ -17,6 +18,13 @@ export function CollectionPage() {
   const text = useUnit($collectionText);
   const title = useUnit($collectionTitle);
   const [activeSlideIndex, setActiveSlideIndex] = useState(1);
+  const collectionCounterChanged = useUnit(changeCollectionCounter);
+
+  const lookLen = looks.looks.length;
+
+  useEffect(() => {
+    collectionCounterChanged({ current: activeSlideIndex, length: lookLen });
+  }, [activeSlideIndex, collectionCounterChanged, lookLen]);
 
   return (
     <section>
@@ -34,7 +42,7 @@ export function CollectionPage() {
         key={title}
         block={looks}
         // @ts-ignore
-        productCarousel={products => <ProductsCarousel products={products} />}
+        productCarousel={products => <ProductsCarousel products={products} className={st.productsSlider} />}
         activeSlideIndex={activeSlideIndex}
         onSlideChanged={setActiveSlideIndex}
       />
