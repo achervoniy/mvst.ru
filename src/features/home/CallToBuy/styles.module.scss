@@ -18,6 +18,11 @@
     img {
       height: 516px;
     }
+
+    div.inAppActions {
+      width: 327px;
+      margin-top: 40px;
+    }
   }
 }
 
@@ -34,11 +39,6 @@
 
 .responsive {
   grid-column: 1 / 3;
-}
-
-.inAppActions {
-  width: 327px;
-  margin-top: 40px;
 }
 
 .appWithQr {
