@@ -3,7 +3,7 @@ import { invoke } from '@withease/factories';
 import { sample } from 'effector';
 
 import { fetchCatalog, FetchFiltersParams } from '@/shared/api/catalog';
-import { createHooks } from '@/shared/pageRouting';
+import { declarePage } from '@/shared/pageRouting';
 
 import { HOME_PAGE_SELECTIONS } from '@/constants/runtimeConfig';
 
@@ -11,7 +11,7 @@ export const catalogQuery = createQuery({
   handler: async (params: FetchFiltersParams) => {
     const [men, women] = await Promise.all([
       fetchCatalog({ data: { ...params, selection: HOME_PAGE_SELECTIONS.men } }),
-      fetchCatalog({ data: { ...params, selection: HOME_PAGE_SELECTIONS.women } }),
+      fetchCatalog({ data: { ...params, selection: HOME_PAGE_SELECTIONS.female } }),
     ]);
 
     return {
@@ -21,7 +21,7 @@ export const catalogQuery = createQuery({
   },
 });
 
-export const pageHooks = invoke(() => createHooks({ pageName: 'HomePage' }));
+export const pageHooks = invoke(() => declarePage({ pageName: 'HomePage' }));
 
 sample({
   clock: pageHooks.entered,

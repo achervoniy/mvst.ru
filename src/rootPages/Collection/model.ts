@@ -4,11 +4,11 @@ import { sample } from 'effector';
 
 import { fetchLanding } from '@/shared/api';
 import { LooksBlock, TextBlock } from '@/shared/api/catalog';
-import { createHooks } from '@/shared/pageRouting';
+import { declarePage } from '@/shared/pageRouting';
 
 import { pageStatusField } from '@/lib/status';
 
-export const pageHooks = invoke(() => createHooks({ pageName: 'Collection' }));
+export const pageHooks = invoke(() => declarePage({ pageName: 'Collection' }));
 
 export const landingQuery = createQuery({
   handler: async ({ slug }: { slug: string }) => {

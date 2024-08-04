@@ -58,7 +58,6 @@ export function ProductsCarousel({ products }: Props) {
                   target="_blank"
                 >
                   <img loading="lazy" src={product.photos[0]?.middle} alt={product.title} />
-                  <Icon name="ShortLogo" className={st.logo} />
 
                   <Typography font="body/regular" align="center" className={st.title}>
                     {product.title}

@@ -16,14 +16,6 @@
     }
   }
 
-  .logo {
-    height: 28px;
-
-    @include desktop() {
-      height: 40px;
-    }
-  }
-
   img {
     width: 155px;
     height: 240px;

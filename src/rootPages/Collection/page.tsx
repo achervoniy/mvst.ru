@@ -26,11 +26,12 @@ export function CollectionPage() {
         </Typography>
 
         <Typography font="paragraph/regular" className={st.counter}>
-          1 / 100
+          {activeSlideIndex} / {looks.looks.length}
         </Typography>
       </div>
 
       <LooksCarousel
+        key={title}
         block={looks}
         // @ts-ignore
         productCarousel={products => <ProductsCarousel products={products} />}

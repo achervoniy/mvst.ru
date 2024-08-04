@@ -11,9 +11,9 @@ export const LOOK_SLUGS = {
 };
 
 export const HOME_PAGE_SELECTIONS = {
-  // men: 'must-m',
-  // female: 'must-w',
+  men: 'must-m',
+  female: 'must-w',
   // Для теста на стейбле
-  men: 'soft-tailoring-men',
-  women: 'sangallo-for-summer-women',
+  // men: 'soft-tailoring-men',
+  // women: 'sangallo-for-summer-women',
 };

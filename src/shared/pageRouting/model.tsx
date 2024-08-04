@@ -8,11 +8,10 @@ export type StartParams = {
 };
 
 type HookProps = {
-  params?: string[];
   pageName?: string;
 };
 
-export function trace(name: string, hooks: ReturnType<typeof createHooks>) {
+export function trace(name: string, hooks: ReturnType<typeof declarePage>) {
   if (process?.env?.NODE_ENV === 'development') {
     hooks.loaded.watch(() => {
       console.log(`[page-hooks-trace (loaded)]: ${name}`);
@@ -28,13 +27,13 @@ export function trace(name: string, hooks: ReturnType<typeof createHooks>) {
   }
 }
 
-export const createHooks = createFactory(({ params = [], pageName }: HookProps) => {
+export const declarePage = createFactory(({ pageName }: HookProps) => {
   // TODO: по переходу параметры реально всегда есть
   // Иначе не нужны
   const $params = createStore<Omit<StartParams, 'ctrl'>>(null!);
 
-  const enter = createEvent<StartParams>(...params);
-  const entered = createEvent<StartParams>(...params);
+  const enter = createEvent<StartParams>();
+  const entered = createEvent<StartParams>();
   const leave = createEvent();
   const load = createEvent();
 

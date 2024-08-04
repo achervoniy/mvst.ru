@@ -1,14 +1,14 @@
 import { allSettled, fork, serialize } from 'effector';
 import { redirect } from 'next/navigation';
 
-import { createHooks } from '@/shared/pageRouting';
+import { declarePage } from '@/shared/pageRouting';
 
 import { $redirect } from './Redirect';
 import { $baseServices, createBaseServices } from './request';
 import { pageStatusField } from './status';
 
 type Props = {
-  pageHooks: ReturnType<typeof createHooks>;
+  pageHooks: ReturnType<typeof declarePage>;
 };
 
 export type PageProps = { params: Record<string, string>; searchParams: Record<string, string> };
@@ -33,6 +33,10 @@ export function createRSC({ pageHooks }: Props) {
     await allSettled(pageHooks.__.load, { scope });
 
     const values = serialize(scope, { ignore: [$baseServices] });
+
+    if (process.env.NODE_ENV === 'development') {
+      console.log('fork values', values);
+    }
 
     return {
       values,

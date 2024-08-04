@@ -1,6 +1,6 @@
 import { ReactNode, useState } from 'react';
 import { Swiper as SwiperInstance } from 'swiper';
-import { Pagination, Thumbs } from 'swiper/modules';
+import { FreeMode, Mousewheel, Pagination, Thumbs } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
 import { CatalogProduct, LooksBlock } from '@/shared/api/catalog';
@@ -41,10 +41,12 @@ export function LooksCarousel({ block, activeSlideIndex, onSlideChanged, product
           </Swiper>
 
           <Swiper
+            mousewheel
+            freeMode
             onSwiper={setThumbsSwiper}
             spaceBetween={24}
             slidesPerView={8}
-            modules={[Thumbs]}
+            modules={[Thumbs, Mousewheel, FreeMode]}
             className={st.thumbSlider}
           >
             {block.looks.map(look => (

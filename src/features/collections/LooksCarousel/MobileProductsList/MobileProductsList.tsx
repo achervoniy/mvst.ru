@@ -4,8 +4,6 @@ import { transformPrice } from '@/lib/currency';
 
 import { Typography } from '@/ui/index';
 
-import { Icon } from '@/ui/assets/Icon';
-
 import st from './styles.module.scss';
 
 type Props = {
@@ -30,7 +28,6 @@ export function MobileProductsList({ activeSlideIndex, looks }: Props) {
           className={st.product}
         >
           <img loading="lazy" src={product.photos[0]?.middle} alt={product.title} />
-          <Icon name="ShortLogo" className={st.logo} />
 
           <Typography font="body/regular" align="center" className={st.title}>
             {product.title}

@@ -2,7 +2,7 @@ import cn from 'classnames';
 import Image from 'next/image';
 import { useRef, useState } from 'react';
 import { Swiper as SwiperInstance } from 'swiper';
-import { Navigation, Pagination } from 'swiper/modules';
+import { FreeMode, Mousewheel, Navigation, Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
 import { Typography } from '@/ui/index';
@@ -44,6 +44,8 @@ export function BoutiqueList() {
       <Icon name="CarouselArrow" className={cn(st.arrow, st.left)} ref={prevBtnRef} />
       <Swiper
         navigation
+        mousewheel
+        freeMode
         pagination={{ clickable: true }}
         onBeforeInit={onBeforeInit}
         spaceBetween={6}
@@ -54,7 +56,7 @@ export function BoutiqueList() {
             spaceBetween: 24,
           },
         }}
-        modules={[Navigation, Pagination]}
+        modules={[Navigation, Pagination, FreeMode, Mousewheel]}
         onSlideChange={swiper => setActiveIndex(swiper.activeIndex + 1)}
       >
         {boutiqueList.map(boutique => (

@@ -2,10 +2,10 @@
 import { useUnit } from 'effector-react';
 import { useEffect } from 'react';
 
-import { createHooks } from './model';
+import { declarePage } from './model';
 
 type Props = {
-  hooks: ReturnType<typeof createHooks>;
+  hooks: ReturnType<typeof declarePage>;
 };
 
 export function usePageLeaved({ hooks }: Props) {
