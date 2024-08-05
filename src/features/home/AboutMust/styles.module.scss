@@ -22,8 +22,11 @@
 }
 
 .text {
-  color: $Core-Wild-tobacco;
-  text-align: center;
+  color: $Core-Dark-brown;
+
+  @include desktop() {
+    text-align: center;
+  }
 }
 
 .intro {

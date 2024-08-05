@@ -14,7 +14,7 @@ type Props = {
 };
 
 export function MobileProductsList({ activeSlideIndex, looks }: Props) {
-  const activeLook = looks[activeSlideIndex];
+  const activeLook = looks[activeSlideIndex - 1];
 
   if (!activeLook) {
     return null;
@@ -31,7 +31,7 @@ export function MobileProductsList({ activeSlideIndex, looks }: Props) {
           <a key={product.id} href={buildProductLink(product.slug)} target="_blank" className={st.product}>
             <img loading="lazy" src={product.photos[0]?.middle} alt={product.title} />
 
-            <Typography font="body/regular" align="center" className={st.title}>
+            <Typography font="body/regular" align="center" className={st.productTitle}>
               {product.title}
             </Typography>
             <Typography font="body/regular" align="center">

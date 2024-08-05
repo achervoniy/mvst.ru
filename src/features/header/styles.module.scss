@@ -37,6 +37,11 @@
   margin: 0 auto;
   display: flex;
   align-items: center;
+
+  svg {
+    height: 23px;
+    width: 84px;
+  }
 }
 
 .responsive {

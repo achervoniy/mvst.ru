@@ -4,7 +4,7 @@ import cn from 'classnames';
 import { useUnit } from 'effector-react';
 import { useEffect, useRef } from 'react';
 
-import { HOME_PAGE_VIDEO_URL } from '@/constants/runtimeConfig';
+import { HOME_PAGE_VIDEO_URL, HOME_PAGE_VIDEO_URL_MOBILE } from '@/constants/runtimeConfig';
 
 import { AboutMust, Banner, BoutiqueList, CallToBuy, ProductsCarousel } from '@/features/home';
 
@@ -34,7 +34,8 @@ export function HomePage() {
     <div className={st.page} ref={pageRef}>
       <div className={st.video}>
         <video autoPlay playsInline loop muted>
-          <source src={HOME_PAGE_VIDEO_URL} type="video/mp4" />
+          <source src={HOME_PAGE_VIDEO_URL} type="video/mp4" media="(min-width:1023px)" />
+          <source src={HOME_PAGE_VIDEO_URL_MOBILE} type="video/mp4" />
         </video>
       </div>
 
