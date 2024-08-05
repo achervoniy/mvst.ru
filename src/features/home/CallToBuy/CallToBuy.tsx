@@ -3,6 +3,8 @@ import { QRCodeSVG } from 'qrcode.react';
 
 import { InAppActions } from '@/shared/ui';
 
+import { DOWNLOAD_APP_LINK } from '@/constants/runtimeConfig';
+
 import { Responsive, Typography } from '@/ui/index';
 
 // @ts-ignore
@@ -33,7 +35,7 @@ export function CallToBuy() {
           <div className={st.appWithQr}>
             <Image src={app} alt="" />
 
-            <QRCodeSVG value="https://tsum.ru/" className={st.qrCode} includeMargin size={124} />
+            <QRCodeSVG value={DOWNLOAD_APP_LINK} className={st.qrCode} includeMargin size={124} />
           </div>
 
           <InAppActions downloadAppVisibility={false} className={st.inAppActions} />

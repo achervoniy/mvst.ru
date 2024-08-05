@@ -30,7 +30,7 @@ export function BoutiqueList() {
   };
 
   return (
-    <div className={st.BoutiqueList} id="boutique">
+    <div className={st.BoutiqueList} target-id="boutique">
       <div className={st.head}>
         <Typography font="leading/h2" className={st.title} align="center">
           наши бутики
