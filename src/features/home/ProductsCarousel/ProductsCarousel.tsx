@@ -50,11 +50,18 @@ export function ProductsCarousel({ products, className }: Props) {
         slidesPerView={1}
         modules={[Navigation, Pagination]}
       >
-        {slides.map(items => (
-          <SwiperSlide key={items[0].id} className={st.slide}>
+        {slides.map((items, id) => (
+          // @ts-ignore
+          <SwiperSlide key={`outer-${id}-${items[0].itemId ?? items[0].slug}`} className={st.slide}>
             {items.map(product => {
               return (
-                <a key={product.id} className={st.product} href={buildProductLink(product.slug)} target="_blank">
+                <a
+                  // @ts-ignore
+                  key={`inner-${product.itemId ?? product.slug}`}
+                  className={st.product}
+                  href={buildProductLink(product.slug)}
+                  target="_blank"
+                >
                   <img loading="lazy" src={product.photos[0]?.middle} alt={product.title} />
 
                   <Typography font="body/regular" align="center" className={st.title}>
