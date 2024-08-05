@@ -18,7 +18,8 @@ export const HOME_PAGE_SELECTIONS = {
   // women: 'sangallo-for-summer-women',
 };
 
-export const DOWNLOAD_APP_LINK = 'https://tsum.onelink.me/oBxT?pid=mvst_ru&c=cn.mvst_lp&af_channel=referral';
+export const DOWNLOAD_APP_LINK =
+  'https://tsum.onelink.me/oBxT?pid=mvst_ru&c=cn.mvst_lp&af_channel=referral&deep_link_value=https%3A%2F%2Fwww.tsum.ru%2Fbrand%2Fmust-774534.html';
 
 export const TSUM_SITE_LINK =
   'https://www.tsum.ru/brand/must-774534.html/?utm_campaign=cn.mvst_lp&utm_medium=referral&utm_source=mvst.ru';
