@@ -12,7 +12,7 @@ type Props = {
 export function LookSlideDesktop({ look, productCarousel }: Props) {
   return (
     <div className={st.slide}>
-      <img src={look.filePath} alt="" loading="lazy" />
+      <img src={look.filePath} alt="" loading="lazy" className={st.image} />
       {productCarousel(look.products)}
     </div>
   );
