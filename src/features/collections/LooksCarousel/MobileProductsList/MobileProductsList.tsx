@@ -28,7 +28,12 @@ export function MobileProductsList({ activeSlideIndex, looks }: Props) {
 
       <div className={st.MobileProductsList}>
         {activeLook.products.map(product => (
-          <a key={product.id} href={buildProductLink(product.slug)} target="_blank" className={st.product}>
+          <a
+            key={`${product.slug}-${product.id}`}
+            href={buildProductLink(product.slug)}
+            target="_blank"
+            className={st.product}
+          >
             <img loading="lazy" src={product.photos[0]?.middle} alt={product.title} />
 
             <Typography font="body/regular" align="center" className={st.productTitle}>

@@ -86,8 +86,8 @@ export function LooksCarousel({ block, activeSlideIndex, onSlideChanged, product
             modules={[Pagination]}
             onSlideChange={swiper => onSlideChanged?.(swiper.activeIndex + 1)}
           >
-            {block.looks.map(look => (
-              <SwiperSlide key={look.fileId} className={st.slideMobile}>
+            {block.looks.map((look, id) => (
+              <SwiperSlide key={`${look.fileId}-${id}`} className={st.slideMobile}>
                 <img src={look.filePath} loading="lazy" />
               </SwiperSlide>
             ))}

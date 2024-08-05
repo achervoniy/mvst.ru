@@ -12,6 +12,7 @@
 .video {
   height: calc(100vh - 60px);
   position: relative;
+  width: 100%;
 
   video {
     position: absolute;
@@ -21,10 +22,10 @@
     height: 100%;
     max-width: 100%;
     object-fit: cover;
+    width: 100%;
 
     @include desktop() {
       width: 100%;
-      object-fit: cover;
     }
   }
 
