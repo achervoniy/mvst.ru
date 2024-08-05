@@ -15,6 +15,7 @@
 
     &.scrollIsDown {
       transform: translateY(-100px);
+      padding-bottom: 0px;
     }
   }
 }

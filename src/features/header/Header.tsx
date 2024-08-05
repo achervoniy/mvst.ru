@@ -77,7 +77,7 @@ export function Header({ className }: Props) {
 
         <Responsive.Desktop className={st.responsive}>
           <div className={st.content}>
-            <DesktopHeader />
+            <DesktopHeader scrollIsDown={scrollIsDown} />
           </div>
         </Responsive.Desktop>
       </header>

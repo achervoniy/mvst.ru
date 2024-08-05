@@ -7,3 +7,26 @@
     height: 100%;
   }
 }
+
+.navWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 1184px;
+  position: relative;
+  overflow: hidden;
+}
+
+.shortLogo {
+  height: 24px;
+  width: 68px;
+  transition: transform .3s ease-in-out;
+  position: absolute;
+  left: 20px;
+  transform: translateY(-56px);
+
+  &.scrollIsDown {
+    transform: translateY(0px);
+  }
+}
