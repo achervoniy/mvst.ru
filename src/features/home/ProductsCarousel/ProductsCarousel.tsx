@@ -7,6 +7,8 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 
 import { CatalogProduct } from '@/shared/api/catalog';
 
+import { buildProductLink } from '@/constants/runtimeConfig';
+
 import { transformPrice } from '@/lib/currency';
 
 import { Typography } from '@/ui/index';
@@ -52,12 +54,7 @@ export function ProductsCarousel({ products, className }: Props) {
           <SwiperSlide key={items[0].id} className={st.slide}>
             {items.map(product => {
               return (
-                <a
-                  key={product.id}
-                  className={st.product}
-                  href={`https://www.tsum.ru/product/${product.slug}/`}
-                  target="_blank"
-                >
+                <a key={product.id} className={st.product} href={buildProductLink(product.slug)} target="_blank">
                   <img loading="lazy" src={product.photos[0]?.middle} alt={product.title} />
 
                   <Typography font="body/regular" align="center" className={st.title}>
