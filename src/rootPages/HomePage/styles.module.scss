@@ -6,6 +6,7 @@
   @include desktop() {
     display: grid;
     grid-template-columns: repeat(2, minmax(164px, 1fr));
+    grid-gap: 16px;
   }
 }
 

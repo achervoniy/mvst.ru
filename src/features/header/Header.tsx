@@ -4,10 +4,12 @@ import { useUnit } from 'effector-react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useState } from 'react';
 
-import { usePopupState } from '@/lib/hooks';
+import { usePopupState, useScrollEventListener } from '@/lib/hooks';
 import { useViewport } from '@/lib/useViewport';
 
+import { BREAKPOINTS } from '@/ui/breakpoints';
 import { Responsive, Typography } from '@/ui/index';
 
 import { Icon } from '@/ui/assets/Icon';
@@ -23,9 +25,10 @@ const MobileDrawer = dynamic(() => import('./Drawer'), { ssr: false });
 
 export function Header({ className }: Props) {
   const popup = usePopupState();
-  const { isTabletAndBelow } = useViewport();
+  const { isTabletAndBelow, isDesktop } = useViewport();
   const pathname = usePathname();
   const counter = useUnit($collectionCounter);
+  const [scrollIsDown, setScrollIsDown] = useState(false);
 
   const isCollectionPage = pathname.startsWith('/collection/');
 
@@ -40,11 +43,18 @@ export function Header({ className }: Props) {
     popup.togglePopup();
   };
 
+  useScrollEventListener((e, { scrollDirection }) => {
+    if (window.innerWidth >= BREAKPOINTS.md && isDesktop) {
+      setScrollIsDown(scrollDirection === 'down');
+    }
+  });
+
   return (
     <>
       <header
         className={cn(st.header, className, {
           [st.isCollectionPage]: isCollectionPage,
+          [st.scrollIsDown]: scrollIsDown,
         })}
       >
         <Responsive.TabletAndBelow className={st.responsive}>
