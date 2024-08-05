@@ -1,7 +1,10 @@
 'use client';
 
 import { useUnit } from 'effector-react';
+import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+
+import { LOOK_SLUGS } from '@/constants/runtimeConfig';
 
 import { LooksCarousel } from '@/features/collections';
 import { changeCollectionCounter } from '@/features/header';
@@ -17,10 +20,12 @@ export function CollectionPage() {
   const looks = useUnit($collectionLooks);
   const text = useUnit($collectionText);
   const title = useUnit($collectionTitle);
+  const params = useParams();
   const [activeSlideIndex, setActiveSlideIndex] = useState(1);
   const collectionCounterChanged = useUnit(changeCollectionCounter);
 
   const lookLen = looks.looks.length;
+  const pageTitle = LOOK_SLUGS.women === params.slug ? 'Женская коллекция' : 'Мужская коллекция';
 
   useEffect(() => {
     collectionCounterChanged({ current: activeSlideIndex, length: lookLen });
@@ -30,7 +35,7 @@ export function CollectionPage() {
     <section>
       <div className={st.head}>
         <Typography font="leading/h2" as="h1" align="center">
-          {title}
+          {pageTitle}
         </Typography>
 
         <Typography font="paragraph/regular" className={st.counter}>
