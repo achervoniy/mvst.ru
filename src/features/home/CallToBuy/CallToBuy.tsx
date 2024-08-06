@@ -35,7 +35,7 @@ export function CallToBuy() {
           <div className={st.appWithQr}>
             <Image src={app} alt="" />
 
-            <QRCodeSVG value={DOWNLOAD_APP_LINK} className={st.qrCode} includeMargin size={124} />
+            <QRCodeSVG value={DOWNLOAD_APP_LINK} className={st.qrCode} includeMargin size={124} level="M" />
           </div>
 
           <InAppActions downloadAppVisibility={false} className={st.inAppActions} />
