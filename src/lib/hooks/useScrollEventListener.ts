@@ -2,7 +2,8 @@ import { useEffect, useRef } from 'react';
 
 type Handler = (_event: Event, _options: { scrollDirection?: 'up' | 'down' }) => (() => void) | void;
 
-const FIXED_GAP = 84;
+const FIXED_GAP = 50;
+// const FIXED_GAP = 0;
 
 export const useScrollEventListener = (handler: Handler, additionalOffset = 0) => {
   const savedHandler = useRef<Handler>(handler);

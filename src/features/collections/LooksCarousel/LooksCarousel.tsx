@@ -1,7 +1,7 @@
 import cn from 'classnames';
 import { ReactNode, useRef, useState } from 'react';
 import { Swiper as SwiperInstance } from 'swiper';
-import { Navigation, Thumbs, Virtual } from 'swiper/modules';
+import { FreeMode, Mousewheel, Navigation, Thumbs, Virtual } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
 import { CatalogProduct, LooksBlock } from '@/shared/api/catalog';
@@ -68,12 +68,14 @@ export function LooksCarousel({ block, activeSlideIndex, onSlideChanged, product
             <Icon name="CarouselArrow" direction="left" className={cn(st.arrow, st.left)} ref={prevBtnRef} />
 
             <Swiper
+              mousewheel
+              freeMode
               onBeforeInit={onBeforeInit}
               navigation
               onSwiper={setThumbsSwiper}
               spaceBetween={version === 'v2' ? 16 : 24}
               slidesPerView={version === 'v2' ? 7 : 8}
-              modules={[Thumbs, Navigation]}
+              modules={[Thumbs, Navigation, Mousewheel, FreeMode]}
               className={st.thumbSlider}
               direction={version === 'v2' ? 'vertical' : 'horizontal'}
             >

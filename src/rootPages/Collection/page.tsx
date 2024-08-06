@@ -8,9 +8,9 @@ import { LOOK_SLUGS } from '@/constants/runtimeConfig';
 
 import { LooksCarousel } from '@/features/collections';
 import { changeCollectionCounter } from '@/features/header';
-import { ProductsCarousel } from '@/features/home';
+import { CallToBuy, ProductsCarousel } from '@/features/home';
 
-import { Typography } from '@/ui/index';
+import { Responsive, Typography } from '@/ui/index';
 
 import { $collectionText, $collectionLooks, $collectionTitle, versionField } from './model';
 
@@ -54,12 +54,18 @@ export function CollectionPage() {
         version={version}
       />
 
-      <Typography
-        font="paragraph/regular"
-        align="center"
-        dangerouslySetInnerHTML={{ __html: text.text }}
-        className={st.lookDescription}
-      />
+      <Responsive.Desktop>
+        <Typography
+          font="paragraph/regular"
+          align="center"
+          dangerouslySetInnerHTML={{ __html: text.text }}
+          className={st.lookDescription}
+        />
+      </Responsive.Desktop>
+
+      <Responsive.TabletAndBelow>
+        <CallToBuy />
+      </Responsive.TabletAndBelow>
     </section>
   );
 }

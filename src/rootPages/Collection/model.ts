@@ -13,7 +13,7 @@ export const pageHooks = invoke(() => declarePage({ pageName: 'Collection' }));
 
 type Version = 'v1' | 'v2';
 // Для каруселей
-export const versionField = invoke(() => createField<'v1' | 'v2'>('v1'));
+export const versionField = invoke(() => createField<'v1' | 'v2'>('v2'));
 
 export const landingQuery = createQuery({
   handler: async ({ slug }: { slug: string }) => {
@@ -41,7 +41,7 @@ sample({ clock: pageHooks.entered, fn: ({ params }) => ({ slug: params.slug }), 
 
 sample({
   clock: pageHooks.entered,
-  fn: params => (params.params.version ?? 'v1') as Version,
+  fn: params => (params.params.version ?? 'v2') as Version,
   target: versionField.change,
 });
 
