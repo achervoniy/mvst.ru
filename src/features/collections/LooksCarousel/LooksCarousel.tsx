@@ -1,7 +1,7 @@
 import cn from 'classnames';
 import { ReactNode, useRef, useState } from 'react';
 import { Swiper as SwiperInstance } from 'swiper';
-import { Navigation, Pagination, Thumbs, Virtual } from 'swiper/modules';
+import { Navigation, Thumbs, Virtual } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
 import { CatalogProduct, LooksBlock } from '@/shared/api/catalog';
@@ -11,7 +11,7 @@ import { Responsive } from '@/ui/index';
 import { Icon } from '@/ui/assets/Icon';
 
 import { LookSlideDesktop } from './LookSlide';
-import { MobileProductsList } from './MobileProductsList';
+import { MobileLook } from './MobileLook';
 
 import st from './styles.module.scss';
 
@@ -20,9 +20,10 @@ type Props = {
   onSlideChanged?: (_index: number) => void;
   activeSlideIndex: number;
   productCarousel: (_items: CatalogProduct[]) => ReactNode;
+  version: 'v1' | 'v2';
 };
 
-export function LooksCarousel({ block, activeSlideIndex, onSlideChanged, productCarousel }: Props) {
+export function LooksCarousel({ block, activeSlideIndex, onSlideChanged, productCarousel, version }: Props) {
   const [thumbsSwiper, setThumbsSwiper] = useState<SwiperInstance | null>(null);
   const prevBtnRef = useRef<SVGSVGElement>(null);
   const nextBtnRef = useRef<SVGSVGElement>(null);
@@ -33,13 +34,20 @@ export function LooksCarousel({ block, activeSlideIndex, onSlideChanged, product
       swiper.params.navigation.prevEl = prevBtnRef.current;
       // @ts-ignore
       swiper.params.navigation.nextEl = nextBtnRef.current;
+
+      if (version === 'v2') {
+        // @ts-ignore
+        swiper.params.navigation.prevEl = nextBtnRef.current;
+        // @ts-ignore
+        swiper.params.navigation.nextEl = prevBtnRef.current;
+      }
     }
   };
 
   return (
     <>
       <Responsive.Desktop>
-        <div className={st.LooksCarousel}>
+        <div className={cn(st[version], st.LooksCarousel)}>
           <Swiper
             virtual
             spaceBetween={0}
@@ -50,7 +58,7 @@ export function LooksCarousel({ block, activeSlideIndex, onSlideChanged, product
           >
             {block.looks.map(look => (
               <SwiperSlide key={look.fileId} className={st.slide}>
-                <LookSlideDesktop look={look} productCarousel={productCarousel} />
+                <LookSlideDesktop look={look} productCarousel={productCarousel} version={version} />
               </SwiperSlide>
             ))}
           </Swiper>
@@ -63,10 +71,11 @@ export function LooksCarousel({ block, activeSlideIndex, onSlideChanged, product
               onBeforeInit={onBeforeInit}
               navigation
               onSwiper={setThumbsSwiper}
-              spaceBetween={24}
-              slidesPerView={8}
+              spaceBetween={version === 'v2' ? 16 : 24}
+              slidesPerView={version === 'v2' ? 7 : 8}
               modules={[Thumbs, Navigation]}
               className={st.thumbSlider}
+              direction={version === 'v2' ? 'vertical' : 'horizontal'}
             >
               {block.looks.map(look => (
                 <SwiperSlide key={look.fileId} className={st.thumbSlide}>
@@ -79,24 +88,12 @@ export function LooksCarousel({ block, activeSlideIndex, onSlideChanged, product
       </Responsive.Desktop>
 
       <Responsive.TabletAndBelow>
-        <div className={st.LooksCarousel}>
-          <Swiper
-            pagination={{ dynamicBullets: true, dynamicMainBullets: 5 }}
-            spaceBetween={0}
-            slidesPerView={1}
-            modules={[Pagination, Virtual]}
-            onSlideChange={swiper => onSlideChanged?.(swiper.activeIndex + 1)}
-            virtual
-          >
-            {block.looks.map((look, id) => (
-              <SwiperSlide key={`${look.fileId}-${id}`} className={st.slideMobile}>
-                <img src={look.filePath} loading="lazy" />
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        </div>
-
-        <MobileProductsList activeSlideIndex={activeSlideIndex} looks={block.looks} />
+        <MobileLook
+          className={st.LooksCarousel}
+          activeSlideIndex={activeSlideIndex}
+          onSlideChanged={onSlideChanged}
+          block={block}
+        />
       </Responsive.TabletAndBelow>
     </>
   );

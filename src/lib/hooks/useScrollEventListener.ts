@@ -2,6 +2,8 @@ import { useEffect, useRef } from 'react';
 
 type Handler = (_event: Event, _options: { scrollDirection?: 'up' | 'down' }) => (() => void) | void;
 
+const FIXED_GAP = 84;
+
 export const useScrollEventListener = (handler: Handler, additionalOffset = 0) => {
   const savedHandler = useRef<Handler>(handler);
 
@@ -15,18 +17,13 @@ export const useScrollEventListener = (handler: Handler, additionalOffset = 0) =
     let prevDir = '';
 
     const eventListener = (event: Event) => {
-      // Элементы из-за которых зависит позиция элементов
-      // На пример хедера
-      // Или фильтров (офсеты)
-      const headerHeight = document.querySelector('header')?.offsetHeight ?? 0;
-
       const currentScroll = window.scrollY;
       const scrollDirection = currentScroll > lastScroll ? 'down' : 'up';
       // const scrollDownTooFast = scrollY - lastScroll > diff;
       // const scrollUpTooFast = scrollY - lastScroll < -diff;
 
       const shouldToggleHeader = prevDir !== scrollDirection;
-      const hasOffset = currentScroll > headerHeight + additionalOffset;
+      const hasOffset = currentScroll > FIXED_GAP + additionalOffset;
 
       if (shouldToggleHeader && (scrollDirection === 'up' || hasOffset)) {
         prevDir = scrollDirection;

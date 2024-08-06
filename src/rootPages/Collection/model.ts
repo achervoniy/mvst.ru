@@ -6,9 +6,14 @@ import { fetchLanding } from '@/shared/api';
 import { LooksBlock, TextBlock } from '@/shared/api/catalog';
 import { declarePage } from '@/shared/pageRouting';
 
+import { createField } from '@/lib/createField';
 import { pageStatusField } from '@/lib/status';
 
 export const pageHooks = invoke(() => declarePage({ pageName: 'Collection' }));
+
+type Version = 'v1' | 'v2';
+// Для каруселей
+export const versionField = invoke(() => createField<'v1' | 'v2'>('v1'));
 
 export const landingQuery = createQuery({
   handler: async ({ slug }: { slug: string }) => {
@@ -33,4 +38,11 @@ export const $collectionLooks = landingQuery.$data.map(data => {
 });
 
 sample({ clock: pageHooks.entered, fn: ({ params }) => ({ slug: params.slug }), target: landingQuery.start });
+
+sample({
+  clock: pageHooks.entered,
+  fn: params => (params.params.version ?? 'v1') as Version,
+  target: versionField.change,
+});
+
 sample({ clock: landingQuery.finished.failure, fn: () => 404, target: pageStatusField.change });

@@ -14,3 +14,14 @@
     grid-template-columns: repeat(2, minmax(164px, 1fr));
   }
 }
+
+.v2 {
+  &.slide {
+    gap: 0px;
+
+    img.image {
+      height: 711px;
+      object-fit: contain;
+    }
+  }
+}

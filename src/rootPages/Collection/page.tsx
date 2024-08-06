@@ -12,7 +12,7 @@ import { ProductsCarousel } from '@/features/home';
 
 import { Typography } from '@/ui/index';
 
-import { $collectionText, $collectionLooks, $collectionTitle } from './model';
+import { $collectionText, $collectionLooks, $collectionTitle, versionField } from './model';
 
 import st from './styles.module.scss';
 
@@ -23,6 +23,7 @@ export function CollectionPage() {
   const params = useParams();
   const [activeSlideIndex, setActiveSlideIndex] = useState(1);
   const collectionCounterChanged = useUnit(changeCollectionCounter);
+  const version = useUnit(versionField.$value);
 
   const lookLen = looks.looks.length;
   const pageTitle = LOOK_SLUGS.women === params.slug ? 'Женская коллекция' : 'Мужская коллекция';
@@ -32,7 +33,7 @@ export function CollectionPage() {
   }, [activeSlideIndex, collectionCounterChanged, lookLen]);
 
   return (
-    <section>
+    <section className={st[version]}>
       <div className={st.head}>
         <Typography font="leading/h2" as="h1" align="center">
           {pageTitle}
@@ -50,6 +51,7 @@ export function CollectionPage() {
         productCarousel={products => <ProductsCarousel products={products} className={st.productsSlider} />}
         activeSlideIndex={activeSlideIndex}
         onSlideChanged={setActiveSlideIndex}
+        version={version}
       />
 
       <Typography
