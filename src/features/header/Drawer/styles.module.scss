@@ -57,7 +57,8 @@
 
 .footer {
   margin-top: auto;
-  padding-bottom: 80px;
+  position: sticky;
+  bottom: 32px;
 
   .title {
     text-transform: uppercase;
