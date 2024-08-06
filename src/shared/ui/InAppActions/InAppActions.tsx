@@ -15,12 +15,12 @@ export function InAppActions({ downloadAppVisibility = true, className }: Props)
   return (
     <div className={cn(st.actions, className)}>
       {downloadAppVisibility && (
-        <a href={TSUM_SITE_LINK} target="_blank">
+        <a href={DOWNLOAD_APP_LINK} target="_blank">
           <Typography font="paragraph/bold">Скачать приложение</Typography>
         </a>
       )}
 
-      <a href={DOWNLOAD_APP_LINK} target="_blank">
+      <a href={TSUM_SITE_LINK} target="_blank">
         <Typography font="paragraph/bold">Перейти на сайт</Typography>
       </a>
     </div>

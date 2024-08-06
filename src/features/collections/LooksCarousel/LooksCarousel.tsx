@@ -1,7 +1,7 @@
 import cn from 'classnames';
 import { ReactNode, useRef, useState } from 'react';
 import { Swiper as SwiperInstance } from 'swiper';
-import { Navigation, Pagination, Thumbs } from 'swiper/modules';
+import { Navigation, Pagination, Thumbs, Virtual } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
 import { CatalogProduct, LooksBlock } from '@/shared/api/catalog';
@@ -41,10 +41,11 @@ export function LooksCarousel({ block, activeSlideIndex, onSlideChanged, product
       <Responsive.Desktop>
         <div className={st.LooksCarousel}>
           <Swiper
+            virtual
             spaceBetween={0}
             slidesPerView={1}
             thumbs={{ swiper: thumbsSwiper }}
-            modules={[Thumbs]}
+            modules={[Thumbs, Virtual]}
             onSlideChange={swiper => onSlideChanged?.(swiper.activeIndex + 1)}
           >
             {block.looks.map(look => (
@@ -80,11 +81,12 @@ export function LooksCarousel({ block, activeSlideIndex, onSlideChanged, product
       <Responsive.TabletAndBelow>
         <div className={st.LooksCarousel}>
           <Swiper
-            pagination={{ clickable: true, dynamicBullets: true, dynamicMainBullets: 5 }}
+            pagination={{ dynamicBullets: true, dynamicMainBullets: 5 }}
             spaceBetween={0}
             slidesPerView={1}
-            modules={[Pagination]}
+            modules={[Pagination, Virtual]}
             onSlideChange={swiper => onSlideChanged?.(swiper.activeIndex + 1)}
+            virtual
           >
             {block.looks.map((look, id) => (
               <SwiperSlide key={`${look.fileId}-${id}`} className={st.slideMobile}>
