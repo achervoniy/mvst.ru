@@ -116,6 +116,10 @@
     padding: 0px;
     width: auto;
 
+    &:last-child {
+      margin-right: 0px !important;
+    }
+
     a {
       width: 100%;
     }
