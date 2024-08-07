@@ -20,7 +20,7 @@
 }
 
 .thumbSlider {
-  margin-top: 24px;
+  margin-top: 16px;
 
   :global(.swiper-button-lock),
   :global(.swiper-button-next),
@@ -59,7 +59,7 @@
   z-index: 2;
   right: 23px;
   left: initial;
-  top: calc(96px / 2);
+  top: 40px;
   cursor: pointer;
 
   &:global(.swiper-button-disabled) {

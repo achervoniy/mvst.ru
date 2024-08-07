@@ -45,7 +45,7 @@ export function ProductsCarousel({ products, className, version }: Props) {
 
       <Swiper
         navigation
-        slidesOffsetBefore={version === 'v1' ? 24 : 0}
+        slidesOffsetBefore={version === 'v1' && products.length > 3 ? 24 : 0}
         onBeforeInit={onBeforeInit}
         pagination={{ clickable: true, dynamicBullets: true, dynamicMainBullets: 5 }}
         spaceBetween={version === 'v1' ? 24 : 6}

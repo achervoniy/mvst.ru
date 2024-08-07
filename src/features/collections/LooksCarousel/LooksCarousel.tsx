@@ -52,7 +52,7 @@ export function LooksCarousel({ block, activeSlideIndex, onSlideChanged, product
             virtual
             spaceBetween={0}
             slidesPerView={1}
-            thumbs={{ swiper: thumbsSwiper }}
+            thumbs={{ swiper: thumbsSwiper, autoScrollOffset: 1 }}
             modules={[Thumbs, Virtual]}
             onSlideChange={swiper => onSlideChanged?.(swiper.activeIndex + 1)}
           >
