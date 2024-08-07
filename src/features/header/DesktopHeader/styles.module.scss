@@ -13,14 +13,14 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  max-width: 1184px;
+  max-width: $max-width-desktop;
   position: relative;
   overflow: hidden;
 }
 
 .shortLogo {
   height: 24px;
-  width: 68px;
+  width: 64px;
   transition: transform .3s ease-in-out;
   position: absolute;
   left: 20px;
