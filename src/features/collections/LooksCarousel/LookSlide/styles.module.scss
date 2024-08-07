@@ -13,6 +13,10 @@
   @include desktop() {
     display: grid;
     grid-template-columns: 384px minmax(164px, 1fr);
+
+    img.image {
+      object-fit: contain;
+    }
   }
 }
 
