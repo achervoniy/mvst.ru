@@ -1,5 +1,5 @@
 import cn from 'classnames';
-import { ReactNode, useLayoutEffect, useRef, useState } from 'react';
+import { ReactNode, useRef, useState } from 'react';
 import { Swiper as SwiperInstance } from 'swiper';
 import { FreeMode, Mousewheel, Navigation, Thumbs, Virtual } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -44,11 +44,11 @@ export function LooksCarousel({ block, activeSlideIndex, onSlideChanged, product
     }
   };
 
-  useLayoutEffect(() => {
-    if (thumbsSwiper) {
-      thumbsSwiper.slideTo(activeSlideIndex);
-    }
-  }, [activeSlideIndex, thumbsSwiper]);
+  // useLayoutEffect(() => {
+  //   if (thumbsSwiper) {
+  //     thumbsSwiper.slideTo(activeSlideIndex);
+  //   }
+  // }, [activeSlideIndex, thumbsSwiper]);
 
   return (
     <>
@@ -84,9 +84,6 @@ export function LooksCarousel({ block, activeSlideIndex, onSlideChanged, product
               modules={[Thumbs, Navigation, Mousewheel, FreeMode]}
               className={st.thumbSlider}
               direction={version === 'v2' ? 'vertical' : 'horizontal'}
-              centeredSlides
-              centeredSlidesBounds
-              slideToClickedSlide
             >
               {block.looks.map(look => (
                 <SwiperSlide key={look.fileId} className={st.thumbSlide}>
