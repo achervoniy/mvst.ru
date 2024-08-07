@@ -97,3 +97,38 @@
     display: block;
   }
 }
+
+.swiper.v1 {
+  display: flex;
+  align-items: center;
+
+  img {
+    mix-blend-mode: multiply;
+  }
+
+  :global(.swiper) {
+    width: 100%;
+  }
+
+  :global(.swiper-slide) {
+    background: #f9f7f4;
+    padding: 0px;
+    width: auto;
+
+    a {
+      width: 100%;
+    }
+  }
+
+  .slide {
+    display: flex;
+  }
+
+  .arrow {
+    top: 300px;
+
+    rect {
+      fill: #fff;
+    }
+  }
+}

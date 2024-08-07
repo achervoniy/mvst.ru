@@ -41,7 +41,7 @@ sample({ clock: pageHooks.entered, fn: ({ params }) => ({ slug: params.slug }), 
 
 sample({
   clock: pageHooks.entered,
-  fn: params => (params.params.version ?? 'v2') as Version,
+  fn: params => (params.params.version ?? 'v1') as Version,
   target: versionField.change,
 });
 

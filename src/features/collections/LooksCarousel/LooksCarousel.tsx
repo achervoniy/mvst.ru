@@ -74,7 +74,7 @@ export function LooksCarousel({ block, activeSlideIndex, onSlideChanged, product
               navigation
               onSwiper={setThumbsSwiper}
               spaceBetween={version === 'v2' ? 16 : 24}
-              slidesPerView={version === 'v2' ? 7 : 8}
+              slidesPerView={version === 'v2' ? 7 : 12}
               modules={[Thumbs, Navigation, Mousewheel, FreeMode]}
               className={st.thumbSlider}
               direction={version === 'v2' ? 'vertical' : 'horizontal'}

@@ -32,8 +32,13 @@
 
 .productsSlider {
   img {
-    height: 357px;
-    width: 230px;
+    height: 377px;
+    width: 199px;
+
+    // @media (min-width:1024px) and (max-width:1183px) {
+    //   height: auto;
+    //   width: 120px;
+    // }
   }
 }
 

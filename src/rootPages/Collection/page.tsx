@@ -48,7 +48,9 @@ export function CollectionPage() {
         key={title}
         block={looks}
         // @ts-ignore
-        productCarousel={products => <ProductsCarousel products={products} className={st.productsSlider} />}
+        productCarousel={products => (
+          <ProductsCarousel products={products} className={st.productsSlider} version={version} />
+        )}
         activeSlideIndex={activeSlideIndex}
         onSlideChanged={setActiveSlideIndex}
         version={version}

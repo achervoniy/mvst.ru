@@ -59,7 +59,7 @@
   z-index: 2;
   right: 23px;
   left: initial;
-  top: calc(132px / 2);
+  top: calc(96px / 2);
   cursor: pointer;
 
   &:global(.swiper-button-disabled) {
@@ -120,6 +120,17 @@
   &.LooksCarousel {
     @include desktop() {
       display: flex;
+    }
+  }
+}
+
+.v1 {
+  .thumbSlide {
+    width: calc(100% / 12);
+
+    img {
+      width: 100%;
+      height: 114px;
     }
   }
 }
