@@ -22,9 +22,13 @@
 .header {
   grid-area: header;
   position: sticky;
-  top: -101px;
+  top: 0px;
   z-index: $z-regular + 2;
   background-color: $Core-Pure-white;
+
+  @include desktop() {
+    top: -101px;
+  }
 }
 
 .content {
