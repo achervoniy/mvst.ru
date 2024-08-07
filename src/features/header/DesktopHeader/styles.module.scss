@@ -24,7 +24,7 @@
   transition: transform .3s ease-in-out;
   position: absolute;
   left: 20px;
-  transform: translateY(-56px);
+  transform: translateY(56px);
 
   &.scrollIsDown {
     transform: translateY(0px);

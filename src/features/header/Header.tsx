@@ -54,7 +54,7 @@ export function Header({ className }: Props) {
       <header
         className={cn(st.header, className, {
           [st.isCollectionPage]: isCollectionPage,
-          [st.scrollIsDown]: scrollIsDown,
+          // [st.scrollIsDown]: scrollIsDown,
         })}
       >
         <Responsive.TabletAndBelow className={st.responsive}>

@@ -98,6 +98,7 @@
 
   &:global(.swiper-button-disabled) {
     cursor: not-allowed;
+    visibility: hidden;
   }
 
   &.left {

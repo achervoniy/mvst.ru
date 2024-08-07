@@ -57,17 +57,18 @@
 .arrow {
   position: absolute;
   z-index: 2;
-  right: 23px;
+  right: 8px;
   left: initial;
   top: 40px;
   cursor: pointer;
 
   &:global(.swiper-button-disabled) {
     cursor: not-allowed;
+    visibility: hidden;
   }
 
   &.left {
-    left: 23px;
+    left: 8px;
     right: initial;
   }
 }
