@@ -1,5 +1,6 @@
 'use client';
 
+import { useVisibilityChange } from '@uidotdev/usehooks';
 import cn from 'classnames';
 import { useUnit } from 'effector-react';
 import { useEffect, useRef } from 'react';
@@ -18,6 +19,8 @@ export function HomePage() {
   const catalog = useUnit(catalogQuery.$data);
   const hash = useHash();
   const pageRef = useRef<HTMLDivElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const documentVisible = useVisibilityChange();
 
   const menList = catalog?.men?.list ?? [];
   const womenList = catalog?.women?.list ?? [];
@@ -30,10 +33,18 @@ export function HomePage() {
     }
   }, [hash]);
 
+  useEffect(() => {
+    if (!documentVisible) {
+      videoRef.current?.pause();
+    } else {
+      videoRef.current?.play();
+    }
+  }, [documentVisible]);
+
   return (
     <div className={st.page} ref={pageRef}>
       <div className={st.video}>
-        <video autoPlay playsInline loop muted>
+        <video autoPlay playsInline loop muted ref={videoRef}>
           <source src={HOME_PAGE_VIDEO_URL} type="video/mp4" media="(min-width:1023px)" />
           <source src={HOME_PAGE_VIDEO_URL_MOBILE} type="video/mp4" />
         </video>
