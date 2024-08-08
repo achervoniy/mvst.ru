@@ -12,12 +12,15 @@ export const LOOK_SLUGS = {
   women: 'must-web-women',
 };
 
-export const HOME_PAGE_SELECTIONS = {
-  men: 'must-m',
-  female: 'must-w',
-  // Для теста на стейбле
-  // men: 'soft-tailoring-men',
-  // women: 'sangallo-for-summer-women',
+export const HOME_PAGE_FILTERS = {
+  men: {
+    root_section: 18327,
+    brand: 13037770,
+  },
+  female: {
+    root_section: 18368,
+    brand: 13037770,
+  },
 };
 
 export const DOWNLOAD_APP_LINK =

@@ -1,7 +1,7 @@
 export type CatalogProductsParams = {
   section?: number | string; // category id
   selection?: string; // sel slug
-  brand?: string;
+  brand?: string | number;
   sort?: string;
   limit?: number;
   page?: number;
@@ -217,7 +217,7 @@ export type FetchFiltersParams = {
   q?: string;
   gender?: 'women' | 'men' | 'kids';
   category?: string;
-  brand?: string;
+  brand?: string | number;
   color?: string;
   attribute?: string;
   size?: string;

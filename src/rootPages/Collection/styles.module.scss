@@ -31,6 +31,10 @@
 }
 
 .productsSlider {
+  :global(.swiper-slide) {
+    max-width: 199px;
+  }
+
   img {
     height: 377px;
     width: 199px;
@@ -43,8 +47,14 @@
 }
 
 .v2 {
-  .productsSlider img {
-    height: 290px;
-    width: 188px;
+  .productsSlider {
+    :global(.swiper-slide) {
+      max-width: initial;
+    }
+
+    img {
+      height: 290px;
+      width: 188px;
+    }
   }
 }

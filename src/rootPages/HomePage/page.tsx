@@ -1,6 +1,5 @@
 'use client';
 
-import { useVisibilityChange } from '@uidotdev/usehooks';
 import cn from 'classnames';
 import { useUnit } from 'effector-react';
 import { useEffect, useRef } from 'react';
@@ -9,7 +8,7 @@ import { HOME_PAGE_VIDEO_URL, HOME_PAGE_VIDEO_URL_MOBILE } from '@/constants/run
 
 import { AboutMust, Banner, BoutiqueList, CallToBuy, ProductsCarousel } from '@/features/home';
 
-import { useHash } from '@/lib/hooks';
+import { useHash, usePageVisibility } from '@/lib/hooks';
 
 import { catalogQuery } from './model';
 
@@ -20,7 +19,7 @@ export function HomePage() {
   const hash = useHash();
   const pageRef = useRef<HTMLDivElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const documentVisible = useVisibilityChange();
+  const documentVisible = usePageVisibility();
 
   const menList = catalog?.men?.list ?? [];
   const womenList = catalog?.women?.list ?? [];
