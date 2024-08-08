@@ -14,11 +14,11 @@ export const LOOK_SLUGS = {
 
 export const HOME_PAGE_FILTERS = {
   men: {
-    root_section: 18327,
+    section: 18327,
     brand: 13037770,
   },
   female: {
-    root_section: 18368,
+    section: 18368,
     brand: 13037770,
   },
 };

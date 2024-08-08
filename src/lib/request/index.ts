@@ -23,6 +23,8 @@ export const baseRequestFx = attach({
   effect: (services, params: RequestParams<any, any>): Promise<any> => {
     const { query, url, mapResult, service = 'tsum', ...reqParams } = params;
 
+    console.log({ url, ...reqParams });
+
     return services.api[service]({
       ...reqParams,
       data: params.data,

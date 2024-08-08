@@ -34,10 +34,6 @@ export function createRSC({ pageHooks }: Props) {
 
     const values = serialize(scope, { ignore: [$baseServices] });
 
-    if (process.env.NODE_ENV === 'development') {
-      console.log('fork values', values);
-    }
-
     return {
       values,
       onRedirected: scope.getState($redirect) ? () => redirect(scope.getState($redirect)?.to!) : undefined,
