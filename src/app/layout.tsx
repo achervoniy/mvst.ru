@@ -17,8 +17,8 @@ import '@/ui/themes/reset.scss';
 import '@/ui/themes/fonts.scss';
 
 export const metadata: Metadata = {
-  title: 'Must',
-  description: 'Must description',
+  title: 'Must Одежда - Элегантные решения для вашего гардероба',
+  description: `Откройте для себя Must Одежду: современные и стильные коллекции для мужчин и женщин. Обновите свой гардероб с нашим уникальным выбором одежды, которая подчеркнёт вашу индивидуальность.`,
 };
 
 type Props = Readonly<{

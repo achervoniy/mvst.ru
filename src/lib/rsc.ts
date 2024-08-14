@@ -11,7 +11,7 @@ type Props = {
   pageHooks: ReturnType<typeof declarePage>;
 };
 
-export type PageProps = { params: Record<string, string>; searchParams: Record<string, string> };
+export type PageProps<Params = Record<string, string>> = { params: Params; searchParams: Record<string, string> };
 
 const baseServices = createBaseServices();
 
