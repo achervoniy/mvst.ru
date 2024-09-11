@@ -2,7 +2,7 @@ import { Look } from '@/shared/api/catalog';
 
 import { buildProductLink } from '@/constants/runtimeConfig';
 
-// import { transformPrice } from '@/lib/currency';
+import { transformPrice } from '@/lib/currency';
 
 import { Typography } from '@/ui/index';
 
@@ -39,9 +39,9 @@ export function MobileProductsList({ activeSlideIndex, looks }: Props) {
             <Typography font="body/regular" align="center" className={st.productTitle}>
               {product.title}
             </Typography>
-            {/* <Typography font="body/regular" align="center">
+            <Typography font="body/regular" align="center">
               {transformPrice(product.skuList[0]?.price_original)}
-            </Typography> */}
+            </Typography>
           </a>
         ))}
       </div>

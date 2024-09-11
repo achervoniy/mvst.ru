@@ -9,7 +9,7 @@ import { CatalogProduct } from '@/shared/api/catalog';
 
 import { buildProductLink } from '@/constants/runtimeConfig';
 
-// import { transformPrice } from '@/lib/currency';
+import { transformPrice } from '@/lib/currency';
 
 import { Typography } from '@/ui/index';
 
@@ -77,9 +77,9 @@ export function ProductsCarousel({ products, className, version }: Props) {
                   <Typography font="body/regular" align="center" className={st.title}>
                     {product.title}
                   </Typography>
-                  {/* <Typography font="body/regular" align="center">
+                  <Typography font="body/regular" align="center">
                     {transformPrice(product.skuList[0]?.price_original)}
-                  </Typography> */}
+                  </Typography>
                 </a>
               </SwiperSlide>
             ))
@@ -100,9 +100,9 @@ export function ProductsCarousel({ products, className, version }: Props) {
                       <Typography font="body/regular" align="center" className={st.title}>
                         {product.title}
                       </Typography>
-                      {/* <Typography font="body/regular" align="center">
+                      <Typography font="body/regular" align="center">
                         {transformPrice(product.skuList[0]?.price_original)}
-                      </Typography> */}
+                      </Typography>
                     </a>
                   );
                 })}
