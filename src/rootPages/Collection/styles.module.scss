@@ -32,7 +32,7 @@
 
 .productsSlider {
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
 
   :global(.swiper-slide) {
     max-width: 199px;
@@ -45,7 +45,11 @@
 
   button {
     margin-top: 20px;
-    margin-bottom: 0px;
+    margin-bottom: 16px;
+  }
+
+  @include desktop() {
+    padding-top: 46px;
   }
 }
 
