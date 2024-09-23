@@ -52,14 +52,14 @@ export function HomePage() {
       {womenList.length > 0 && (
         <div className={st.productsRow}>
           <Banner gender="f" />
-          <ProductsCarousel products={womenList} />
+          <ProductsCarousel products={womenList} gender="women" />
         </div>
       )}
 
       {menList.length > 0 && (
         <div className={cn(st.productsRow, st.reverse)}>
           <Banner gender="m" />
-          <ProductsCarousel products={menList} />
+          <ProductsCarousel products={menList} gender="men" />
         </div>
       )}
 

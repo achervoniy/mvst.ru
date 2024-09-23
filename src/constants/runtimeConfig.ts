@@ -32,3 +32,9 @@ export const TSUM_SITE_LINK =
 export const buildProductLink = (slug: string) => {
   return `https://www.tsum.ru/product/${slug}/?utm_campaign=cn.mvst_lp&utm_medium=referral&utm_source=mvst.ru`;
 };
+
+export const TSUM_SITE_LINK_BY_GENDER = {
+  women:
+    'https://www.tsum.ru/brand/zhenskoe-18368/must-774534.html?utm_campaign=cn.mvst_lp&utm_medium=referral&utm_source=mvst.ru',
+  men: 'https://www.tsum.ru/brand/muzhskoe-2408/must-774534.html?utm_campaign=cn.mvst_lp&utm_medium=referral&utm_source=mvst.ru',
+};

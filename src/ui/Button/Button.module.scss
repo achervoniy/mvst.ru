@@ -1,0 +1,32 @@
+.btn {
+  padding: 13.5px 8px;
+  color: $Core-Dark-brown;
+  background-color: transparent;
+  border-radius: 4px;
+  border: 0 solid transparent;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  border: 1.5px solid $Core-Champagne;
+  @include paragraph-bold();
+
+  &.stretch {
+    width: 100%;
+  }
+
+  &.bold {
+    font-weight: 500;
+  }
+
+  &.disabled {
+    opacity: 0.24;
+    cursor: not-allowed;
+  }
+
+  @include desktop() {
+    padding: 12px 8px;
+  }
+}

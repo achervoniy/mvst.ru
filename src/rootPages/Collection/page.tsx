@@ -47,13 +47,18 @@ export function CollectionPage() {
       <LooksCarousel
         key={title}
         block={looks}
-        // @ts-ignore
+        version={version}
         productCarousel={products => (
-          <ProductsCarousel products={products} className={st.productsSlider} version={version} />
+          <ProductsCarousel
+            products={products}
+            className={st.productsSlider}
+            version={version}
+            gender={LOOK_SLUGS.women === params.slug ? 'women' : 'men'}
+          />
         )}
         activeSlideIndex={activeSlideIndex}
         onSlideChanged={setActiveSlideIndex}
-        version={version}
+        gender={LOOK_SLUGS.women === params.slug ? 'women' : 'men'}
       />
 
       <Responsive.Desktop>

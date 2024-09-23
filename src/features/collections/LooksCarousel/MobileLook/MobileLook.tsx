@@ -3,6 +3,10 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 
 import { LooksBlock } from '@/shared/api/catalog';
 
+import { TSUM_SITE_LINK_BY_GENDER } from '@/constants/runtimeConfig';
+
+import { Button } from '@/ui/index';
+
 import { MobileProductsList } from '../MobileProductsList';
 
 import st from './styles.module.scss';
@@ -12,9 +16,10 @@ type Props = {
   onSlideChanged?: (_index: number) => void;
   activeSlideIndex: number;
   className?: string;
+  gender: 'women' | 'men';
 };
 
-export function MobileLook({ block, activeSlideIndex, onSlideChanged, className }: Props) {
+export function MobileLook({ block, activeSlideIndex, onSlideChanged, className, gender }: Props) {
   return (
     <>
       <div className={className}>
@@ -35,6 +40,18 @@ export function MobileLook({ block, activeSlideIndex, onSlideChanged, className 
       </div>
 
       <MobileProductsList activeSlideIndex={activeSlideIndex} looks={block.looks} />
+
+      <Button
+        stretch
+        className={st.action}
+        onClick={() => {
+          if (typeof window !== 'undefined') {
+            window.open(TSUM_SITE_LINK_BY_GENDER[gender], '__blank');
+          }
+        }}
+      >
+        Смотреть все вещи
+      </Button>
     </>
   );
 }

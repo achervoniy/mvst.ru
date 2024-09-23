@@ -31,6 +31,9 @@
 }
 
 .productsSlider {
+  flex-direction: column;
+  justify-content: center;
+
   :global(.swiper-slide) {
     max-width: 199px;
   }
@@ -38,11 +41,11 @@
   img {
     height: 377px;
     width: 199px;
+  }
 
-    // @media (min-width:1024px) and (max-width:1183px) {
-    //   height: auto;
-    //   width: 120px;
-    // }
+  button {
+    margin-top: 20px;
+    margin-bottom: 0px;
   }
 }
 

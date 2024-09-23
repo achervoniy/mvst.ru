@@ -21,9 +21,10 @@ type Props = {
   activeSlideIndex: number;
   productCarousel: (_items: CatalogProduct[]) => ReactNode;
   version: 'v1' | 'v2';
+  gender: 'women' | 'men';
 };
 
-export function LooksCarousel({ block, activeSlideIndex, onSlideChanged, productCarousel, version }: Props) {
+export function LooksCarousel({ block, activeSlideIndex, onSlideChanged, productCarousel, version, gender }: Props) {
   const [thumbsSwiper, setThumbsSwiper] = useState<SwiperInstance | null>(null);
   const prevBtnRef = useRef<SVGSVGElement>(null);
   const nextBtnRef = useRef<SVGSVGElement>(null);
@@ -101,6 +102,7 @@ export function LooksCarousel({ block, activeSlideIndex, onSlideChanged, product
           activeSlideIndex={activeSlideIndex}
           onSlideChanged={onSlideChanged}
           block={block}
+          gender={gender}
         />
       </Responsive.TabletAndBelow>
     </>

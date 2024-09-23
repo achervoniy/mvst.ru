@@ -7,11 +7,11 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 
 import { CatalogProduct } from '@/shared/api/catalog';
 
-import { buildProductLink } from '@/constants/runtimeConfig';
+import { TSUM_SITE_LINK_BY_GENDER, buildProductLink } from '@/constants/runtimeConfig';
 
 import { transformPrice } from '@/lib/currency';
 
-import { Typography } from '@/ui/index';
+import { Button, Typography } from '@/ui/index';
 
 import { Icon } from '@/ui/assets/Icon';
 
@@ -21,9 +21,10 @@ type Props = {
   products: CatalogProduct[];
   className?: string;
   version?: 'v1' | 'v2';
+  gender: 'women' | 'men';
 };
 
-export function ProductsCarousel({ products, className, version }: Props) {
+export function ProductsCarousel({ products, className, version, gender }: Props) {
   const slides = useMemo(() => chunk(products, 4), [products]);
 
   const prevBtnRef = useRef<SVGSVGElement>(null);
@@ -109,6 +110,18 @@ export function ProductsCarousel({ products, className, version }: Props) {
               </SwiperSlide>
             ))}
       </Swiper>
+
+      <Button
+        stretch
+        className={st.action}
+        onClick={() => {
+          if (typeof window !== 'undefined') {
+            window.open(TSUM_SITE_LINK_BY_GENDER[gender], '__blank');
+          }
+        }}
+      >
+        Смотреть все вещи
+      </Button>
     </div>
   );
 }

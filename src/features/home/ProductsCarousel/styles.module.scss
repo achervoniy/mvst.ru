@@ -34,8 +34,8 @@
     object-fit: contain;
 
     @include desktop() {
-      width: 230px;
-      height: 357px;
+      width: 205px;
+      height: 317px;
     }
   }
 }
@@ -148,5 +148,17 @@
     rect {
       fill: #fff;
     }
+  }
+}
+
+.action {
+  margin: auto;
+  margin-top: 16px;
+  max-width: calc(100% - 48px);
+
+  @include desktop() {
+    margin: auto;
+    max-width: 368px;
+    margin-top: 19.5px;
   }
 }
