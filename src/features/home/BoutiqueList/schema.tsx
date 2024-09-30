@@ -7,19 +7,19 @@ import tsum from './assets/must_tsum.jpg';
 
 export const boutiqueList = [
   {
-    title: 'Бутик Must Barvikha Luxury Village',
+    title: 'Бутик MUST Barvikha Luxury Village',
     image: barviha,
     address: 'Москва, Рублево-Успенское шоссе, д. 114с7',
     time: <>Ежедневно с&nbsp;11-&#8288;00 до&nbsp;22-&#8288;00, пт-вс с&nbsp;11-00 до&nbsp;23-&#8288;00</>,
   },
   {
-    title: 'Must Цум',
+    title: 'MUST Цум',
     image: tsum,
     address: 'Москва, ул. Петровка, д.2',
     time: <>Ежедневно с&nbsp;10-&#8288;00 до&nbsp;22-&#8288;00</>,
   },
   {
-    title: 'Бутик Must Третьяковский проезд',
+    title: 'Бутик MUST Третьяковский проезд',
     image: tret,
     address: 'Москва, Третьяковский проезд, д.1',
     time: <>Ежедневно с&nbsp;11-&#8288;00 до&nbsp;22-&#8288;00, пт-сб с&nbsp;11-00 до&nbsp;23-&#8288;00</>,
@@ -31,13 +31,13 @@ export const boutiqueList = [
     time: <>Ежедневно с&nbsp;11-&#8288;00 до&nbsp;22-&#8288;00</>,
   },
   {
-    title: 'Бутик Must Торговый Дом Москва',
+    title: 'Бутик MUST Торговый Дом Москва',
     image: td,
     address: 'Москва, Кутузовский проспект, д.31',
     time: <>Ежедневно с&nbsp;11-&#8288;00 до&nbsp;22-&#8288;00</>,
   },
   {
-    title: 'Must ДЛТ',
+    title: 'MUST ДЛТ',
     image: dlt,
     address: 'Санкт-Петербург, Большая Конюшенная ул., д.21-23',
     time: <>Ежедневно с&nbsp;11-&#8288;00 до&nbsp;22-&#8288;00</>,

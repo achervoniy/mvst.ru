@@ -1,3 +1,5 @@
+import { TG_LINK } from '@/constants/runtimeConfig';
+
 import { Typography } from '@/ui/index';
 
 import { Icon } from '@/ui/assets/Icon';
@@ -19,7 +21,9 @@ export function Footer() {
 
       <div className={st.socials}>
         <Icon name="VkIcon" />
-        <Icon name="TgIcon" />
+        <a href={TG_LINK}>
+          <Icon name="TgIcon" />
+        </a>
       </div>
     </div>
   );

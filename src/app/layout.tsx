@@ -1,5 +1,6 @@
 import { EffectorNext } from '@effector/next';
 import type { Metadata } from 'next';
+import Script from 'next/script';
 
 import { MainTemplate } from '@/shared/ui';
 
@@ -17,8 +18,8 @@ import '@/ui/themes/reset.scss';
 import '@/ui/themes/fonts.scss';
 
 export const metadata: Metadata = {
-  title: 'Must Одежда - Элегантные решения для вашего гардероба',
-  description: `Откройте для себя Must Одежду: современные и стильные коллекции для мужчин и женщин. Обновите свой гардероб с нашим уникальным выбором одежды, которая подчеркнёт вашу индивидуальность.`,
+  title: 'MUST Одежда - Элегантные решения для вашего гардероба',
+  description: `Откройте для себя MUST Одежду: современные и стильные коллекции для мужчин и женщин. Обновите свой гардероб с нашим уникальным выбором одежды, которая подчеркнёт вашу индивидуальность.`,
 };
 
 type Props = Readonly<{
@@ -30,12 +31,31 @@ export default function RootLayout({ children }: Props) {
     <html lang="ru">
       <head>
         <style type="text/css">{mediaStyle}</style>
+        <Script
+          strategy="beforeInteractive"
+          id="_next-gtm-init"
+          dangerouslySetInnerHTML={{
+            __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-KZ8MJHPM');`,
+          }}
+        />
       </head>
 
       <EffectorNext>
         <MediaContextProvider disableDynamicMediaQueries>
           <ViewportProvider>
             <body>
+              <noscript>
+                <iframe
+                  src="https://www.googletagmanager.com/ns.html?id=GTM-KZ8MJHPM"
+                  height="0"
+                  width="0"
+                  style={{ display: 'none', visibility: 'hidden' }}
+                />
+              </noscript>
               <MainTemplate header={<Header />} footer={<Footer />}>
                 {children}
               </MainTemplate>
