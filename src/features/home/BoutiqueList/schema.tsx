@@ -7,16 +7,16 @@ import tsum from './assets/must_tsum.jpg';
 
 export const boutiqueList = [
   {
-    title: 'Бутик MUST Barvikha Luxury Village',
-    image: barviha,
-    address: 'Москва, Рублево-Успенское шоссе, д. 114с7',
-    time: <>Ежедневно с&nbsp;11-&#8288;00 до&nbsp;22-&#8288;00, пт-вс с&nbsp;11-00 до&nbsp;23-&#8288;00</>,
-  },
-  {
     title: 'MUST ЦУМ',
     image: tsum,
     address: 'Москва, ул. Петровка, д.2',
     time: <>Ежедневно с&nbsp;10-&#8288;00 до&nbsp;22-&#8288;00</>,
+  },
+  {
+    title: 'Бутик MUST Barvikha Luxury Village',
+    image: barviha,
+    address: 'Москва, Рублево-Успенское шоссе, д. 114с7',
+    time: <>Ежедневно с&nbsp;11-&#8288;00 до&nbsp;22-&#8288;00, пт-вс с&nbsp;11-00 до&nbsp;23-&#8288;00</>,
   },
   {
     title: 'Бутик MUST Третьяковский проезд',
