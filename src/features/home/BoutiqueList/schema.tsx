@@ -13,7 +13,7 @@ export const boutiqueList = [
     time: <>Ежедневно с&nbsp;11-&#8288;00 до&nbsp;22-&#8288;00, пт-вс с&nbsp;11-00 до&nbsp;23-&#8288;00</>,
   },
   {
-    title: 'MUST Цум',
+    title: 'MUST ЦУМ',
     image: tsum,
     address: 'Москва, ул. Петровка, д.2',
     time: <>Ежедневно с&nbsp;10-&#8288;00 до&nbsp;22-&#8288;00</>,
