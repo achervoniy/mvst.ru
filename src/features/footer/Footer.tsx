@@ -12,15 +12,15 @@ export function Footer() {
       <Typography font="paragraph/regular" align="center" className={st.private}>
         Все права защищены 2024
       </Typography>
-      <Typography font="paragraph/regular" align="center" decoration="underline">
+      {/* <Typography font="paragraph/regular" align="center" decoration="underline">
         Политика конфиденциальности
-      </Typography>
+      </Typography> */}
       <Typography font="paragraph/regular" align="center">
         Мы в социальных сетях
       </Typography>
 
       <div className={st.socials}>
-        <Icon name="VkIcon" />
+        {/* <Icon name="VkIcon" /> */}
         <a href={TG_LINK}>
           <Icon name="TgIcon" />
         </a>
