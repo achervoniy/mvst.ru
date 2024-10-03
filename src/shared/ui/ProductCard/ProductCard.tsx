@@ -43,14 +43,16 @@ export const ProductCard = memo(
             </Typography>
           </div>
 
-          <Typography
-            font="body/regular"
-            className={cn(st.title, st.productTitle, {
-              [st.titleOnlyOneRow]: false,
-            })}
-          >
-            {transformPrice(firstAvailableSku.internationalPrice.displayed.original)}
-          </Typography>
+          {firstAvailableSku && (
+            <Typography
+              font="body/regular"
+              className={cn(st.title, st.productTitle, {
+                [st.titleOnlyOneRow]: false,
+              })}
+            >
+              {transformPrice(firstAvailableSku.internationalPrice.displayed.original)}
+            </Typography>
+          )}
         </div>
       </a>
     );
