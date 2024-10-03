@@ -1,6 +1,12 @@
 import { createBaseRequest } from '@/lib/request';
 
-import { CatalogProduct, CatalogProductsParams, FetchedCatalogResult, FetchFiltersParams } from './types';
+import {
+  CatalogProduct,
+  CatalogProductsParams,
+  FetchedCatalogResult,
+  FetchFiltersParams,
+  FiltersResponse,
+} from './types';
 
 export const fetchCatalog = createBaseRequest<
   CatalogProductsParams & FetchFiltersParams,
@@ -60,4 +66,9 @@ export const fetchBrandCatalog = createBaseRequest<
       list: catalog,
     };
   },
+});
+
+export const fetchFiltersBrands = createBaseRequest<FetchFiltersParams, FiltersResponse>({
+  method: 'GET',
+  url: '/catalog/filter/brand',
 });

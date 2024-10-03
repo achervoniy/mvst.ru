@@ -5,3 +5,4 @@ export * from './ProgressBar';
 export * from './Typography';
 export * from './Responsive';
 export * from './NotFound';
+export * from './Pagination';

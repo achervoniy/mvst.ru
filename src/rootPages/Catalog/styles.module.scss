@@ -1,0 +1,23 @@
+.head {
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  display: flex;
+  justify-content: center;
+
+  h1 {
+    color: $Core-Dark-brown;
+  }
+
+  @include desktop() {
+    height: 64px;
+  }
+}
+
+.pagination {
+  margin-top: 16px;
+  padding: 8px 24px;
+  display: flex;
+  justify-content: center;
+}

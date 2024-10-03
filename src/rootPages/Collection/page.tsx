@@ -1,7 +1,7 @@
 'use client';
 
 import { useUnit } from 'effector-react';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import { LOOK_SLUGS } from '@/constants/runtimeConfig';
@@ -24,6 +24,9 @@ export function CollectionPage() {
   const [activeSlideIndex, setActiveSlideIndex] = useState(1);
   const collectionCounterChanged = useUnit(changeCollectionCounter);
   const version = useUnit(versionField.$value);
+  const nav = useRouter();
+  const p = useSearchParams();
+  const pathname = usePathname();
 
   const lookLen = looks.looks.length;
   const pageTitle = LOOK_SLUGS.women === params.slug ? 'Женская коллекция' : 'Мужская коллекция';
@@ -36,8 +39,10 @@ export function CollectionPage() {
     <section className={st[version]}>
       <div className={st.head}>
         <Typography font="leading/h2" as="h1" align="center">
-          {pageTitle}
+          {pageTitle} Page is {p.get('page') ?? ''}
         </Typography>
+
+        <p onClick={() => nav.push(`${pathname}?page=${Math.random()}`)}>push to page</p>
 
         <Typography font="paragraph/regular" className={st.counter}>
           {activeSlideIndex} / {looks.looks.length}

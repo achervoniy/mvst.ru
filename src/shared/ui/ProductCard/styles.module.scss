@@ -1,0 +1,266 @@
+$brand-height-mobile: 28px;
+$brand-height-desktop: 40px;
+
+.ProductCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  color: $Core-Reach-black;
+  text-align: center;
+  background-color: #fff;
+  padding: 4px;
+  padding-bottom: 0px;
+  max-width: 156px;
+
+  @include desktop() {
+    padding: 8px;
+    padding-bottom: 0px;
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+.content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.photo {
+  width: calc(100% + 2px);
+  height: calc(100% + 2px);
+  margin-left: -1px;
+  margin-top: -1px;
+  object-fit: cover;
+  background-color: #fff;
+}
+
+.photoContent {
+  height: 240px;
+  width: 155px;
+  display: block;
+  align-self: center;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  @include desktop() {
+    height: 370px;
+    width: 240px;
+    max-width: 100%;
+  }
+}
+
+.photoContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  top: 0;
+
+  img {
+    transition: all 0.3 cubic-bezier(0.66, 0, 0.2, 1);
+    max-width: 100%;
+    object-fit: contain;
+  }
+
+  &.zoom {
+    picture:nth-of-type(1) {
+      img {
+        transform: scale(1);
+      }
+    }
+
+    picture:nth-of-type(2) {
+      img {
+        transform: scale(0);
+      }
+    }
+
+    &.hasSecondImage {
+      &:hover {
+        picture:nth-of-type(2) {
+          img {
+            transform: scale(1);
+          }
+        }
+
+        picture:nth-of-type(1) {
+          img {
+            transform: scale(0);
+          }
+        }
+      }
+    }
+  }
+
+  &.transition {
+    picture:nth-of-type(1) {
+      img {
+        transform: translateX(0px);
+      }
+    }
+
+    picture:nth-of-type(2) {
+      img {
+        transform: translateX(-100%);
+      }
+    }
+
+    &.hasSecondImage {
+      &:hover {
+        picture:nth-of-type(2) {
+          img {
+            transform: translateX(0px);
+          }
+        }
+
+        picture:nth-of-type(1) {
+          img {
+            transform: translateX(-100%);
+          }
+        }
+      }
+    }
+  }
+
+  &.opacity {
+    &.hasSecondImage {
+      picture:nth-of-type(2) {
+        img {
+          display: none;
+        }
+      }
+
+      @include desktop() {
+        picture:nth-of-type(2) {
+          img {
+            display: block;
+          }
+        }
+      }
+    }
+
+    @include desktop() {
+      picture:nth-of-type(1) {
+        img {
+          opacity: 1;
+        }
+      }
+
+      picture:nth-of-type(2) {
+        img {
+          opacity: 0;
+        }
+      }
+
+      &.hasSecondImage {
+        &:hover {
+          picture:nth-of-type(2) {
+            img {
+              opacity: 1;
+            }
+          }
+
+          picture:nth-of-type(1) {
+            img {
+              opacity: 0;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.photo {
+  position: absolute;
+  left: 0;
+  top: 0;
+  border: none;
+  user-select: none;
+  outline: none;
+}
+
+.info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+
+  .shortInfo {
+    display: flex;
+    flex-direction: column;
+    max-width: 100%;
+    align-items: center;
+    flex: 1;
+    justify-content: flex-end;
+  }
+}
+
+.title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 4px;
+  height: auto;
+  max-width: 100%;
+
+  &.productTitle {
+    &:not(.titleOnlyOneRow) {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      white-space: normal;
+      margin-bottom: auto;
+      line-height: 18px;
+
+      @include desktop() {
+        line-height: 24px;
+      }
+    }
+  }
+
+  @include desktop() {
+    margin-bottom: 4px;
+  }
+}
+
+.prices {
+  display: none;
+  z-index: 2;
+  margin-bottom: auto;
+
+  &.visibled {
+    display: block;
+    // Оставляем место для отступа в карточке
+    height: 19.5px;
+
+    @include desktop() {
+      height: 22.5px;
+    }
+  }
+
+  // Для цены со скидкой
+  &.hasDiscountInRow {
+    height: 37px;
+
+    @include desktop() {
+      height: 43px;
+    }
+  }
+
+  .price {
+    font-size: 13px;
+    line-height: 18px;
+
+    @include desktop() {
+      font-size: 15px;
+      line-height: 23px;
+    }
+  }
+}

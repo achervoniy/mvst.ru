@@ -1,6 +1,7 @@
 import ArrowBack from './icons/ArrowBack.svg?react';
 import ArrowRight from './icons/ArrowRight.svg?react';
 import CarouselArrow from './icons/CarouselArrow.svg?react';
+import Chevron from './icons/Chevron.svg?react';
 import CloseIcon from './icons/CloseIcon.svg?react';
 import LogoFull from './icons/LogoFull.svg?react';
 import NavIcon from './icons/NavIcon.svg?react';
@@ -18,4 +19,5 @@ export const Icons = {
   CloseIcon,
   CarouselArrow,
   ArrowBack,
+  Chevron,
 };

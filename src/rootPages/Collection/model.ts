@@ -37,7 +37,11 @@ export const $collectionLooks = landingQuery.$data.map(data => {
   return text;
 });
 
-sample({ clock: pageHooks.entered, fn: ({ params }) => ({ slug: params.slug }), target: landingQuery.start });
+sample({
+  clock: pageHooks.entered,
+  fn: ({ params, query }) => ({ slug: params.slug, page: query.page }),
+  target: landingQuery.start,
+});
 
 sample({
   clock: pageHooks.entered,
