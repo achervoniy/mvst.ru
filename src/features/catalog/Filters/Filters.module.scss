@@ -1,0 +1,148 @@
+.filtersList {
+  // @include hide-scroll();
+  position: relative;
+  padding: 8px 0px 8px 24px;
+  position: sticky;
+  z-index: $z-minor+2;
+  top: 60px;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+
+  .inner {
+    display: flex;
+    position: absolute;
+    width: 100%;
+    left: 0;
+    right: 0;
+    top: 100%;
+    background-color: transparent;
+    z-index: $z-minor;
+    transition-delay: 0.3s;
+    overflow: auto;
+    height: calc(100vh - 150px);
+    flex-direction: column;
+
+    .overlay {
+      flex: 1;
+      background-color: #1B1B1B;
+      opacity: 0.65;
+    }
+  }
+
+
+  @include desktop() {
+    padding: 8px 24px;
+    top: 72px;
+    justify-content: center;
+    gap: 16px;
+
+    .inner {
+      height: calc(100vh - 172px - 64px - 40px);
+    }
+  }
+
+  &.scrollIsDown {
+    .inner {
+      // - filters - header
+      height: calc(100vh - 56px - 60px);
+    }
+
+    @include desktop() {
+      .inner {
+        height: calc(100vh - 120px);
+      }
+    }
+  }
+}
+
+.nav {
+  background-color: $Core-Overlays-ExtraLight;
+  display: flex;
+  flex-direction: column;
+  column-gap: 24px;
+  padding-top: 16px;
+
+  li {
+    height: 56px;
+    margin: 0px 24px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    justify-content: space-between;
+
+    &:not(:last-child) {
+      box-shadow: 0px -1px 0px 0px #F5F4F9 inset;
+    }
+
+    &.action {
+      grid-column: 1 / 5;
+      display: flex;
+      justify-content: center;
+      padding: 16px 0px;
+      height: auto;
+      position: sticky;
+      bottom: 0px;
+      background-color: $Core-Overlays-ExtraLight;
+      margin-top: auto;
+
+      button {
+        max-width: 368px;
+      }
+    }
+  }
+
+  @include desktop() {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(220px, 1fr));
+    height: auto;
+
+    li {
+      &.last {
+        box-shadow: none
+      }
+    }
+  }
+}
+
+.tag {
+  display: inline-flex;
+  @include paragraph-regular();
+  padding: 8px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  flex: none;
+
+  &.hovered {
+    border-bottom-color: $Core-Light-brass;
+  }
+
+  &.close {
+    border-radius: 50%;
+    background-color: $Core-Champagne;
+    width: 32px;
+    height: 32px;
+    padding: 0px;
+
+    @include desktop() {
+      display: none;
+    }
+  }
+
+  &.sortTag {
+    border-bottom-color: transparent;
+    padding: 0px;
+  }
+}
+
+.sortIcon {
+  border-radius: 4px;
+  border: 1px solid $Core-Champagne;
+  width: 32px;
+  height: 32px;
+  padding: 4px;
+}

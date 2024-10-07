@@ -6,14 +6,16 @@ import st from './Button.module.scss';
 type Props = {
   children: ReactNode;
   stretch?: boolean;
+  filled?: boolean;
 } & ComponentPropsWithoutRef<'button'>;
 
-export function Button({ children, stretch, className, ...props }: Props) {
+export function Button({ children, stretch, className, filled, ...props }: Props) {
   return (
     <button
       {...props}
       className={classNames(st.btn, className, {
         [st.stretch]: stretch,
+        [st.filled]: filled,
       })}
     >
       {children}

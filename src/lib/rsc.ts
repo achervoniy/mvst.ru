@@ -1,4 +1,5 @@
 import { allSettled, fork, serialize } from 'effector';
+import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 import { declarePage } from '@/shared/pageRouting';
@@ -17,6 +18,9 @@ const baseServices = createBaseServices();
 
 export function createRSC({ pageHooks }: Props) {
   return async ({ params, searchParams }: PageProps) => {
+    const headerList = headers();
+    const pathname = headerList.get('x-current-path');
+
     const scope = fork({
       values: new Map().set($baseServices, baseServices),
     });
@@ -24,7 +28,7 @@ export function createRSC({ pageHooks }: Props) {
     await allSettled(pageHooks.__.enter, {
       scope,
       params: {
-        url: '',
+        url: pathname ?? '',
         query: searchParams,
         params,
       },

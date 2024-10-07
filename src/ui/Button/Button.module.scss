@@ -13,6 +13,10 @@
   border: 1.5px solid $Core-Champagne;
   @include paragraph-bold();
 
+  &.filled {
+    background-color: $Core-Champagne;
+  }
+
   &.stretch {
     width: 100%;
   }

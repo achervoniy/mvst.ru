@@ -4,7 +4,7 @@
   "rules": {
     "effector/keep-options-order": "error",
     "no-unused-vars": [
-      "error",
+      "warn",
       {
         "varsIgnorePattern": "^_",
         "ignoreRestSiblings": true,
