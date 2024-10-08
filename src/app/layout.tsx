@@ -2,11 +2,6 @@ import { EffectorNext } from '@effector/next';
 import type { Metadata } from 'next';
 import Script from 'next/script';
 
-import { MainTemplate } from '@/shared/ui';
-
-import { Footer } from '@/features/footer';
-import { Header } from '@/features/header';
-
 import { ViewportProvider } from '@/lib/useViewport';
 
 import { ProgressBar, MediaContextProvider, mediaStyle } from '@/ui/index';
@@ -56,9 +51,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                   style={{ display: 'none', visibility: 'hidden' }}
                 />
               </noscript>
-              <MainTemplate header={<Header />} footer={<Footer />}>
-                {children}
-              </MainTemplate>
+              {children}
               <ProgressBar />
             </body>
           </ViewportProvider>

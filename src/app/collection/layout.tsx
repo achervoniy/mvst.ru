@@ -3,12 +3,14 @@ import { MainTemplate } from '@/shared/ui';
 import { Footer } from '@/features/footer';
 import { Header } from '@/features/header';
 
-import { NotFound } from '@/ui/index';
+type Props = Readonly<{
+  children: React.ReactNode;
+}>;
 
-export default function NotFoundPage() {
+export default function CollectionLayout({ children }: Props) {
   return (
     <MainTemplate header={<Header />} footer={<Footer />}>
-      <NotFound />
+      {children}
     </MainTemplate>
   );
 }

@@ -28,7 +28,8 @@ export function CatalogPage({ pageTitle }: Props) {
       </div>
 
       {result.data?.filters && <Filters filters={result.data?.filters} />}
-      <ProductList products={result.data?.catalog?.list ?? []} />
+
+      <ProductList products={result.data?.catalog?.list ?? []} className={st.catalog} />
 
       {result.data && (
         <div className={st.pagination}>

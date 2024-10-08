@@ -5,10 +5,10 @@ import { FiltersResponse } from '@/shared/api/catalog';
 
 import { useScrollEventListener } from '@/lib/hooks';
 
-import { Button, Typography } from '@/ui/index';
-
 import { Icon } from '@/ui/assets/Icon';
 
+import { CategoryFilter } from './CategoryFilter';
+import { MultiSelectFilter } from './MultiSelectFilter';
 import { Filter } from './types';
 import { useAppliedFilters } from './useAppliedFilters';
 
@@ -18,95 +18,6 @@ type Props = {
   filters: FiltersResponse;
 };
 
-function FilterContent({
-  filter,
-  hoveredItem,
-  onMouseEnter,
-  leaveHandler,
-  appliedFilters,
-}: {
-  filter: Filter;
-  hoveredItem: null | string;
-  onMouseEnter: (_key: string) => void;
-  leaveHandler: () => void;
-  appliedFilters: ReturnType<typeof useAppliedFilters>;
-}) {
-  if (filter.filter.items.length === 0) {
-    return null;
-  }
-
-  return (
-    <div
-      key={filter.title}
-      className={cn(st.tag, {
-        [st.hovered]: hoveredItem === filter.title,
-        [st.sortTag]: filter.key === 'sort',
-      })}
-      onMouseEnter={() => onMouseEnter(filter.title)}
-    >
-      {filter.key === 'sort' ? (
-        <Icon name="SortIcon" className={st.sortIcon} />
-      ) : (
-        <>
-          {filter.title}
-          {filter.filter.applied?.length > 0 ? ` (${filter.filter.applied.length})` : ''}
-        </>
-      )}
-
-      {hoveredItem === filter.title && (
-        <div className={st.inner} onMouseLeave={leaveHandler}>
-          <ul className={st.nav}>
-            {filter.filter.items.map((item, index) => {
-              const selected = !!appliedFilters.applied[filter.key]?.find(applied => applied.value === item.value);
-
-              return (
-                <li
-                  onClick={() => {
-                    appliedFilters.updateAppliedFilters({
-                      key: filter.key,
-                      filter: item,
-                      selected,
-                      applyImmediately: filter.type === 'sort',
-                    });
-
-                    if (filter.type === 'sort') {
-                      leaveHandler();
-                    }
-                  }}
-                  key={item.value}
-                  className={cn({
-                    [st.last]: index >= filter.filter.items.length - 4,
-                  })}
-                >
-                  <Typography font="paragraph/regular">{item.title}</Typography>
-                  {selected && <Icon name="CheckedIcon" />}
-                </li>
-              );
-            })}
-
-            {filter.type !== 'sort' && (
-              <li className={st.action}>
-                <Button
-                  stretch
-                  filled
-                  onClick={() => {
-                    appliedFilters.applyFilters(appliedFilters.applied);
-                    leaveHandler();
-                  }}
-                >
-                  Показать товары
-                </Button>
-              </li>
-            )}
-          </ul>
-
-          <div className={st.overlay} onMouseEnter={leaveHandler} />
-        </div>
-      )}
-    </div>
-  );
-}
-
 export function Filters({ filters }: Props) {
   const [scrollIsDown, setScrollIsDown] = useState(false);
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
@@ -115,6 +26,12 @@ export function Filters({ filters }: Props) {
 
   const additionalFilters = [
     { type: 'sort', filter: filters.sort, title: 'Сортировка', key: 'sort' },
+    {
+      type: 'category',
+      filter: { items: filters.category.items, applied: filters.category.applied },
+      title: 'Категория',
+      key: 'section',
+    },
     // В урл по типу хардкод
     { type: 'multiselect', filter: filters.color, title: 'Цвет', key: 'color' },
     { type: 'multiselect', filter: filters.size, title: 'Размер', key: 'size' },
@@ -168,12 +85,25 @@ export function Filters({ filters }: Props) {
       )}
 
       {additionalFilters.map(filter => {
+        if (filter.type === 'category') {
+          return (
+            <CategoryFilter
+              key={filter.key}
+              filter={filter}
+              hoveredItem={hoveredItem}
+              onMouseEnter={onMouseEnter}
+              leaveHandler={leaveHandler}
+              appliedFilters={appliedFilters}
+            />
+          );
+        }
+
         if (filter.type === 'attribute') {
           return filter.filter.items.map(attribute => {
             const appliedAttributes = filter.filter.applied.find(attr => attr.title === attribute.title);
 
             return (
-              <FilterContent
+              <MultiSelectFilter
                 key={attribute.key}
                 filter={{
                   title: attribute.title,
@@ -191,7 +121,7 @@ export function Filters({ filters }: Props) {
         }
 
         return (
-          <FilterContent
+          <MultiSelectFilter
             key={filter.key}
             filter={filter}
             hoveredItem={hoveredItem}

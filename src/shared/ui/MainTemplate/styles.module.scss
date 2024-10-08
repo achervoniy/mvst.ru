@@ -32,11 +32,14 @@
 }
 
 .content {
-  @include maxWidth();
   grid-area: content;
 
-  @include desktop() {
-    padding: 0 24px;
+  &:not(.contentResetStyles) {
+    @include maxWidth();
+
+    @include desktop() {
+      padding: 0 24px;
+    }
   }
 }
 

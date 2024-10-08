@@ -4,81 +4,93 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { FiltersCommonItem, FiltersResponse } from '@/shared/api/catalog';
 
+import { pickLastNodeFromTrees } from '../tree';
+
 import { AppliedFilters, FilterValue } from './types';
 
+const buildQueryString = (filters: AppliedFilters) => {
+  const qs: string[] = [];
+
+  if (filters.color.length > 0) {
+    qs.push(`color=${filters.color.map(item => item.value).join(',')}`);
+  }
+
+  if (filters.size.length > 0) {
+    qs.push(`size=${filters.size.map(item => item.value).join(',')}`);
+  }
+
+  if (filters.attribute.length > 0) {
+    qs.push(`attribute=${filters.attribute.map(item => item.value).join(',')}`);
+  }
+
+  if (filters.section.length > 0) {
+    qs.push(`section=${filters.section.map(filter => pickLastNodeFromTrees(filter).value).join(',')}`);
+  }
+
+  if (filters.sort.length > 0 && !filters.sort[0].isDefault) {
+    qs.push(`sort=${filters.sort[0].value}`);
+  }
+
+  if (filters.additional.length > 0) {
+    const labels: FilterValue[] = [];
+
+    filters.additional.forEach(filter => {
+      if (filter.key === 'labels') {
+        labels.push(filter.value);
+      } else {
+        qs.push(`${filter.key}=${filter.value}`);
+      }
+    });
+
+    if (labels.length > 0) {
+      qs.push(`labels=${labels.join(',')}`);
+    }
+  }
+
+  return qs.length > 0 ? `?${qs.join('&')}` : '';
+};
+
 export function useAppliedFilters(filters: FiltersResponse) {
-  const [applied, setApplied] = useState({} as AppliedFilters);
+  const [applied, setApplied] = useState<AppliedFilters>({} as AppliedFilters);
   const router = useRouter();
   const pathname = usePathname();
 
   const applyFilters = useCallback(
     (filters: AppliedFilters) => {
-      const qs = [];
+      const queryString = buildQueryString(filters);
 
-      if (filters.color.length > 0) {
-        qs.push(`color=${filters.color.map(item => item.value).join(',')}`);
-      }
-
-      if (filters.size.length > 0) {
-        qs.push(`size=${filters.size.map(item => item.value).join(',')}`);
-      }
-
-      if (filters.attribute.length > 0) {
-        qs.push(`attribute=${filters.attribute.map(item => item.value).join(',')}`);
-      }
-
-      if (filters.sort.length > 0 && !filters.sort[0].isDefault) {
-        qs.push(`sort=${filters.sort[0].value}`);
-      }
-
-      if (filters.additional.length > 0) {
-        const labels = [] as FilterValue[];
-
-        filters.additional.forEach(filter => {
-          if (filter.key === 'labels') {
-            labels.push(filter.value);
-          } else {
-            // as is
-            qs.push(`${filter.key}=${filter.value}`);
-          }
-        });
-
-        if (labels.length > 0) {
-          qs.push(`labels=${labels.join(',')}`);
-        }
-      }
-
-      router.push(`${pathname}${qs.length > 0 ? `?${qs.join('&')}` : ''}`);
+      router.push(`${pathname}${queryString}`);
     },
     [pathname, router],
   );
 
   const updateAppliedFilters = useCallback(
-    (params: {
+    ({
+      key,
+      filter,
+      selected,
+      applyImmediately,
+    }: {
       key: string;
       filter: FiltersCommonItem<FilterValue>;
       selected: boolean;
       applyImmediately?: boolean;
     }) => {
-      let filters = {} as AppliedFilters;
-
-      if (params.key === 'sort') {
-        filters = {
-          ...applied,
-          [params.key]: !params.selected ? [params.filter] : [],
-        };
-      } else if (typeof applied[params.key] !== 'undefined') {
-        filters = {
-          ...applied,
-          [params.key]: !params.selected
-            ? [...applied[params.key], params.filter]
-            : applied[params.key].filter(item => item.value !== params.filter.value),
-        };
-      }
+      const filters = {
+        ...applied,
+        [key]:
+          key === 'sort'
+            ? !selected
+              ? [filter]
+              : []
+            : selected
+              ? applied[key].filter(item => item.value !== filter.value)
+              : [...applied[key], filter],
+      };
 
       setApplied(filters);
 
-      if (params.applyImmediately) {
+      if (applyImmediately) {
         applyFilters(filters);
       }
     },
@@ -88,12 +100,10 @@ export function useAppliedFilters(filters: FiltersResponse) {
   const syncApplied = useCallback(() => {
     setApplied({
       color: filters.color.applied,
+      section: filters.category.applied,
       size: filters.size.applied,
       sort: filters.sort.applied,
-      attribute: filters.attribute.applied.reduce(
-        (acc, applied) => [...acc, ...applied.items],
-        [] as FiltersCommonItem<FilterValue>[],
-      ),
+      attribute: filters.attribute.applied.flatMap(applied => applied.items),
       additional: [...filters.additional.applied, ...filters.tag.applied],
     });
   }, [filters]);

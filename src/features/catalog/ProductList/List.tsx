@@ -8,12 +8,13 @@ import st from './ProductList.module.scss';
 
 type Props = {
   products: CatalogProduct[];
+  className?: string;
 };
 
-export function ProductList({ products }: Props) {
+export function ProductList({ products, className }: Props) {
   return (
     <div
-      className={cn(st.productList, {
+      className={cn(st.productList, className, {
         [st.nosidebar]: true,
       })}
     >
