@@ -14,7 +14,7 @@ type Props = {
 
 export type PageProps<Params = Record<string, string>> = { params: Params; searchParams: Record<string, string> };
 
-const baseServices = createBaseServices();
+export const baseServices = createBaseServices();
 
 export function createRSC({ pageHooks }: Props) {
   return async ({ params, searchParams }: PageProps) => {

@@ -22,7 +22,6 @@ export const catalogQuery = createQuery({
     color?: string;
     root_section: number;
   }) => {
-    console.log({ params, root_section });
     const [catalog, filters] = await Promise.all([
       fetchBrandCatalog({ data: { limit: 60, ...params } }),
       fetchFiltersBrands({ query: { ...params, root_section } }),
