@@ -12,7 +12,6 @@ export function AboutMust() {
       </div>
 
       <Typography font="paragraph/regular" className={st.text}>
-        <span className={st.intro}>MUST — бренд, философия которого тесно связана с классикой.</span> <br />
         Женские и мужские коллекции MUST - это элегантные вещи вне времени, верность традициям, лучшие материалы и эталонное качество!
         <br />
         Главные ценности MUST - безупречный крой, премиальные
