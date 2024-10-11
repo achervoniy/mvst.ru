@@ -10,6 +10,7 @@ export const HOME_PAGE_VIDEO_URL_MOBILE =
 export const LOOK_SLUGS = {
   men: 'must-web-men',
   women: 'must-web-women',
+  all: 'must-web'
 };
 
 export const HOME_PAGE_FILTERS = {

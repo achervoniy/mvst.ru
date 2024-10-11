@@ -14,6 +14,8 @@ import { catalogQuery } from './model';
 
 import st from './styles.module.scss';
 
+const HIDE_CATALOG = true
+
 export function HomePage() {
   const catalog = useUnit(catalogQuery.$data);
   const hash = useHash();
@@ -42,25 +44,32 @@ export function HomePage() {
 
   return (
     <div className={st.page} ref={pageRef}>
-      <div className={st.video}>
+      {!HIDE_CATALOG && <div className={st.video}>
         <video autoPlay playsInline loop muted ref={videoRef}>
           <source src={HOME_PAGE_VIDEO_URL} type="video/mp4" media="(min-width:1023px)" />
           <source src={HOME_PAGE_VIDEO_URL_MOBILE} type="video/mp4" />
         </video>
-      </div>
+      </div>}
 
-      {womenList.length > 0 && (
-        <div className={st.productsRow}>
-          <Banner gender="f" />
-          <ProductsCarousel products={womenList} gender="women" />
-        </div>
-      )}
+      {/*<Banner gender="f" />*/}
+      <Banner gender="m" />
 
-      {menList.length > 0 && (
-        <div className={cn(st.productsRow, st.reverse)}>
-          <Banner gender="m" />
-          <ProductsCarousel products={menList} gender="men" />
-        </div>
+      {!HIDE_CATALOG && (
+        <>
+          {womenList.length > 0 && (
+            <div className={st.productsRow}>
+              <Banner gender="f" />
+              <ProductsCarousel products={womenList} gender="women" />
+            </div>
+          )}
+
+          {menList.length > 0 && (
+            <div className={cn(st.productsRow, st.reverse)}>
+              <Banner gender="m" />
+              <ProductsCarousel products={menList} gender="men" />
+            </div>
+          )}
+        </>
       )}
 
       <BoutiqueList />

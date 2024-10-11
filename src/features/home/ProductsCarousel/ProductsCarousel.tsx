@@ -24,6 +24,8 @@ type Props = {
   gender: 'women' | 'men';
 };
 
+const SHOW_CATALOG = false
+
 export function ProductsCarousel({ products, className, version, gender }: Props) {
   const slides = useMemo(() => chunk(products, 4), [products]);
 
@@ -111,7 +113,7 @@ export function ProductsCarousel({ products, className, version, gender }: Props
             ))}
       </Swiper>
 
-      <Button
+      {SHOW_CATALOG && <Button
         stretch
         className={st.action}
         onClick={() => {
@@ -121,7 +123,7 @@ export function ProductsCarousel({ products, className, version, gender }: Props
         }}
       >
         Смотреть все вещи
-      </Button>
+      </Button>}
     </div>
   );
 }
