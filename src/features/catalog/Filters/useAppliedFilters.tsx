@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { FiltersCommonItem, FiltersResponse } from '@/shared/api/catalog';
 
-import { pickLastNodeFromTrees } from '../tree';
+import { flattenTree, pickLastNodeFromTrees } from '../tree';
 
 import { AppliedFilters, FilterValue } from './types';
 
@@ -100,7 +100,7 @@ export function useAppliedFilters(filters: FiltersResponse) {
   const syncApplied = useCallback(() => {
     setApplied({
       color: filters.color.applied,
-      section: filters.category.applied,
+      section: (filters.category.applied ?? []).map(pickLastNodeFromTrees),
       size: filters.size.applied,
       sort: filters.sort.applied,
       attribute: filters.attribute.applied.flatMap(applied => applied.items),

@@ -60,7 +60,6 @@ export function Filters({ filters }: Props) {
 
   const onMouseEnter = (key: string) => {
     clearTimeout(idRef.current!);
-
     idRef.current = setTimeout(() => {
       setHoveredItem(key);
       appliedFilters.syncApplied();

@@ -39,19 +39,19 @@ export function pickIdsFromTree(tree: CategoryFilterCommonItem[] | FiltersCommon
 
 export function flattenTree(tree: FiltersCommonItem[] | FiltersCommonItem<FilterValue>) {
   const queue = Array.isArray(tree) ? [...tree] : [tree];
-  const map: Record<string | number, boolean> = {};
+  const result: (FiltersCommonItem | FiltersCommonItem<FilterValue>)[] = [];
 
   while (queue.length > 0) {
     const currentCategory = queue.shift()!;
 
-    map[currentCategory.value] = true;
+    result.push(currentCategory);
 
     if (currentCategory?.items?.length > 0) {
       queue.push(...currentCategory.items);
     }
   }
 
-  return map;
+  return result;
 }
 
 /*

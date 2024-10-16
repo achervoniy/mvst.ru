@@ -40,7 +40,7 @@
     gap: 16px;
 
     .inner {
-      height: calc(100vh - 172px - 64px - 40px);
+      height: calc(100vh - 172px - 64px - 60px);
     }
   }
 
@@ -64,18 +64,17 @@
   flex-direction: column;
   column-gap: 24px;
   padding-top: 16px;
+  padding-bottom: 16px;
 
   li {
+    position: relative;
     height: 56px;
-    margin: 0px 24px;
+    padding: 0px 24px;
     display: flex;
     align-items: center;
     cursor: pointer;
     justify-content: space-between;
-
-    &:not(:last-child) {
-      box-shadow: 0px -1px 0px 0px #F5F4F9 inset;
-    }
+    color: $Core-Dark-brown;
 
     &.action {
       grid-column: 1 / 5;
@@ -145,4 +144,12 @@
   width: 32px;
   height: 32px;
   padding: 4px;
+}
+
+.separator {
+  width: calc(100% - 48px);
+  height: 1px;
+  background-color: #F5F4F9;
+  position: absolute;
+  bottom: 0px;
 }

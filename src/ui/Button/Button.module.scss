@@ -25,6 +25,10 @@
     font-weight: 500;
   }
 
+  &.outline {
+    border-color: transparent;
+  }
+
   &.disabled {
     opacity: 0.24;
     cursor: not-allowed;
