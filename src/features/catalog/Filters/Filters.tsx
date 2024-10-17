@@ -77,16 +77,51 @@ export function Filters({ filters }: Props) {
         [st.scrollIsDown]: scrollIsDown,
       })}
     >
-      {hoveredItem && (
-        <div className={cn(st.tag, st.close)} onMouseEnter={leaveHandler}>
-          <Icon name="CloseIcon" />
-        </div>
-      )}
+      <div className={st.filterListContent}>
+        {hoveredItem && (
+          <div className={cn(st.tag, st.close)} onMouseEnter={leaveHandler}>
+            <Icon name="CloseIcon" />
+          </div>
+        )}
 
-      {additionalFilters.map(filter => {
-        if (filter.type === 'category') {
+        {additionalFilters.map(filter => {
+          if (filter.type === 'category') {
+            return (
+              <CategoryFilter
+                key={filter.key}
+                filter={filter}
+                hoveredItem={hoveredItem}
+                onMouseEnter={onMouseEnter}
+                leaveHandler={leaveHandler}
+                appliedFilters={appliedFilters}
+              />
+            );
+          }
+
+          if (filter.type === 'attribute') {
+            return filter.filter.items.map(attribute => {
+              const appliedAttributes = filter.filter.applied.find(attr => attr.title === attribute.title);
+
+              return (
+                <MultiSelectFilter
+                  key={attribute.key}
+                  filter={{
+                    title: attribute.title,
+                    filter: { items: attribute.items, applied: appliedAttributes?.items ?? [] },
+                    key: attribute.key,
+                    type: 'attribute',
+                  }}
+                  hoveredItem={hoveredItem}
+                  onMouseEnter={onMouseEnter}
+                  leaveHandler={leaveHandler}
+                  appliedFilters={appliedFilters}
+                />
+              );
+            });
+          }
+
           return (
-            <CategoryFilter
+            <MultiSelectFilter
               key={filter.key}
               filter={filter}
               hoveredItem={hoveredItem}
@@ -95,41 +130,8 @@ export function Filters({ filters }: Props) {
               appliedFilters={appliedFilters}
             />
           );
-        }
-
-        if (filter.type === 'attribute') {
-          return filter.filter.items.map(attribute => {
-            const appliedAttributes = filter.filter.applied.find(attr => attr.title === attribute.title);
-
-            return (
-              <MultiSelectFilter
-                key={attribute.key}
-                filter={{
-                  title: attribute.title,
-                  filter: { items: attribute.items, applied: appliedAttributes?.items ?? [] },
-                  key: attribute.key,
-                  type: 'attribute',
-                }}
-                hoveredItem={hoveredItem}
-                onMouseEnter={onMouseEnter}
-                leaveHandler={leaveHandler}
-                appliedFilters={appliedFilters}
-              />
-            );
-          });
-        }
-
-        return (
-          <MultiSelectFilter
-            key={filter.key}
-            filter={filter}
-            hoveredItem={hoveredItem}
-            onMouseEnter={onMouseEnter}
-            leaveHandler={leaveHandler}
-            appliedFilters={appliedFilters}
-          />
-        );
-      })}
+        })}
+      </div>
     </div>
   );
 }

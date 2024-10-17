@@ -1,8 +1,15 @@
 ul.category {
   display: flex;
   flex-direction: column;
-  max-width: 372px;
   flex: 1;
+  margin: 0;
+  overflow-y: auto;
+
+  li.backAction {
+    justify-content: flex-start;
+    gap: 16px;
+    display: flex;
+  }
 
   li {
     transition: all 0.3s ease-in-out;
@@ -15,11 +22,18 @@ ul.category {
       background-color: $Core-Overlays-light;
     }
   }
+
+  @include desktop() {
+    max-width: 372px;
+
+    li.backAction {
+      display: none;
+    }
+  }
 }
 
 .content {
   background-color: $Core-Overlays-ExtraLight;
-  padding-bottom: 16px;
 
   .contentWrapper {
     max-width: $max-width-desktop;
@@ -27,6 +41,15 @@ ul.category {
     display: flex;
     flex-direction: row;
     gap: 8px;
+  }
+
+  @include desktop() {
+    // max-height: calc(100% - 85px);
+    overflow: hidden;
+
+    .contentWrapper {
+      max-height: calc(100% - 85px);
+    }
   }
 }
 
@@ -40,4 +63,20 @@ ul.category {
   justify-content: space-between;
   position: sticky;
   bottom: 0px;
+
+  .resetFiltersAction {
+    display: none;
+
+    @include desktop() {
+      display: block;
+    }
+  }
+}
+
+.arrowRight {
+  display: none;
+
+  @include desktop() {
+    display: block;
+  }
 }

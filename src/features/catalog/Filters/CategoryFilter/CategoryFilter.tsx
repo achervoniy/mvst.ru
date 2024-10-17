@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 
 import { CategoryFilterCommonItem } from '@/shared/api/catalog';
 
+import { useViewport } from '@/lib/useViewport';
+
 import { Button, Typography } from '@/ui/index';
 
 import { Icon } from '@/ui/assets/Icon';
@@ -45,6 +47,13 @@ function Content({
 }: FilterContentProps) {
   return (
     <ul className={cn(st.nav, catSt.category)}>
+      {index > 1 && (
+        <li key="back" className={catSt.backAction}>
+          <Icon name="ArrowBack" />
+          <Typography font="paragraph/regular">Назад</Typography>
+        </li>
+      )}
+
       {items.map(item => {
         const categorySelected = selectedCategoryIds.includes(item.value);
         const categoryClicked = clickedCategoryIds.includes(item.value);
@@ -69,7 +78,7 @@ function Content({
             })}
           >
             <Typography font="paragraph/regular">{item.title}</Typography>
-            {!isLastLvl && <Icon name="ArrowRight" />}
+            {!isLastLvl && <Icon name="ArrowRight" className={catSt.arrowRight} />}
             {categorySelected && <Icon name="CheckedIcon" />}
             <div className={st.separator} />
           </li>
@@ -84,6 +93,7 @@ export function CategoryFilter({ filter, hoveredItem, onMouseEnter, leaveHandler
 
   const [selectedCategories, setSelectedCategories] = useState<CategoryFilterCommonItem[][]>([topCategories]);
   const [clickedCategoryIds, setClickedCategoryIds] = useState<FilterValue[]>([]);
+  const { isTabletAndBelow } = useViewport();
 
   const changeSelectedCategory = (item: CategoryFilterCommonItem, index: number) => {
     setSelectedCategories([topCategories, ...selectedCategories.slice(1, index), item.items]);
@@ -120,28 +130,44 @@ export function CategoryFilter({ filter, hoveredItem, onMouseEnter, leaveHandler
         <div className={st.inner} onMouseLeave={leaveHandler}>
           <div className={catSt.content}>
             <div className={catSt.contentWrapper}>
-              {selectedCategories.map((cat, index) => {
-                return (
-                  <Content
-                    key={index}
-                    items={cat as CategoryFilterCommonItem[]}
-                    appliedFilters={appliedFilters}
-                    filterKey={filter.key}
-                    clickedCategoryIds={clickedCategoryIds}
-                    selectedCategoryIds={selectedCategoryIds}
-                    isLastLvl={cat[0]?.items.length === 0}
-                    changeSelectedCategory={changeSelectedCategory}
-                    index={index + 1}
-                  />
-                );
-              })}
+              {isTabletAndBelow ? (
+                <Content
+                  items={selectedCategories[selectedCategories.length - 1] as CategoryFilterCommonItem[]}
+                  appliedFilters={appliedFilters}
+                  filterKey={filter.key}
+                  clickedCategoryIds={clickedCategoryIds}
+                  selectedCategoryIds={selectedCategoryIds}
+                  isLastLvl={selectedCategories[selectedCategories.length - 1][0]?.items.length === 0}
+                  changeSelectedCategory={changeSelectedCategory}
+                  index={selectedCategories.length}
+                />
+              ) : (
+                selectedCategories.map((cat, index) => {
+                  return (
+                    <Content
+                      key={index}
+                      items={cat as CategoryFilterCommonItem[]}
+                      appliedFilters={appliedFilters}
+                      filterKey={filter.key}
+                      clickedCategoryIds={clickedCategoryIds}
+                      selectedCategoryIds={selectedCategoryIds}
+                      isLastLvl={cat[0]?.items.length === 0}
+                      changeSelectedCategory={changeSelectedCategory}
+                      index={index + 1}
+                    />
+                  );
+                })
+              )}
             </div>
 
             <div className={catSt.footer}>
-              <Button outline>Сбросить настройки фильтров</Button>
+              <Button outline className={catSt.resetFiltersAction}>
+                Сбросить настройки фильтров
+              </Button>
 
               <Button
                 filled
+                stretch={isTabletAndBelow}
                 onClick={() => {
                   appliedFilters.applyFilters(appliedFilters.applied);
                   leaveHandler();

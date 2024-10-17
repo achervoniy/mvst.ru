@@ -42,50 +42,52 @@ export function MultiSelectFilter({ filter, hoveredItem, onMouseEnter, leaveHand
 
       {hoveredItem === filter.title && (
         <div className={st.inner} onMouseLeave={leaveHandler}>
-          <ul className={st.nav}>
-            {filter.filter.items.map((item, index) => {
-              const selected = !!appliedFilters.applied[filter.key]?.find(applied => applied.value === item.value);
+          <div className={st.navWrapper}>
+            <ul className={st.nav}>
+              {filter.filter.items.map((item, index) => {
+                const selected = !!appliedFilters.applied[filter.key]?.find(applied => applied.value === item.value);
 
-              return (
-                <li
-                  onClick={() => {
-                    appliedFilters.updateAppliedFilters({
-                      key: filter.key,
-                      filter: { ...item, items: [] },
-                      selected,
-                      applyImmediately: filter.type === 'sort',
-                    });
+                return (
+                  <li
+                    onClick={() => {
+                      appliedFilters.updateAppliedFilters({
+                        key: filter.key,
+                        filter: { ...item, items: [] },
+                        selected,
+                        applyImmediately: filter.type === 'sort',
+                      });
 
-                    if (filter.type === 'sort') {
+                      if (filter.type === 'sort') {
+                        leaveHandler();
+                      }
+                    }}
+                    key={item.value}
+                    className={cn({
+                      [st.last]: index >= filter.filter.items.length - 4,
+                    })}
+                  >
+                    <Typography font="paragraph/regular">{item.title}</Typography>
+                    {selected && <Icon name="CheckedIcon" />}
+                  </li>
+                );
+              })}
+
+              {filter.type !== 'sort' && (
+                <li className={st.action}>
+                  <Button
+                    stretch
+                    filled
+                    onClick={() => {
+                      appliedFilters.applyFilters(appliedFilters.applied);
                       leaveHandler();
-                    }
-                  }}
-                  key={item.value}
-                  className={cn({
-                    [st.last]: index >= filter.filter.items.length - 4,
-                  })}
-                >
-                  <Typography font="paragraph/regular">{item.title}</Typography>
-                  {selected && <Icon name="CheckedIcon" />}
+                    }}
+                  >
+                    Показать товары
+                  </Button>
                 </li>
-              );
-            })}
-
-            {filter.type !== 'sort' && (
-              <li className={st.action}>
-                <Button
-                  stretch
-                  filled
-                  onClick={() => {
-                    appliedFilters.applyFilters(appliedFilters.applied);
-                    leaveHandler();
-                  }}
-                >
-                  Показать товары
-                </Button>
-              </li>
-            )}
-          </ul>
+              )}
+            </ul>
+          </div>
 
           <div className={st.overlay} onMouseEnter={leaveHandler} />
         </div>

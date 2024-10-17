@@ -1,7 +1,6 @@
+$filterPadding: 8px 0px 8px 24px;
+
 .filtersList {
-  // @include hide-scroll();
-  position: relative;
-  padding: 8px 0px 8px 24px;
   position: sticky;
   z-index: $z-minor+2;
   top: 60px;
@@ -18,6 +17,8 @@
     left: 0;
     right: 0;
     top: 100%;
+    // bottom: 0px;
+    // transform: translateY(100%);
     background-color: transparent;
     z-index: $z-minor;
     transition-delay: 0.3s;
@@ -29,37 +30,50 @@
       flex: 1;
       background-color: #1B1B1B;
       opacity: 0.65;
+      position: fixed;
+      height: 100%;
+      z-index: -1;
+      bottom: 0;
+      left: 0;
+      height: calc(100vh - 300px);
+      width: 100vw;
+      overflow: hidden;
     }
   }
-
 
   @include desktop() {
     padding: 8px 24px;
     top: 72px;
-    justify-content: center;
     gap: 16px;
 
     .inner {
       height: calc(100vh - 172px - 64px - 60px);
-    }
-  }
 
-  &.scrollIsDown {
-    .inner {
-      // - filters - header
-      height: calc(100vh - 56px - 60px);
-    }
-
-    @include desktop() {
-      .inner {
-        height: calc(100vh - 120px);
+      .overlay {
+        height: calc(100vh - 300px);
       }
     }
   }
+
+  // &.scrollIsDown {
+  //   .inner {
+  //     // - filters - header
+  //     height: calc(100vh - 56px - 60px);
+  //   }
+
+  //   @include desktop() {
+  //     .inner {
+  //       height: calc(100vh - 120px);
+  //     }
+  //   }
+  // }
+}
+
+.navWrapper {
+  background-color: $Core-Overlays-ExtraLight;
 }
 
 .nav {
-  background-color: $Core-Overlays-ExtraLight;
   display: flex;
   flex-direction: column;
   column-gap: 24px;
@@ -97,8 +111,13 @@
     display: grid;
     grid-template-columns: repeat(4, minmax(220px, 1fr));
     height: auto;
+    max-width: $max-width-desktop;
+    margin: 0 auto;
 
     li {
+      height: 42px;
+      flex: 0 0 auto;
+
       &.last {
         box-shadow: none
       }
@@ -152,4 +171,22 @@
   background-color: #F5F4F9;
   position: absolute;
   bottom: 0px;
+}
+
+.filterListContent {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  overflow: auto;
+  max-width: 100%;
+  padding: 8px 0px 8px 24px;
+
+  @include desktop() {
+    gap: 16px;
+    max-width: $max-width-desktop;
+    margin: 0 auto;
+    width: 100%;
+    padding: 0;
+  }
 }
