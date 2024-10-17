@@ -24,14 +24,15 @@ $filterPadding: 8px 0px 8px 24px;
     transition-delay: 0.3s;
     overflow: auto;
     height: calc(100vh - 150px);
+    height: calc(100dvh - 150px);
     flex-direction: column;
 
     .overlay {
+      display: none;
       flex: 1;
       background-color: #1B1B1B;
       opacity: 0.65;
       position: fixed;
-      height: 100%;
       z-index: -1;
       bottom: 0;
       left: 0;
@@ -50,6 +51,7 @@ $filterPadding: 8px 0px 8px 24px;
       height: calc(100vh - 172px - 64px - 60px);
 
       .overlay {
+        display: block;
         height: calc(100vh - 300px);
       }
     }
@@ -71,6 +73,15 @@ $filterPadding: 8px 0px 8px 24px;
 
 .navWrapper {
   background-color: $Core-Overlays-ExtraLight;
+  min-height: 100%;
+
+  .nav {
+    min-height: 100%;
+  }
+
+  @include desktop() {
+    min-height: auto
+  }
 }
 
 .nav {

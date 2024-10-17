@@ -79,7 +79,7 @@ export function Filters({ filters }: Props) {
     >
       <div className={st.filterListContent}>
         {hoveredItem && (
-          <div className={cn(st.tag, st.close)} onMouseEnter={leaveHandler}>
+          <div className={cn(st.tag, st.close)} onClick={leaveHandler}>
             <Icon name="CloseIcon" />
           </div>
         )}
