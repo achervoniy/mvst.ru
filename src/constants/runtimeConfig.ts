@@ -3,13 +3,14 @@ export const runtimeConfig = {
   SSR_API_DOMAIN: process.env.SSR_API_DOMAIN,
 };
 
-export const HOME_PAGE_VIDEO_URL = 'https://cdn1.tsum.com/video/mvst-landing-video/low_size_MUST_1920x1080.mp4';
+export const HOME_PAGE_VIDEO_URL = 'https://cdn1.tsum.com/video/mvst-landing-video/low_size_MUST_1920x1080-241025.mp4';
 export const HOME_PAGE_VIDEO_URL_MOBILE =
-  'https://cdn1.tsum.com/video/mvst-landing-video/low_size_MUST_1080x1920_IG.mp4';
+  'https://cdn1.tsum.com/video/mvst-landing-video/low_size_MUST_1080x1920-241025.mp4';
 
 export const LOOK_SLUGS = {
   men: 'must-web-men',
   women: 'must-web-women',
+  all: 'must-web',
 };
 
 export const HOME_PAGE_FILTERS = {

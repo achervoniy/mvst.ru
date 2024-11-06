@@ -19,6 +19,8 @@ type Props = {
   gender: 'women' | 'men';
 };
 
+const SHOW_CATALOG = false
+
 export function MobileLook({ block, activeSlideIndex, onSlideChanged, className, gender }: Props) {
   return (
     <>
@@ -41,7 +43,7 @@ export function MobileLook({ block, activeSlideIndex, onSlideChanged, className,
 
       <MobileProductsList activeSlideIndex={activeSlideIndex} looks={block.looks} />
 
-      <Button
+      {SHOW_CATALOG &&  <Button
         stretch
         className={st.action}
         onClick={() => {
@@ -51,7 +53,7 @@ export function MobileLook({ block, activeSlideIndex, onSlideChanged, className,
         }}
       >
         Смотреть все вещи
-      </Button>
+      </Button>}
     </>
   );
 }
