@@ -16,6 +16,20 @@ import { $collectionText, $collectionLooks, $collectionTitle, versionField } fro
 
 import st from './styles.module.scss';
 
+const getTitle = (gender: string) => {
+  switch (gender) {
+    case LOOK_SLUGS.men:
+      return 'Мужская коллекция'
+
+    case LOOK_SLUGS.women:
+      return 'Женская коллекция'
+
+    default:
+      return 'Коллекция FW24/25'
+  }
+}
+
+
 export function CollectionPage() {
   const looks = useUnit($collectionLooks);
   const text = useUnit($collectionText);
@@ -25,8 +39,8 @@ export function CollectionPage() {
   const collectionCounterChanged = useUnit(changeCollectionCounter);
   const version = useUnit(versionField.$value);
 
-  const lookLen = looks.looks.length;
-  const pageTitle = LOOK_SLUGS.women === params.slug ? 'Женская коллекция' : 'Мужская коллекция';
+  const lookLen = looks?.looks?.length;
+  const pageTitle = getTitle(params.slug as string)
 
   useEffect(() => {
     collectionCounterChanged({ current: activeSlideIndex, length: lookLen });
@@ -40,7 +54,7 @@ export function CollectionPage() {
         </Typography>
 
         <Typography font="paragraph/regular" className={st.counter}>
-          {activeSlideIndex} / {looks.looks.length}
+          {activeSlideIndex} / {looks?.looks?.length}
         </Typography>
       </div>
 

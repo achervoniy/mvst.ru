@@ -24,6 +24,8 @@ type Props = {
   gender: 'women' | 'men';
 };
 
+const SHOW_CATALOG = false;
+
 export function ProductsCarousel({ products, className, version, gender }: Props) {
   const slides = useMemo(() => chunk(products, 4), [products]);
 
@@ -111,17 +113,19 @@ export function ProductsCarousel({ products, className, version, gender }: Props
             ))}
       </Swiper>
 
-      <Button
-        stretch
-        className={st.action}
-        onClick={() => {
-          if (typeof window !== 'undefined') {
-            window.open(TSUM_SITE_LINK_BY_GENDER[gender], '__blank');
-          }
-        }}
-      >
-        Смотреть все вещи
-      </Button>
+      {SHOW_CATALOG && (
+        <Button
+          stretch
+          className={st.action}
+          onClick={() => {
+            if (typeof window !== 'undefined') {
+              window.open(TSUM_SITE_LINK_BY_GENDER[gender], '__blank');
+            }
+          }}
+        >
+          Смотреть все вещи
+        </Button>
+      )}
     </div>
   );
 }

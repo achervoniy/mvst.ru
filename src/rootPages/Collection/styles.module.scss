@@ -32,7 +32,8 @@
 
 .productsSlider {
   flex-direction: column;
-  justify-content: space-between;
+  //justify-content: space-between;
+  justify-content: center;
 
   :global(.swiper-slide) {
     max-width: 199px;
@@ -49,7 +50,7 @@
   }
 
   @include desktop() {
-    padding-top: 46px;
+    //padding-top: 46px;
   }
 }
 

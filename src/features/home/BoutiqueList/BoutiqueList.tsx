@@ -33,7 +33,7 @@ export function BoutiqueList() {
     <div className={st.BoutiqueList} target-id="boutique">
       <div className={st.head}>
         <Typography font="leading/h2" className={st.title} align="center">
-          наши бутики
+          Бутики
         </Typography>
         <Typography font="paragraph/regular" className={st.counter}>
           {activeIndex} / {SLIDES_LEN}
