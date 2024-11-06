@@ -15,7 +15,7 @@ import st from './styles.module.scss';
 export function CallToBuy() {
   return (
     <>
-      <Responsive.TabletAndBelow className={st.responsive}>
+      {/* <Responsive.TabletAndBelow className={st.responsive}>
         <section className={st.callToBuy}>
           <Typography font="leading/h2" align="center" className={st.title}>
             Купить на сайте tsum.ru или в приложении ЦУМа
@@ -24,7 +24,7 @@ export function CallToBuy() {
           <Image src={app} alt="" />
           <InAppActions />
         </section>
-      </Responsive.TabletAndBelow>
+      </Responsive.TabletAndBelow> */}
 
       <Responsive.Desktop className={st.responsive}>
         <section className={st.callToBuy}>
