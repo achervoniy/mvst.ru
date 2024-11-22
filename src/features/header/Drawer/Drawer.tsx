@@ -61,22 +61,6 @@ export function Nav({ onLink }: { onLink?: () => void }) {
           <Icon name="ArrowRight" />
         </Link>
       </li>
-      <li className={st.item}>
-        <Link href="/catalog/women" onClick={onLink}>
-          <Typography font="paragraph/regular" onClick={onLink}>
-            На каталог W
-          </Typography>
-          <Icon name="ArrowRight" />
-        </Link>
-      </li>
-      <li className={st.item}>
-        <Link href="/catalog/men" onClick={onLink}>
-          <Typography font="paragraph/regular" onClick={onLink}>
-            На каталог M
-          </Typography>
-          <Icon name="ArrowRight" />
-        </Link>
-      </li>
     </ul>
   );
 }
