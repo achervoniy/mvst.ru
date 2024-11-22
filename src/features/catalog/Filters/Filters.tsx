@@ -20,7 +20,7 @@ type Props = {
 
 export function Filters({ filters }: Props) {
   const [scrollIsDown, setScrollIsDown] = useState(false);
-  const [hoveredItem, setHoveredItem] = useState<string | null>('Цвет');
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const idRef = useRef<NodeJS.Timeout | null>(null);
   const appliedFilters = useAppliedFilters(filters);
 
