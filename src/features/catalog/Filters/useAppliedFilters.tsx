@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { FiltersCommonItem, FiltersResponse } from '@/shared/api/catalog';
 
-import { flattenTree, pickLastNodeFromTrees } from '../tree';
+import { pickLastNodeFromTrees } from '../tree';
 
 import { AppliedFilters, FilterValue } from './types';
 

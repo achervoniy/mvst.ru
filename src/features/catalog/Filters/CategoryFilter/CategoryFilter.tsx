@@ -33,6 +33,7 @@ type FilterContentProps = {
   isLastLvl: boolean;
   changeSelectedCategory: (item: CategoryFilterCommonItem, index: number) => void;
   index: number;
+  goBack: () => void;
 };
 
 function Content({
@@ -44,11 +45,12 @@ function Content({
   isLastLvl,
   changeSelectedCategory,
   index,
+  goBack,
 }: FilterContentProps) {
   return (
     <ul className={cn(st.nav, catSt.category)}>
       {index > 1 && (
-        <li key="back" className={catSt.backAction}>
+        <li key="back" className={catSt.backAction} onClick={goBack}>
           <Icon name="ArrowBack" />
           <Typography font="paragraph/regular">Назад</Typography>
         </li>
@@ -100,6 +102,11 @@ export function CategoryFilter({ filter, hoveredItem, onMouseEnter, leaveHandler
     setClickedCategoryIds(index === 1 ? [item.value] : [clickedCategoryIds[0], item.value]);
   };
 
+  const goBack = () => {
+    setSelectedCategories(selectedCategories.slice(0, 1));
+    setClickedCategoryIds(clickedCategoryIds.slice(0, 1));
+  };
+
   useEffect(() => {
     if (hoveredItem === filter.title) {
       return () => {
@@ -140,6 +147,7 @@ export function CategoryFilter({ filter, hoveredItem, onMouseEnter, leaveHandler
                   isLastLvl={selectedCategories[selectedCategories.length - 1][0]?.items.length === 0}
                   changeSelectedCategory={changeSelectedCategory}
                   index={selectedCategories.length}
+                  goBack={goBack}
                 />
               ) : (
                 selectedCategories.map((cat, index) => {
@@ -154,6 +162,7 @@ export function CategoryFilter({ filter, hoveredItem, onMouseEnter, leaveHandler
                       isLastLvl={cat[0]?.items.length === 0}
                       changeSelectedCategory={changeSelectedCategory}
                       index={index + 1}
+                      goBack={goBack}
                     />
                   );
                 })
