@@ -10,6 +10,7 @@ import st from './styles.module.scss';
 type Props = {
   scrollIsDown: boolean;
 };
+
 export function DesktopHeader({ scrollIsDown }: Props) {
   return (
     <>

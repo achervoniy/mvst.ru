@@ -1,0 +1,242 @@
+$filterPadding: 8px 0px 8px 24px;
+
+.filtersList {
+  position: sticky;
+  z-index: $z-minor+2;
+  top: 60px;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+
+  .inner {
+    display: flex;
+    position: absolute;
+    width: 100%;
+    left: 0;
+    right: 0;
+    top: 100%;
+    // bottom: 0px;
+    // transform: translateY(100%);
+    background-color: $Core-Overlays-ExtraLight;
+    z-index: $z-minor;
+    transition-delay: 0.3s;
+    overflow: auto;
+    height: calc(100vh - 150px);
+    height: calc(100dvh - 150px);
+    flex-direction: column;
+
+    .overlay {
+      display: none;
+      flex: 1;
+      background-color: #1B1B1B;
+      opacity: 0.65;
+      position: fixed;
+      z-index: -1;
+      bottom: 0;
+      left: 0;
+      height: calc(100vh - 300px);
+      width: 100vw;
+      overflow: hidden;
+    }
+  }
+
+  @include desktop() {
+    padding: 8px 24px;
+    top: 72px;
+    gap: 16px;
+    background-color: transparent;
+
+    .inner {
+      height: 100vh;
+      max-height: 411px;
+
+      .overlay {
+        display: block;
+        height: calc(100vh - 300px);
+      }
+    }
+  }
+
+  // &.scrollIsDown {
+  //   .inner {
+  //     // - filters - header
+  //     height: calc(100vh - 56px - 60px);
+  //   }
+
+  //   @include desktop() {
+  //     .inner {
+  //       height: calc(100vh - 120px);
+  //     }
+  //   }
+  // }
+}
+
+.navWrapper {
+  background-color: $Core-Overlays-ExtraLight;
+  display: flex;
+  flex-direction: column;
+  padding-top: 16px;
+  padding-bottom: 16px;
+  min-height: 100%;
+
+  @include desktop() {
+    min-height: auto;
+  }
+}
+
+.contentGrid {
+  max-width: $max-width-desktop;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+
+  @include desktop() {
+    min-height: auto;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(220px, 1fr));
+    margin: 0 auto;
+  }
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  column-gap: 24px;
+
+  li {
+    position: relative;
+    height: 56px;
+    padding: 0px 24px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    justify-content: space-between;
+    color: $Core-Dark-brown;
+
+    &.action {
+      grid-column: 1 / 5;
+      display: flex;
+      justify-content: center;
+      padding: 16px 0px;
+      height: auto;
+      position: sticky;
+      bottom: 0px;
+      background-color: $Core-Overlays-ExtraLight;
+      margin-top: auto;
+
+      button {
+        max-width: 368px;
+      }
+    }
+  }
+
+  @include desktop() {
+    height: auto;
+    max-width: 100%;
+    width: 100%;
+
+    li {
+      height: 42px;
+      flex: 0 0 auto;
+
+      &.last {
+        box-shadow: none
+      }
+    }
+  }
+}
+
+.action {
+  grid-column: 1 / 5;
+  display: flex;
+  justify-content: center;
+  padding: 16px 0px;
+  height: auto;
+  position: sticky;
+  bottom: 0px;
+  background-color: $Core-Overlays-ExtraLight;
+  margin-top: auto;
+
+  button {
+    max-width: 368px;
+  }
+}
+
+.tag {
+  display: inline-flex;
+  @include paragraph-regular();
+  padding: 8px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  flex: none;
+
+  &.needToHide .sortIcon {
+    display: none;
+  }
+
+  &.hovered {
+    border-bottom-color: $Core-Light-brass;
+  }
+
+  &.close {
+    border-radius: 50%;
+    background-color: $Core-Champagne;
+    width: 32px;
+    height: 32px;
+    padding: 0px;
+
+    @include desktop() {
+      display: none;
+    }
+  }
+
+  &.sortTag {
+    border-bottom-color: transparent;
+    padding: 0px;
+  }
+
+  @include desktop() {
+    &.needToHide .sortIcon {
+      display: inline-flex;
+    }
+  }
+}
+
+.sortIcon {
+  border-radius: 4px;
+  border: 1px solid $Core-Champagne;
+  width: 32px;
+  height: 32px;
+  padding: 4px;
+}
+
+.separator {
+  width: calc(100% - 48px);
+  height: 1px;
+  background-color: #F5F4F9;
+  position: absolute;
+  bottom: 0px;
+}
+
+.filterListContent {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  overflow: auto;
+  max-width: 100%;
+  padding: 8px 0px 8px 24px;
+
+  @include desktop() {
+    gap: 16px;
+    max-width: $max-width-desktop;
+    margin: 0 auto;
+    width: 100%;
+    padding: 0;
+  }
+}

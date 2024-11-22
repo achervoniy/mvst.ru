@@ -3,7 +3,7 @@
 import { useUnit } from 'effector-react';
 import { usePathname } from 'next/navigation';
 
-import { ProductList } from '@/features/catalog';
+import { Filters, ProductList } from '@/features/catalog';
 
 import { Typography, Pagination } from '@/ui/index';
 
@@ -26,7 +26,10 @@ export function CatalogPage({ pageTitle }: Props) {
           {pageTitle}
         </Typography>
       </div>
-      <ProductList products={result.data?.catalog?.list ?? []} />
+
+      {result.data?.filters && <Filters filters={result.data?.filters} />}
+
+      <ProductList products={result.data?.catalog?.list ?? []} className={st.catalog} />
 
       {result.data && (
         <div className={st.pagination}>

@@ -43,7 +43,7 @@ export function Header({ className }: Props) {
     popup.togglePopup();
   };
 
-  useScrollEventListener((e, { scrollDirection }) => {
+  useScrollEventListener((_, { scrollDirection }) => {
     if (window.innerWidth >= BREAKPOINTS.md && isDesktop) {
       setScrollIsDown(scrollDirection === 'down');
     }

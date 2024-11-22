@@ -268,12 +268,16 @@ export interface FiltersResponse {
     applied: FiltersCommonItem[];
   };
   tag: {
-    items: FiltersCommonItem<string>[];
-    applied: FiltersCommonItem<string>[];
+    items: FiltersCommonItem[];
+    applied: FiltersCommonItem[];
   };
   color: {
     items: FiltersCommonItem[];
     applied: FiltersCommonItem[];
+  };
+  sort: {
+    items: (FiltersCommonItem & { isDefault: boolean })[];
+    applied: (FiltersCommonItem & { isDefault: boolean })[];
   };
   size: {
     items: FiltersCommonItem[];

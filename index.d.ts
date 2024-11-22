@@ -17,3 +17,34 @@ declare module '*.jpg' {
 
   export default content;
 }
+
+type SeoMeta = {
+  seoText?: string;
+  seoTextMore?: string;
+  seoTitle?: string;
+};
+
+type CatalogMeta = {
+  canonicalUrl?: string;
+};
+
+declare type BaseMetaType = {
+  title?: string;
+  description?: string;
+  keywords?: string;
+  ogDescription?: string;
+  ogTitle?: string;
+  ogType?: string;
+  ogImage?: string;
+  ogImageAlt?: string;
+  ogUrl?: string;
+  ogImageSecureUrl?: string;
+  twitterCard?: string;
+  twitterImage?: string;
+  twitterTitle?: string;
+  twitterDescription?: string;
+  ogAvailability?: string;
+  elementImageTitle?: string;
+  elementImageAlt?: string;
+} & SeoMeta &
+  CatalogMeta;
