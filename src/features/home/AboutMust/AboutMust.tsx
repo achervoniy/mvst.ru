@@ -4,7 +4,7 @@ import st from './styles.module.scss';
 
 export function AboutMust() {
   return (
-    <div className={st.aboutMust} target-id="must">
+    <div className={st.aboutMust} target-id="mvst">
       <div className={st.head}>
         <Typography font="leading/h2" className={st.title} align="center">
           О Бренде
@@ -12,16 +12,10 @@ export function AboutMust() {
       </div>
 
       <Typography font="paragraph/regular" className={st.text}>
-        Женские и мужские коллекции MUST
-        — это элегантные вещи вне времени,
-        которые отличают безупречный
-        крой, премиальные материалы и
-        благородные оттенки.
+        Женские и мужские коллекции MVST — это элегантные вещи вне времени, которые отличают безупречный крой,
+        премиальные материалы и благородные оттенки.
         <br />
-        Такие достоинства идеально
-        отвечают потребностям
-        взыскательных клиентов, которые
-        привыкли к лучшему.
+        Такие достоинства идеально отвечают потребностям взыскательных клиентов, которые привыкли к лучшему.
       </Typography>
     </div>
   );

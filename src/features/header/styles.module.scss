@@ -40,7 +40,12 @@
 
   svg {
     height: 31px;
-    width: 190px;
+    width: 84px;
+
+    @include desktop() {
+      height: 24px;
+      width: 190px;
+    }
   }
 }
 

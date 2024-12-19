@@ -72,7 +72,7 @@ export function Nav({ onLink }: { onLink?: () => void }) {
         </Link>
       </li>
       <li className={st.item}>
-        <Link href="/#must" onClick={onLink}>
+        <Link href="/#mvst" onClick={onLink}>
           <Typography font="paragraph/regular" onClick={onLink}>
             О бренде
           </Typography>

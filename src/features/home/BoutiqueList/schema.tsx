@@ -7,7 +7,7 @@ import tsum from './assets/must_tsum.jpg';
 
 export const boutiqueList = [
   {
-    title: 'MUST ЦУМ',
+    title: 'ЦУМ',
     image: tsum,
     address: 'Москва, ул. Петровка, д.2',
     time: <>Ежедневно с&nbsp;10-&#8288;00 до&nbsp;22-&#8288;00</>,
@@ -37,7 +37,7 @@ export const boutiqueList = [
     time: <>Ежедневно с&nbsp;11-&#8288;00 до&nbsp;22-&#8288;00</>,
   },
   {
-    title: 'MUST ДЛТ',
+    title: 'ДЛТ',
     image: dlt,
     address: 'Санкт-Петербург, Большая Конюшенная ул., д.21-23',
     time: <>Ежедневно с&nbsp;11-&#8288;00 до&nbsp;22-&#8288;00</>,
