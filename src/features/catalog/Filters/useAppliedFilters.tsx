@@ -1,8 +1,11 @@
+import { debounce } from 'lodash-es';
 import { usePathname } from 'next/navigation';
 import { useRouter } from 'next-nprogress-bar';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { FiltersCommonItem, FiltersResponse } from '@/shared/api/catalog';
+
+import { useViewport } from '@/lib/useViewport';
 
 import { pickLastNodeFromTrees } from '../tree';
 
@@ -50,18 +53,32 @@ const buildQueryString = (filters: AppliedFilters) => {
   return qs.length > 0 ? `?${qs.join('&')}` : '';
 };
 
+const sync = (filters: FiltersResponse) => ({
+  color: filters.color.applied,
+  section: (filters.category.applied ?? []).map(pickLastNodeFromTrees),
+  size: filters.size.applied,
+  sort: filters.sort.applied,
+  attribute: filters.attribute.applied.flatMap(applied => applied.items),
+  additional: [...filters.additional.applied, ...filters.tag.applied],
+});
+
 export function useAppliedFilters(filters: FiltersResponse) {
-  const [applied, setApplied] = useState<AppliedFilters>({} as AppliedFilters);
+  const { isDesktop } = useViewport();
+  const [applied, setApplied] = useState<AppliedFilters>(() => sync(filters) as AppliedFilters);
   const router = useRouter();
   const pathname = usePathname();
 
-  const applyFilters = useCallback(
-    (filters: AppliedFilters) => {
-      const queryString = buildQueryString(filters);
+  const applyFilters = useMemo(
+    () =>
+      debounce(
+        (filters: AppliedFilters) => {
+          const queryString = buildQueryString(filters);
 
-      router.push(`${pathname}${queryString}`);
-    },
-    [pathname, router],
+          router.push(`${pathname}${queryString}`);
+        },
+        isDesktop ? 700 : 0,
+      ),
+    [isDesktop, pathname, router],
   );
 
   const updateAppliedFilters = useCallback(
@@ -84,8 +101,8 @@ export function useAppliedFilters(filters: FiltersResponse) {
               ? [filter]
               : []
             : selected
-              ? applied[key].filter(item => item.value !== filter.value)
-              : [...applied[key], filter],
+            ? applied[key].filter(item => item.value !== filter.value)
+            : [...applied[key], filter],
       };
 
       setApplied(filters);
@@ -98,14 +115,7 @@ export function useAppliedFilters(filters: FiltersResponse) {
   );
 
   const syncApplied = useCallback(() => {
-    setApplied({
-      color: filters.color.applied,
-      section: (filters.category.applied ?? []).map(pickLastNodeFromTrees),
-      size: filters.size.applied,
-      sort: filters.sort.applied,
-      attribute: filters.attribute.applied.flatMap(applied => applied.items),
-      additional: [...filters.additional.applied, ...filters.tag.applied],
-    });
+    setApplied(sync(filters));
   }, [filters]);
 
   useEffect(() => {

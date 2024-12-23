@@ -3,40 +3,54 @@
 import { useUnit } from 'effector-react';
 import { usePathname } from 'next/navigation';
 
-import { Filters, ProductList } from '@/features/catalog';
+import { DesktopFilters, Filters, ProductList, Sidebar } from '@/features/catalog';
+import { CatalogSidebarWrapper } from '@/features/catalog/Templates';
 
-import { Typography, Pagination } from '@/ui/index';
+import { Typography, Pagination, Responsive } from '@/ui/index';
 
 import { catalogQuery } from './model';
 
 import st from './styles.module.scss';
 
-type Props = {
-  pageTitle: string;
-};
-
-export function CatalogPage({ pageTitle }: Props) {
+export function CatalogPage() {
   const pathname = usePathname();
-  const result = useUnit(catalogQuery);
+  const data = useUnit(catalogQuery.$data);
+
+  const categories = data?.filters?.category?.list ?? [];
 
   return (
-    <section>
+    <section className={st.catalogPage}>
       <div className={st.head}>
         <Typography as="h1" font="leading/h2">
-          {pageTitle}
+          {data?.category?.title}
         </Typography>
       </div>
 
-      {result.data?.filters && <Filters filters={result.data?.filters} />}
+      {categories.length > 0 && (
+        <CatalogSidebarWrapper>
+          <Sidebar categories={categories} />
+        </CatalogSidebarWrapper>
+      )}
 
-      <ProductList products={result.data?.catalog?.list ?? []} className={st.catalog} />
+      {data?.filters && (
+        <>
+          <Responsive.TabletAndBelow>
+            <Filters filters={data?.filters} />
+          </Responsive.TabletAndBelow>
+          <Responsive.Desktop className={st.filters}>
+            <DesktopFilters filters={data?.filters} />
+          </Responsive.Desktop>
+        </>
+      )}
 
-      {result.data && (
+      <ProductList products={data?.catalog?.list ?? []} className={st.catalog} nosidebar={categories.length === 0} />
+
+      {data && (
         <div className={st.pagination}>
           <Pagination
-            current={result.data.catalog.currentPage}
-            total={result.data.catalog.total}
-            pageSize={result.data.catalog.perPage}
+            current={data.catalog.currentPage}
+            total={data.catalog.total}
+            pageSize={data.catalog.perPage}
             baseUrl={pathname}
           />
         </div>

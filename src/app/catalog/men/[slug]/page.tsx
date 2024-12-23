@@ -10,9 +10,11 @@ import { type PageProps, createRSC, baseServices } from '@/lib/rsc';
 
 const rsc = createRSC({ pageHooks });
 
-export async function generateMetadata() {
+export async function generateMetadata(props: { params: { slug?: string } }) {
+  const slug = props.params?.slug || DEFAULT_MVST_SLUGS.men;
+
   const seo = await baseServices.api.tsum
-    .post('/seo/info', { url: `/brand/${DEFAULT_MVST_SLUGS.women}/must-774534.html` })
+    .post('/seo/info', { url: `/brand/${slug}/must-774534.html` })
     .then(rs => mapServerMetaToClient(rs.data));
 
   return {
@@ -34,7 +36,7 @@ export async function generateMetadata() {
   } as Metadata;
 }
 
-export default async function CatalogWomenPage(props: PageProps<{}>) {
+export default async function CatalogMenPage(props: PageProps<{}>) {
   const result = await rsc(props);
 
   if (result.onRedirected) {
@@ -43,7 +45,7 @@ export default async function CatalogWomenPage(props: PageProps<{}>) {
 
   return (
     <EffectorNext values={result.values}>
-      <Page pageTitle="Женская одежда" />
+      <Page pageTitle="Мужская одежда" />
     </EffectorNext>
   );
 }

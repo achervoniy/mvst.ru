@@ -9,13 +9,14 @@ import st from './ProductList.module.scss';
 type Props = {
   products: CatalogProduct[];
   className?: string;
+  nosidebar?: boolean;
 };
 
-export function ProductList({ products, className }: Props) {
+export function ProductList({ products, className, nosidebar }: Props) {
   return (
     <div
       className={cn(st.productList, className, {
-        [st.nosidebar]: true,
+        [st.nosidebar]: nosidebar,
       })}
     >
       {products.map(product => {

@@ -4,13 +4,15 @@ import { Metadata } from 'next';
 import { CatalogPage as Page, pageHooks } from '@/rootPages/Catalog';
 import { mapServerMetaToClient } from '@/shared/api/seo';
 
+import { DEFAULT_MVST_SLUGS } from '@/constants/slugs';
+
 import { type PageProps, createRSC, baseServices } from '@/lib/rsc';
 
 const rsc = createRSC({ pageHooks });
 
 export async function generateMetadata() {
   const seo = await baseServices.api.tsum
-    .post('/seo/info', { url: '/brand/muzhskoe-2408/must-774534.html' })
+    .post('/seo/info', { url: `/brand/${DEFAULT_MVST_SLUGS.men}/must-774534.html` })
     .then(rs => mapServerMetaToClient(rs.data));
 
   return {

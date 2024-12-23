@@ -11,10 +11,10 @@ $brand-height-desktop: 40px;
   padding: 4px;
   padding-bottom: 0px;
   max-width: 156px;
+  gap: 4px;
 
   @include desktop() {
-    padding: 8px;
-    padding-bottom: 0px;
+    padding: 0px;
     width: 100%;
     max-width: 100%;
   }

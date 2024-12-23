@@ -33,6 +33,7 @@
 
 .content {
   grid-area: content;
+  @include templatePaddings();
 
   &:not(.contentResetStyles) {
     @include maxWidth();

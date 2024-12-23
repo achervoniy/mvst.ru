@@ -1,0 +1,54 @@
+.filtersContent {
+  display: grid;
+  grid-auto-columns: 1fr minmax(0, 100%);
+  max-height: 80vh;
+  position: relative;
+  padding: 2px;
+
+  p {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: calc(280px - 60px);
+  }
+
+  li {
+    padding: 0px 8px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+
+    &:hover {
+      background-color: $Core-Overlays-ExtraLight;
+    }
+  }
+}
+
+.tag {
+  display: flex;
+  height: 100%;
+  padding: 0px 8px;
+  align-items: center;
+
+  p {
+    color: $Core-Dark-brown;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  .icon {
+    color: $Core-Light-brass;
+    margin-left: 8px;
+  }
+
+  &.isOpen {
+    background-color: $Core-Overlays-ExtraLight;
+  }
+}
+
+.checkedIcon {
+  margin-left: auto;
+}

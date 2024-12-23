@@ -3,6 +3,7 @@ import { createBaseRequest } from '@/lib/request';
 import {
   CatalogProduct,
   CatalogProductsParams,
+  CategoryInfoResponse,
   FetchedCatalogResult,
   FetchFiltersParams,
   FiltersResponse,
@@ -71,4 +72,9 @@ export const fetchBrandCatalog = createBaseRequest<
 export const fetchFiltersBrands = createBaseRequest<FetchFiltersParams, FiltersResponse>({
   method: 'GET',
   url: '/catalog/filter/brand',
+});
+
+export const fetchCategoryBySlug = createBaseRequest<{ slug: string }, CategoryInfoResponse>({
+  method: 'GET',
+  url: ({ slug }) => `/v2/catalog/category/${slug}`,
 });

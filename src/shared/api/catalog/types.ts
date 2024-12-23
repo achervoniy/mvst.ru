@@ -233,6 +233,7 @@ export interface FiltersCommonItem<Value = number> {
   count: number;
   items: FiltersCommonItem<Value>[];
   title: string;
+  isDefault?: boolean;
 }
 
 export interface FiltersBrandItem extends FiltersCommonItem {
