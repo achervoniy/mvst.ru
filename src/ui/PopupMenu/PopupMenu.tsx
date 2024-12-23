@@ -1,6 +1,5 @@
 import cn from 'classnames';
 import { forwardRef, ReactNode, ComponentPropsWithoutRef } from 'react';
-import { Icon } from '@/ui/assets/Icon';
 
 import st from './style.module.scss';
 
