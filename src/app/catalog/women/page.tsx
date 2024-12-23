@@ -43,7 +43,7 @@ export default async function CatalogWomenPage(props: PageProps<{}>) {
 
   return (
     <EffectorNext values={result.values}>
-      <Page pageTitle="Женская одежда" />
+      <Page />
     </EffectorNext>
   );
 }
