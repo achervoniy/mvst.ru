@@ -118,9 +118,25 @@ export function useAppliedFilters(filters: FiltersResponse) {
     setApplied(sync(filters));
   }, [filters]);
 
+  const resetFilter = useCallback(
+    (key: keyof AppliedFilters, applied: FiltersCommonItem<FilterValue>[]) => {
+      const syncedFilters = sync(filters);
+
+      const next = {
+        ...syncedFilters,
+        // @ts-ignore
+        [key]: syncedFilters[key].filter(filter => !applied.find(appl => appl.value === filter.value)),
+      };
+
+      setApplied(next);
+      applyFilters(next);
+    },
+    [applyFilters, filters],
+  );
+
   useEffect(() => {
     syncApplied();
   }, [syncApplied]);
 
-  return { applied, updateAppliedFilters, syncApplied, applyFilters };
+  return { applied, updateAppliedFilters, syncApplied, applyFilters, resetFilter };
 }

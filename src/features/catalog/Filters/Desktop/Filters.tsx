@@ -59,21 +59,25 @@ export function DesktopFilters({ filters }: Props) {
     >
       {additionalFilters.map(filter =>
         filter.type === 'attribute' ? (
-          filter.filter.items.map(attribute => (
-            <li key={`${filter.type}/${attribute.key}`}>
-              <MultiSelect
-                appliedFilters={appliedFilters}
-                filter={{
-                  title: attribute.title,
-                  filter: { items: attribute.items, applied: [] },
-                  key: attribute.key,
-                  type: 'attribute',
-                }}
-              />
-            </li>
-          ))
+          filter.filter.items.map(attribute => {
+            const appliedAttributes = filter.filter.applied.find(attr => attr.title === attribute.title);
+
+            return (
+              <li key={`${attribute.key}/${attribute.title}`}>
+                <MultiSelect
+                  appliedFilters={appliedFilters}
+                  filter={{
+                    title: attribute.title,
+                    filter: { items: attribute.items, applied: appliedAttributes?.items ?? [] },
+                    key: attribute.key,
+                    type: 'attribute',
+                  }}
+                />
+              </li>
+            );
+          })
         ) : (
-          <li key={filter.type} className={st[filter.type]}>
+          <li key={filter.key} className={st[filter.type]}>
             <MultiSelect filter={filter} appliedFilters={appliedFilters} />
           </li>
         ),

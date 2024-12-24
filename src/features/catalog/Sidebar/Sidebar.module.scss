@@ -9,5 +9,10 @@
     display: flex;
     align-items: center;
     color: $Core-Dark-brown;
+    padding: 0px 8px;
+
+    &.checked {
+      background-color: $Core-Overlays-ExtraLight;
+    }
   }
 }

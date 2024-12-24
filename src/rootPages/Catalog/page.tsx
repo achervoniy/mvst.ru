@@ -1,7 +1,9 @@
 'use client';
 
 import { useUnit } from 'effector-react';
-import { usePathname } from 'next/navigation';
+import { isEmpty, omit } from 'lodash-es';
+import { usePathname, useSearchParams } from 'next/navigation';
+import { useMemo } from 'react';
 
 import { DesktopFilters, Filters, ProductList, Sidebar } from '@/features/catalog';
 import { CatalogSidebarWrapper } from '@/features/catalog/Templates';
@@ -14,9 +16,16 @@ import st from './styles.module.scss';
 
 export function CatalogPage() {
   const pathname = usePathname();
+  const search = useSearchParams();
   const data = useUnit(catalogQuery.$data);
 
   const categories = data?.filters?.category?.list ?? [];
+
+  const queriesWithoutPage = useMemo(() => {
+    const q = omit(Object.fromEntries(search.entries()), 'page');
+
+    return isEmpty(!q) ? `?${new URLSearchParams(q)}` : '';
+  }, [search]);
 
   return (
     <section className={st.catalogPage}>
@@ -51,7 +60,7 @@ export function CatalogPage() {
             current={data.catalog.currentPage}
             total={data.catalog.total}
             pageSize={data.catalog.perPage}
-            baseUrl={pathname}
+            baseUrl={`${pathname}${queriesWithoutPage}`}
           />
         </div>
       )}

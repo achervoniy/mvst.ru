@@ -19,9 +19,13 @@ export function Content({ filter, appliedFilters, closePopup }: Props) {
       {filter.filter.items.map(item => {
         const selected = !!appliedFilters.applied[filter.key]?.find(applied => applied.value === item.value);
 
+        if (item.isDefault) {
+          return null;
+        }
+
         return (
           <li
-            key={item.key}
+            key={item.value}
             onClick={() => {
               appliedFilters.updateAppliedFilters({
                 key: filter.key,

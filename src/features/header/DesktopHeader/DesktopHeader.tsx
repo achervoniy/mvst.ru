@@ -20,7 +20,7 @@ export function DesktopHeader({ scrollIsDown }: Props) {
 
       <div className={st.navWrapper}>
         <Icon
-          name="ShortLogo"
+          name="LogoFull"
           className={cn(st.shortLogo, {
             [st.scrollIsDown]: scrollIsDown,
           })}

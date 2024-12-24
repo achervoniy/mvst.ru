@@ -33,13 +33,13 @@
 
 .content {
   grid-area: content;
-  @include templatePaddings();
 
   &:not(.contentResetStyles) {
     @include maxWidth();
 
     @include desktop() {
       padding: 0 24px;
+      @include templatePaddings();
     }
   }
 }

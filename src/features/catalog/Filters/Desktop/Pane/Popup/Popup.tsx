@@ -1,6 +1,6 @@
 import cn from 'classnames';
 import { ReactNode, useCallback, ReactElement, forwardRef } from 'react';
-import { Popover, ArrowContainer, PopoverState } from 'react-tiny-popover';
+import { Popover, ArrowContainer, PopoverState, PopoverAlign } from 'react-tiny-popover';
 
 import { PopupMenu } from '@/ui/index';
 
@@ -13,10 +13,11 @@ interface Props {
   tag: React.JSX.Element;
   menuClassName?: string;
   withArrow?: boolean;
+  align?: PopoverAlign;
 }
 
 export const Popup = forwardRef<HTMLDivElement, Props>(
-  ({ menuClassName, closePopup, isOpen, tag, children, withArrow }, ref) => {
+  ({ menuClassName, closePopup, isOpen, tag, children, withArrow, align = 'start' }, ref) => {
     const renderContent = useCallback(
       ({ position, childRect, popoverRect }: PopoverState) =>
         withArrow ? (
@@ -43,7 +44,7 @@ export const Popup = forwardRef<HTMLDivElement, Props>(
     return (
       <Popover
         containerClassName={st.popupContainer}
-        align="start"
+        align={align}
         padding={6}
         positions={['bottom']}
         isOpen={isOpen}
