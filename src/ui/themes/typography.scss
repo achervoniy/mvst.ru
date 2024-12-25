@@ -92,6 +92,16 @@
 	}
 }
 
+@mixin leading-h3 {
+	@include mobile-leading-h2();
+	font-weight: 400;
+	text-transform: none;
+
+	@include desktop() {
+		font-size: 19px;
+	}
+}
+
 @mixin paragraph-bold {
 	@include mobile-paragraph-bold();
 

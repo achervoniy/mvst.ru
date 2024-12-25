@@ -7,6 +7,7 @@ export type BaseFont =
   | 'leading/display'
   | 'leading/h1'
   | 'leading/h2'
+  | 'leading/h3'
   | 'paragraph/bold'
   | 'paragraph/regular'
   | 'body/bold'

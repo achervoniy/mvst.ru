@@ -8,6 +8,8 @@ import { CategoryFilterListCommonItem } from '@/shared/api/catalog';
 
 import { Typography } from '@/ui/index';
 
+import { Dropdown } from './Dropdown';
+
 import st from './Sidebar.module.scss';
 
 type Props = {
@@ -19,7 +21,7 @@ export function Sidebar({ categories }: Props) {
   const search = useSearchParams();
 
   const queriesWithoutPage = useMemo(() => {
-    const q = omit(Object.fromEntries(search.entries()), 'page');
+    const q = omit(Object.fromEntries(search.entries()), 'page', 'section');
 
     return isEmpty(!q) ? `?${new URLSearchParams(q)}` : '';
   }, [search]);
@@ -40,8 +42,10 @@ export function Sidebar({ categories }: Props) {
           })}
         >
           <Link href={`${pathWithoutSlug}/${cat.slug}${queriesWithoutPage}`}>
-            <Typography font="paragraph/regular">{cat.title}</Typography>
+            <Typography font="leading/h3">{cat.title}</Typography>
           </Link>
+
+          {cat.items.length > 0 && <Dropdown category={cat} />}
         </li>
       ))}
     </ul>

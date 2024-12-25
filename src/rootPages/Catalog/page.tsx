@@ -5,16 +5,16 @@ import { isEmpty, omit } from 'lodash-es';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useMemo } from 'react';
 
-import { DesktopFilters, Filters, ProductList, Sidebar } from '@/features/catalog';
+import { Breadcrumbs, DesktopFilters, Filters, ProductList, Sidebar } from '@/features/catalog';
 import { CatalogSidebarWrapper } from '@/features/catalog/Templates';
 
-import { Typography, Pagination, Responsive } from '@/ui/index';
+import { Pagination, Responsive } from '@/ui/index';
 
 import { catalogQuery } from './model';
 
 import st from './styles.module.scss';
 
-export function CatalogPage() {
+export function CatalogPage({ gender }: { gender?: 'w' | 'm' }) {
   const pathname = usePathname();
   const search = useSearchParams();
   const data = useUnit(catalogQuery.$data);
@@ -30,9 +30,7 @@ export function CatalogPage() {
   return (
     <section className={st.catalogPage}>
       <div className={st.head}>
-        <Typography as="h1" font="leading/h2">
-          {data?.category?.title}
-        </Typography>
+        <Breadcrumbs gender={gender} />
       </div>
 
       {categories.length > 0 && (

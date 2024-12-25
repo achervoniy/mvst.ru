@@ -14,6 +14,10 @@
 		@include leading-h2()
 	}
 
+	&.leading-h3 {
+		@include leading-h3()
+	}
+
 	&.paragraph-bold {
 		@include paragraph-bold()
 	}

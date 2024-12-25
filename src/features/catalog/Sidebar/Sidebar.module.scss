@@ -5,14 +5,34 @@
   padding: 8px 0px;
 
   li {
-    height: 42px;
     display: flex;
-    align-items: center;
     color: $Core-Dark-brown;
     padding: 0px 8px;
+    flex-direction: column;
 
     &.checked {
       background-color: $Core-Overlays-ExtraLight;
     }
+
+    a {
+      display: flex;
+      height: 42px;
+      align-items: center;
+    }
+  }
+}
+
+.checkboxes {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 0px;
+
+  li {
+    display: flex;
+    justify-content: center;
+    height: 42px;
   }
 }

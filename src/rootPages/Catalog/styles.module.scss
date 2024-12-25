@@ -6,19 +6,12 @@
 
 .head {
   grid-area: head;
-  height: 34px;
   align-items: center;
-  justify-content: center;
   position: relative;
   display: flex;
-  justify-content: center;
-
-  h1 {
-    color: $Core-Dark-brown;
-  }
+  justify-content: flex-start;
 
   @include desktop() {
-    height: 64px;
     grid-column: 1 / 3;
   }
 }
