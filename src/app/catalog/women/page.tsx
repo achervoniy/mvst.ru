@@ -1,8 +1,11 @@
 import { EffectorNext } from '@effector/next';
 import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 
 import { CatalogPage as Page, pageHooks } from '@/rootPages/Catalog';
 import { mapServerMetaToClient } from '@/shared/api/seo';
+
+import { DEFAULT_MVST_SLUGS } from '@/constants/slugs';
 
 import { type PageProps, createRSC, baseServices } from '@/lib/rsc';
 
@@ -10,7 +13,7 @@ const rsc = createRSC({ pageHooks });
 
 export async function generateMetadata() {
   const seo = await baseServices.api.tsum
-    .post('/seo/info', { url: '/brand/zhenskoe-18368/must-774534.html' })
+    .post('/seo/info', { url: `/brand/${DEFAULT_MVST_SLUGS.women}/must-774534.html` })
     .then(rs => mapServerMetaToClient(rs.data));
 
   return {
@@ -39,9 +42,13 @@ export default async function CatalogWomenPage(props: PageProps<{}>) {
     result.onRedirected();
   }
 
+  if (result.is404) {
+    notFound();
+  }
+
   return (
     <EffectorNext values={result.values}>
-      <Page pageTitle="Женская одежда" />
+      <Page />
     </EffectorNext>
   );
 }

@@ -1,0 +1,16 @@
+.popupContainer {
+  z-index: $z-minor + 3;
+}
+
+
+.popup {
+  width: 280px;
+  height: fit-content;
+  max-height: 550px;
+  padding: 0;
+  overflow-y: auto;
+}
+
+.arrow {
+  z-index: $z-minor;
+}

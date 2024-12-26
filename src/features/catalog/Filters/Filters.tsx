@@ -104,7 +104,7 @@ export function Filters({ filters }: Props) {
 
               return (
                 <MultiSelectFilter
-                  key={attribute.key}
+                  key={`${attribute.key}/${attribute.title}`}
                   filter={{
                     title: attribute.title,
                     filter: { items: attribute.items, applied: appliedAttributes?.items ?? [] },

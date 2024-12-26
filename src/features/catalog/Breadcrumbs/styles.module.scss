@@ -1,0 +1,10 @@
+.Breadcrumbs {
+  height: 42px;
+  padding: 0px 8px;
+  display: flex;
+  align-items: center;
+
+  a:hover {
+    color: $Core-Light-brass;
+  }
+}

@@ -39,6 +39,7 @@
 
     @include desktop() {
       padding: 0 24px;
+      @include templatePaddings();
     }
   }
 }

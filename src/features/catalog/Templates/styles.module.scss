@@ -1,0 +1,14 @@
+.sidebar {
+  grid-area: sidebar;
+  display: none;
+  padding: 0px;
+
+  @include desktop() {
+    display: block;
+    align-self: flex-start;
+  }
+}
+
+.box {
+  transition: top 0.3s ease;
+}

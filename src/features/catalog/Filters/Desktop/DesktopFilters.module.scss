@@ -1,0 +1,25 @@
+.FilterWrapper {
+  display: flex;
+  height: 58px;
+  padding: 8px 0px;
+  justify-content: space-between;
+  gap: 8px;
+
+  li {
+    @include paragraph-regular();
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    color: $Core-Dark-brown;
+  }
+}
+
+.chevron {
+  margin-left: 16px;
+  color: $Core-Light-brass;
+}
+
+.sort {
+  order: 1;
+  margin-left: auto;
+}
