@@ -1,10 +1,22 @@
 .Breadcrumbs {
   height: 42px;
   padding: 0px 8px;
-  display: flex;
+  display: none;
   align-items: center;
+
+  a {
+    color: $Core-Dark-brown;
+
+    &:last-child {
+      color: $Core-Light-brass;
+    }
+  }
 
   a:hover {
     color: $Core-Light-brass;
+  }
+
+  @include desktop() {
+    display: flex;
   }
 }

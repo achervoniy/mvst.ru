@@ -59,7 +59,7 @@ export function Dropdown({ category }: { category: CategoryFilterListCommonItem 
                 router.push(`${pathname}?${new URLSearchParams({ ...rawQueries, section: sections.join(',') })}`);
               }}
             >
-              <Typography font="paragraph/regular">{item.title}</Typography>
+              <Typography font="body/regular">{item.title}</Typography>
             </Checkbox>
           </li>
         );

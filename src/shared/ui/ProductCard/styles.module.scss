@@ -33,6 +33,7 @@ $brand-height-desktop: 40px;
   margin-top: -1px;
   object-fit: cover;
   background-color: #fff;
+  mix-blend-mode: darken;
 }
 
 .photoContent {
@@ -45,6 +46,7 @@ $brand-height-desktop: 40px;
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: $Core-Overlays-ExtraLight;
 
   @include desktop() {
     height: 370px;
@@ -64,6 +66,10 @@ $brand-height-desktop: 40px;
     transition: all 0.3 cubic-bezier(0.66, 0, 0.2, 1);
     max-width: 100%;
     object-fit: contain;
+
+    @include desktop() {
+      max-width: calc(100% + 2px);
+    }
   }
 
   &.zoom {
@@ -208,6 +214,7 @@ $brand-height-desktop: 40px;
   margin-bottom: 4px;
   height: auto;
   max-width: 100%;
+  color: $Core-Dark-brown;
 
   &.productTitle {
     &:not(.titleOnlyOneRow) {

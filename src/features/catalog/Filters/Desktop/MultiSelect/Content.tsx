@@ -1,3 +1,5 @@
+import cn from 'classnames';
+
 import { Typography } from '@/ui/index';
 
 import { Icon } from '@/ui/assets/Icon';
@@ -40,7 +42,12 @@ export function Content({ filter, appliedFilters, closePopup }: Props) {
             }}
           >
             <Typography font="paragraph/regular">{item.title}</Typography>
-            {selected && <Icon name="CheckedIcon" className={st.checkedIcon} />}
+            <Icon
+              name="CheckedIcon"
+              className={cn(st.checkedIcon, {
+                [st.selected]: selected,
+              })}
+            />
           </li>
         );
       })}

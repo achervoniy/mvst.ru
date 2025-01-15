@@ -1,32 +1,45 @@
 import Link from 'next/link';
 
+import { CategoryInfoResponse } from '@/shared/api/catalog';
+
+import { HOME_PAGE_FILTERS } from '@/constants/runtimeConfig';
+
 import { Typography } from '@/ui/index';
 
 import st from './styles.module.scss';
 
-const links = (gender?: 'w' | 'm') =>
-  [
+const links = ({ gender, category }: { gender?: 'w' | 'm'; category?: CategoryInfoResponse }) => {
+  const isRootPage =
+    category && [HOME_PAGE_FILTERS.female.section, HOME_PAGE_FILTERS.men.section].includes(category.id);
+
+  return [
     {
       title: 'Главная',
       link: '/',
     },
-    gender && {
-      title: 'Каталог',
-      link: gender === 'w' ? '/catalog/women' : '/catalog/men',
+    {
+      title: gender === 'w' ? 'Женское' : 'Мужское',
+      ...(!isRootPage ? { link: gender === 'w' ? '/catalog/women' : '/catalog/men' } : {}),
     },
-  ].filter(Boolean) as { title: string; link: string }[];
+    !isRootPage && {
+      title: category?.title,
+    },
+  ].filter(Boolean) as { title: string; link?: string }[];
+};
 
-export function Breadcrumbs({ gender }: { gender?: 'w' | 'm' }) {
+export function Breadcrumbs({ gender, category }: { gender?: 'w' | 'm'; category?: CategoryInfoResponse }) {
   return (
     <div className={st.Breadcrumbs}>
-      {links(gender).map((link, index, arr) => (
-        <Link href={link.link} key={link.link}>
-          <Typography font="body/regular">
-            {link.title}
-            {arr.length - 1 > index ? <>&nbsp;&nbsp;•&nbsp;&nbsp;</> : ''}
-          </Typography>
-        </Link>
-      ))}
+      {links({ gender, category }).map((link, index, arr) => {
+        return (
+          <Link href={link.link ?? '#'} key={link.link}>
+            <Typography font="body/regular">
+              {link.title}
+              {arr.length - 1 > index ? <>&nbsp;&nbsp;•&nbsp;&nbsp;</> : ''}
+            </Typography>
+          </Link>
+        );
+      })}
     </div>
   );
 }

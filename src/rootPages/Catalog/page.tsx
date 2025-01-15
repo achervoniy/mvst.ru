@@ -30,7 +30,7 @@ export function CatalogPage({ gender }: { gender?: 'w' | 'm' }) {
   return (
     <section className={st.catalogPage}>
       <div className={st.head}>
-        <Breadcrumbs gender={gender} />
+        <Breadcrumbs gender={gender} category={data?.category} />
       </div>
 
       {categories.length > 0 && (
