@@ -1,3 +1,5 @@
+$size: 24px;
+
 .wrap {
 	display: flex;
 	align-items: center;
@@ -38,14 +40,14 @@
 	}
 
 	.control {
-		border: 2px solid $Core-Dark-brown;
+		border: 2px solid $Core-Light-brass;
 		margin-right: 18px;
 		position: relative;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 20px;
-		height: 20px;
+		width: $size;
+		height: $size;
 		border-radius: 4px;
 		box-sizing: border-box;
 		flex-shrink: 0;
@@ -63,14 +65,15 @@
 			transition: transform .2s;
 			color: #fff;
 			z-index: 1;
-			width: 20px;
-			height: 20px;
+			min-width: $size;
+			max-width: 100%;
+			height: $size;
 		}
 
 		&::after {
 			content: '';
 			display: flex;
-			background: $Core-Dark-brown;
+			background: $Core-Light-brass;
 			transition: opacity .4s;
 			opacity: 0;
 			justify-content: center;
@@ -79,12 +82,11 @@
 
 
 		&.colored {
-			border: 2px solid $Core-Dark-brown;
-			;
+			border: 2px solid $Core-Light-brass;
+
 
 			&::after {
-				background: $Core-Dark-brown;
-				;
+				background: $Core-Light-brass;
 			}
 		}
 

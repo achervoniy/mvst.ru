@@ -13,20 +13,25 @@ import st from './styles.module.scss';
 
 type Props = {
   product: CatalogProduct;
+  // Заменить первую и вторую картинку местами
+  reversePhoto?: boolean;
 };
 
 export const ProductCard = memo(
-  forwardRef<HTMLAnchorElement, Props>(({ product }, ref) => {
+  forwardRef<HTMLAnchorElement, Props>(({ product, reversePhoto }, ref) => {
     const [imagePrimary, imageSecondary] = product.photos;
     const firstAvailableSku = product.skuList.find(sku => sku.availabilityInStock) ?? product.skuList[0];
+
+    const firstImage = imageSecondary ? (reversePhoto ? imageSecondary : imagePrimary) : imagePrimary;
+    const secondImage = imageSecondary ? (reversePhoto ? imagePrimary : imageSecondary) : imageSecondary;
 
     return (
       <a ref={ref} className={cn(st.ProductCard)} href={`https://www.tsum.ru/product/${product.slug}/`} target="_blank">
         <div className={st.content}>
-          <div className={cn(st.photoContainer, st.opacity, { [st.hasSecondImage]: !!imageSecondary })}>
+          <div className={cn(st.photoContainer, st.opacity, { [st.hasSecondImage]: !!secondImage })}>
             <div className={st.photoContent}>
-              <ProductCardImage photo={imagePrimary} className={st.photo} itemProp="image" />
-              {!!imageSecondary && <ProductCardImage photo={imageSecondary} className={st.photo} itemProp="image" />}
+              <ProductCardImage photo={firstImage} className={st.photo} itemProp="image" />
+              {!!secondImage && <ProductCardImage photo={secondImage} className={st.photo} itemProp="image" />}
             </div>
           </div>
         </div>
@@ -34,7 +39,7 @@ export const ProductCard = memo(
         <div className={st.info}>
           <div className={st.shortInfo}>
             <Typography
-              font="body/regular"
+              font="paragraph/regular"
               className={cn(st.title, st.productTitle, {
                 [st.titleOnlyOneRow]: false,
               })}
@@ -45,7 +50,7 @@ export const ProductCard = memo(
 
           {firstAvailableSku && (
             <Typography
-              font="body/regular"
+              font="paragraph/regular"
               className={cn(st.title, st.productTitle, {
                 [st.titleOnlyOneRow]: false,
               })}

@@ -1,5 +1,7 @@
 import { createBaseRequest } from '@/lib/request';
 
+import { mapServerMetaToClient } from '../seo';
+
 import {
   CatalogProduct,
   CatalogProductsParams,
@@ -77,4 +79,10 @@ export const fetchFiltersBrands = createBaseRequest<FetchFiltersParams, FiltersR
 export const fetchCategoryBySlug = createBaseRequest<{ slug: string }, CategoryInfoResponse>({
   method: 'GET',
   url: ({ slug }) => `/v2/catalog/category/${slug}`,
+});
+
+export const fetchSEO = createBaseRequest<{ url: string }, BaseMetaType>({
+  method: 'POST',
+  url: '/seo/info',
+  mapResult: (result: any) => (console.log(result), mapServerMetaToClient(result)),
 });

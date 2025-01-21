@@ -2,7 +2,7 @@ import { createQuery } from '@farfetched/core';
 import { invoke } from '@withease/factories';
 import { sample } from 'effector';
 
-import { fetchBrandCatalog, fetchCategoryBySlug, fetchFiltersBrands } from '@/shared/api/catalog';
+import { fetchBrandCatalog, fetchCategoryBySlug, fetchFiltersBrands, fetchSEO } from '@/shared/api/catalog';
 import { declarePage } from '@/shared/pageRouting';
 
 import { HOME_PAGE_FILTERS } from '@/constants/runtimeConfig';
@@ -32,12 +32,17 @@ export const catalogQuery = createQuery({
       return Promise.reject(new Error('no category'));
     }
 
-    const [catalog, filters] = await Promise.all([
+    const seoURL = `/brand/${slug}/must-774534.html`;
+
+    console.log('seoURL', seoURL);
+
+    const [catalog, filters, seo] = await Promise.all([
       fetchBrandCatalog({ data: { limit: 60, ...params, section: section ?? category.id } }),
       fetchFiltersBrands({ query: { ...params, section, root_section: category.id } }),
+      fetchSEO({ data: { url: seoURL } }),
     ]);
 
-    return { catalog, filters, category };
+    return { catalog, filters, category, seo };
   },
 });
 

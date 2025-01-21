@@ -20,7 +20,7 @@ export function ProductList({ products, className, nosidebar }: Props) {
       })}
     >
       {products.map(product => {
-        return <ProductCard key={product.id} product={product} />;
+        return <ProductCard key={product.id} product={product} reversePhoto />;
       })}
     </div>
   );

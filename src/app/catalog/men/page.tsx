@@ -1,5 +1,6 @@
 import { EffectorNext } from '@effector/next';
 import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 
 import { CatalogPage as Page, pageHooks } from '@/rootPages/Catalog';
 import { mapServerMetaToClient } from '@/shared/api/seo';
@@ -39,6 +40,10 @@ export default async function CatalogMenPage(props: PageProps<{}>) {
 
   if (result.onRedirected) {
     result.onRedirected();
+  }
+
+  if (result.is404) {
+    notFound();
   }
 
   return (

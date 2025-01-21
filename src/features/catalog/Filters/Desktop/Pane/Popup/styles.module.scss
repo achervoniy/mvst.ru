@@ -4,7 +4,9 @@
 
 
 .popup {
-  width: 280px;
+  min-width: 280px;
+  max-width: 390px;
+  width: auto;
   height: fit-content;
   max-height: 550px;
   padding: 0;
