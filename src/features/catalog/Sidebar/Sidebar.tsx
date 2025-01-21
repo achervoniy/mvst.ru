@@ -42,7 +42,7 @@ export function Sidebar({ categories }: Props) {
           })}
         >
           <Link href={`${pathWithoutSlug}/${cat.slug}${queriesWithoutPage}`}>
-            <Typography font="leading/h3">{cat.title}</Typography>
+            <Typography font="paragraph/regular">{cat.title}</Typography>
           </Link>
 
           {cat.items.length > 0 && <Dropdown category={cat} />}

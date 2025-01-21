@@ -34,8 +34,6 @@ export const catalogQuery = createQuery({
 
     const seoURL = `/brand/${slug}/must-774534.html`;
 
-    console.log('seoURL', seoURL);
-
     const [catalog, filters, seo] = await Promise.all([
       fetchBrandCatalog({ data: { limit: 60, ...params, section: section ?? category.id } }),
       fetchFiltersBrands({ query: { ...params, section, root_section: category.id } }),
