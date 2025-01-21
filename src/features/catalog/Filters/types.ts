@@ -3,9 +3,8 @@ import { FiltersCommonItem, CategoryFilterCommonItem } from '@/shared/api/catalo
 export type FilterValue = string | number;
 
 export type Filter =
-  | { type: 'variant' }
   | {
-      type: 'multiselect' | 'multiselect-separated' | 'sort' | 'attribute';
+      type: 'multiselect' | 'multiselect-separated' | 'sort' | 'attribute' | 'variant';
       filter: {
         items: FiltersCommonItem<FilterValue>[];
         applied: FiltersCommonItem<FilterValue>[];
