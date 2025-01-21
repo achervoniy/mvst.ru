@@ -13,6 +13,16 @@ $brand-height-desktop: 40px;
   max-width: 156px;
   gap: 4px;
 
+  img {
+    visibility: hidden;
+  }
+
+  &.photoVisibility {
+    img {
+      visibility: visible;
+    }
+  }
+
   @include desktop() {
     padding: 0px;
     width: 100%;

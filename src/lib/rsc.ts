@@ -12,17 +12,21 @@ type Props = {
   pageHooks: ReturnType<typeof declarePage>;
 };
 
-export type PageProps<Params = Record<string, string>> = { params: Params; searchParams: Record<string, string> };
+export type PageProps<Params = Record<string, string>> = {
+  params: Params;
+  searchParams: Record<string, string>;
+  updateInitialState?: (_state: Map<any, any>) => Map<any, any>;
+};
 
 export const baseServices = createBaseServices();
 
 export function createRSC({ pageHooks }: Props) {
-  return async ({ params, searchParams }: PageProps) => {
+  return async ({ params, searchParams, updateInitialState }: PageProps) => {
     const headerList = headers();
     const pathname = headerList.get('x-current-path');
 
     const scope = fork({
-      values: new Map().set($baseServices, baseServices),
+      values: (updateInitialState ? updateInitialState(new Map()) : new Map()).set($baseServices, baseServices),
     });
 
     await allSettled(pageHooks.__.enter, {

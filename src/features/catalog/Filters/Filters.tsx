@@ -9,6 +9,7 @@ import { Icon } from '@/ui/assets/Icon';
 
 import { CategoryFilter } from './CategoryFilter';
 import { MultiSelectFilter } from './MultiSelectFilter';
+import { ProductImageVariantFilter } from './ProductImageVariantFilter';
 import { Filter } from './types';
 import { useAppliedFilters } from './useAppliedFilters';
 
@@ -26,6 +27,7 @@ export function Filters({ filters }: Props) {
 
   const additionalFilters = [
     { type: 'sort', filter: filters.sort, title: 'Сортировка', key: 'sort' },
+    { type: 'variant', filter: filters.sort, title: 'Вариант', key: 'variant' },
     {
       type: 'category',
       filter: { items: filters.category.items, applied: filters.category.applied },
@@ -118,6 +120,10 @@ export function Filters({ filters }: Props) {
                 />
               );
             });
+          }
+
+          if (filter.type === 'variant') {
+            return <ProductImageVariantFilter key="variant" />;
           }
 
           return (
