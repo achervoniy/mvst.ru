@@ -5,6 +5,10 @@
   gap: 0px;
   padding: 8px 0px;
 
+  p {
+    color: $Core-Dark-brown;
+  }
+
   li {
     display: flex;
     color: $Core-Dark-brown;
@@ -15,6 +19,7 @@
     &.checked {
       background-color: $Core-Overlays-ExtraLight;
       padding-top: 8px;
+      margin-top: 8px;
     }
 
     a {

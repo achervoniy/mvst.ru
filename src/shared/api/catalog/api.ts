@@ -84,5 +84,5 @@ export const fetchCategoryBySlug = createBaseRequest<{ slug: string }, CategoryI
 export const fetchSEO = createBaseRequest<{ url: string }, BaseMetaType>({
   method: 'POST',
   url: '/seo/info',
-  mapResult: (result: any) => (console.log(result), mapServerMetaToClient(result)),
+  mapResult: (result: any) => mapServerMetaToClient(result),
 });
