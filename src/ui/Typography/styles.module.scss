@@ -1,6 +1,7 @@
 @import '@/ui/themes/config.scss';
 
 .typography {
+	color: $Core-Dark-brown;
 
 	&.leading-display {
 		@include leading-display()

@@ -6,6 +6,7 @@ import { FiltersResponse } from '@/shared/api/catalog';
 import { useScrollEventListener } from '@/lib/hooks';
 import { useViewport } from '@/lib/useViewport';
 
+import { ProductImageVariantFilter } from '../ProductImageVariantFilter';
 import { Filter } from '../types';
 import { useAppliedFilters } from '../useAppliedFilters';
 
@@ -24,6 +25,7 @@ export function DesktopFilters({ filters }: Props) {
 
   const additionalFilters = [
     { type: 'sort', filter: filters.sort, title: 'Сортировка', key: 'sort' },
+    { type: 'variant', filter: filters.sort, title: 'Сортировка', key: 'variant' },
     // В урл по типу хардкод
     { type: 'multiselect', filter: filters.color, title: 'Цвет', key: 'color' },
     { type: 'multiselect', filter: filters.size, title: 'Размер', key: 'size' },
@@ -57,31 +59,42 @@ export function DesktopFilters({ filters }: Props) {
         [st.scrollIsDown]: scrollIsDown,
       })}
     >
-      {additionalFilters.map(filter =>
-        filter.type === 'attribute' ? (
-          filter.filter.items.map(attribute => {
-            const appliedAttributes = filter.filter.applied.find(attr => attr.title === attribute.title);
+      {additionalFilters.map(filter => {
+        switch (filter.type) {
+          case 'attribute':
+            return filter.filter.items.map(attribute => {
+              const appliedAttributes = filter.filter.applied.find(attr => attr.title === attribute.title);
 
+              return (
+                <li key={`${attribute.key}/${attribute.title}`}>
+                  <MultiSelect
+                    appliedFilters={appliedFilters}
+                    filter={{
+                      title: attribute.title,
+                      filter: { items: attribute.items, applied: appliedAttributes?.items ?? [] },
+                      key: attribute.key,
+                      type: 'attribute',
+                    }}
+                  />
+                </li>
+              );
+            });
+
+          case 'variant':
             return (
-              <li key={`${attribute.key}/${attribute.title}`}>
-                <MultiSelect
-                  appliedFilters={appliedFilters}
-                  filter={{
-                    title: attribute.title,
-                    filter: { items: attribute.items, applied: appliedAttributes?.items ?? [] },
-                    key: attribute.key,
-                    type: 'attribute',
-                  }}
-                />
+              <li key={filter.type} className={st[filter.type]}>
+                <ProductImageVariantFilter />
               </li>
             );
-          })
-        ) : (
-          <li key={filter.key} className={st[filter.type]}>
-            <MultiSelect filter={filter} appliedFilters={appliedFilters} />
-          </li>
-        ),
-      )}
+
+          default:
+            return (
+              <li key={filter.key} className={st[filter.type]}>
+                <MultiSelect filter={filter} appliedFilters={appliedFilters} />
+              </li>
+            );
+        }
+      })}
     </ul>
   );
 }

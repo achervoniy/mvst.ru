@@ -4,7 +4,7 @@ export type FilterValue = string | number;
 
 export type Filter =
   | {
-      type: 'multiselect' | 'multiselect-separated' | 'sort' | 'attribute';
+      type: 'multiselect' | 'multiselect-separated' | 'sort' | 'attribute' | 'variant';
       filter: {
         items: FiltersCommonItem<FilterValue>[];
         applied: FiltersCommonItem<FilterValue>[];

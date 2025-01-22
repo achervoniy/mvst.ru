@@ -4,6 +4,7 @@
   align-items: center;
   gap: 16px;
   padding-top: 32px;
+  grid-column: 1 / 3;
 
   img {
     height: 298px;
@@ -33,13 +34,9 @@
 
   @include desktop() {
     min-height: 56px;
-    color: $Core-Reach-black;
   }
 }
 
-.responsive {
-  grid-column: 1 / 3;
-}
 
 .appWithQr {
   position: relative;
@@ -54,5 +51,10 @@
     border: 1px solid $Core-Champagne;
     padding: 16px;
     background-color: #fff;
+    display: none;
+
+    @include desktop() {
+      display: block;
+    }
   }
 }
