@@ -1,13 +1,12 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
+import { compose, setPathname } from './middlewares';
+
 export function middleware(request: NextRequest) {
-  // Add a new header x-current-path which passes the path to downstream components
-  const headers = new Headers(request.headers);
+  const register = compose(setPathname(request));
 
-  headers.set('x-current-path', request.nextUrl.pathname);
-
-  return NextResponse.next({ headers });
+  return register(NextResponse.next());
 }
 
 export const config = {
