@@ -19,16 +19,15 @@ import st from './styles.module.scss';
 const getTitle = (gender: string) => {
   switch (gender) {
     case LOOK_SLUGS.men:
-      return 'Мужская коллекция'
+      return 'Мужская коллекция';
 
     case LOOK_SLUGS.women:
-      return 'Женская коллекция'
+      return 'Женская коллекция';
 
     default:
-      return 'Коллекция FW24/25'
+      return 'Коллекция SS25';
   }
-}
-
+};
 
 export function CollectionPage() {
   const looks = useUnit($collectionLooks);
@@ -40,7 +39,7 @@ export function CollectionPage() {
   const version = useUnit(versionField.$value);
 
   const lookLen = looks?.looks?.length;
-  const pageTitle = getTitle(params.slug as string)
+  const pageTitle = getTitle(params.slug as string);
 
   useEffect(() => {
     collectionCounterChanged({ current: activeSlideIndex, length: lookLen });
