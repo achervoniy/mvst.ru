@@ -6,23 +6,23 @@ import { Video } from './Video';
 
 import st from './styles.module.scss';
 
-const VIDEO_SRC = 'https://rutube.ru/play/embed/49555172d5d235a92323e50cdb58ef70';
+const VIDEO_SRC = 'https://vkvideo.ru/video_ext.php?oid=-41200683&id=456239608&hd=1&autoplay=1';
 
 export function FashionShowPage() {
   return (
     <div className={st.page}>
       <Typography font="leading/display" align="center">
-        TSUM Fashion Show
+        MVST SS25
       </Typography>
 
       <Video src={VIDEO_SRC} />
 
       <Typography font="body/regular" align="center" className={st.description}>
-        Время обновить гардероб к весне с новинками Dolce & Gabbana, Jil Sander, MVST, Valentino и других брендов ЦУМа.
-        Нежные оттенки, мягкие материалы и интересные сочетания — главные герои нового сезона.
+        Безупречный крой, благородная палитра оттенков и натуральные материалы — отличительные черты бренда MVST.
         <br />
         <br />
-        Образы с новинками, представленными на TSUM Fashion Show в Малом театре, можно оценить в лукбуке.
+        Мужская и женская коллекции MVST SS25 включают блузы и брюки, рубашки и пиджаки, лёгкие платья, изделия из
+        тонкого трикотажа, а также верхнюю одежду.
       </Typography>
     </div>
   );

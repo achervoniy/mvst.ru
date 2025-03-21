@@ -25,7 +25,7 @@ export function Video({ src }: Props)  {
       return getRTSrc(src);
     }
 
-    return null;
+    return src;
   }, [src]);
 
   if (!link) {
