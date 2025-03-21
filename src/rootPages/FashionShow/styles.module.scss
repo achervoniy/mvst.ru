@@ -1,0 +1,15 @@
+.page {
+  display: flex;
+  grid-gap: 16px;
+  flex-direction: column;
+  padding-top: 16px;
+}
+
+.description {
+  padding: 8px 16px;
+
+  @include desktop() {
+    margin-left: 200px;
+    margin-right: 200px;
+  }
+}
