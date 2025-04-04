@@ -44,12 +44,12 @@ export function HomePage() {
 
   return (
     <div className={st.page} ref={pageRef}>
-      {/* <div className={st.video}>
+      <div className={st.video}>
         <video autoPlay playsInline loop muted ref={videoRef}>
           <source src={HOME_PAGE_VIDEO_URL} type="video/mp4" media="(min-width:1023px)" />
           <source src={HOME_PAGE_VIDEO_URL_MOBILE} type="video/mp4" />
         </video>
-      </div> */}
+      </div>
 
       <Banner gender="all" />
 
