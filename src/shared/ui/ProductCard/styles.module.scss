@@ -229,7 +229,7 @@ $brand-height-desktop: 40px;
   &.productTitle {
     &:not(.titleOnlyOneRow) {
       display: -webkit-box;
-      -webkit-line-clamp: 2;
+      -webkit-line-clamp: 1;
       line-clamp: 2;
       -webkit-box-orient: vertical;
       white-space: normal;
