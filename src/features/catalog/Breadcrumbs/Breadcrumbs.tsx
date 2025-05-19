@@ -32,7 +32,7 @@ export function Breadcrumbs({ gender, category }: { gender?: 'w' | 'm'; category
     <div className={st.Breadcrumbs}>
       {links({ gender, category }).map((link, index, arr) => {
         return (
-          <Link href={link.link ?? '#'} key={link.link}>
+          <Link href={link.link ?? '#'} key={index}>
             <Typography font="body/regular">
               {link.title}
               {arr.length - 1 > index ? <>&nbsp;&nbsp;•&nbsp;&nbsp;</> : ''}

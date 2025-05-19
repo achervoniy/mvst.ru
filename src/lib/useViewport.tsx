@@ -10,6 +10,7 @@ const ViewportCtx = createContext<{
   isTabletAndBelow: boolean;
   isDesktop: boolean;
   width: number;
+  device: 'desktop' | 'mobile';
 } | null>(null);
 
 export function ViewportProvider({ children }: { children: ReactNode }) {
@@ -39,6 +40,7 @@ export function ViewportProvider({ children }: { children: ReactNode }) {
       isTabletAndBelow: isViewportInitialized && isTabletAndBelow,
       isDesktop: isViewportInitialized && isDesktop,
       width,
+      device: isDesktop ? ('desktop' as const) : ('mobile' as const),
     }),
     [isDesktop, isMobile, isTabletAndBelow, isViewportInitialized, width],
   );

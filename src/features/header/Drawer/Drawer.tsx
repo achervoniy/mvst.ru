@@ -20,8 +20,6 @@ type Props = {
   popup: ReturnType<typeof usePopupState>;
 };
 
-const SHOW_CATALOG = false;
-
 export function Nav({ onLink }: { onLink?: () => void }) {
   const pathname = usePathname();
 
@@ -38,30 +36,26 @@ export function Nav({ onLink }: { onLink?: () => void }) {
         </Link>
       </li>
 
-      {SHOW_CATALOG && (
-        <>
-          <li
-            className={cn(st.item, {
-              [st.active]: pathname === `/collection/${LOOK_SLUGS.women}`,
-            })}
-          >
-            <Link href={`/collection/${LOOK_SLUGS.women}`} onClick={onLink}>
-              <Typography font="paragraph/regular">Женская коллекция</Typography>
-              <Icon name="ArrowRight" />
-            </Link>
-          </li>
-          <li
-            className={cn(st.item, {
-              [st.active]: pathname === `/collection/${LOOK_SLUGS.men}`,
-            })}
-          >
-            <Link href={`/collection/${LOOK_SLUGS.men}`} onClick={onLink}>
-              <Typography font="paragraph/regular">Мужская коллекция</Typography>
-              <Icon name="ArrowRight" />
-            </Link>
-          </li>
-        </>
-      )}
+      <li
+        className={cn(st.item, {
+          [st.active]: pathname.startsWith('/catalog/women'),
+        })}
+      >
+        <Link href="/catalog/women" onClick={onLink}>
+          <Typography font="paragraph/regular">Женщинам</Typography>
+          <Icon name="ArrowRight" />
+        </Link>
+      </li>
+      <li
+        className={cn(st.item, {
+          [st.active]: pathname.startsWith('/catalog/men'),
+        })}
+      >
+        <Link href="/catalog/men" onClick={onLink}>
+          <Typography font="paragraph/regular">Мужчинам</Typography>
+          <Icon name="ArrowRight" />
+        </Link>
+      </li>
 
       <li className={st.item}>
         <Link href="/#boutique" onClick={onLink}>

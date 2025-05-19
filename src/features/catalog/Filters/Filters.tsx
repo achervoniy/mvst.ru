@@ -26,8 +26,7 @@ export function Filters({ filters }: Props) {
   const appliedFilters = useAppliedFilters(filters);
 
   const additionalFilters = [
-    { type: 'sort', filter: filters.sort, title: 'Сортировка', key: 'sort' },
-    { type: 'variant', filter: filters.sort, title: 'Вариант', key: 'variant' },
+    // { type: 'sort', filter: filters.sort, title: 'Сортировка', key: 'sort' },
     {
       type: 'category',
       filter: { items: filters.category.items, applied: filters.category.applied },
@@ -53,6 +52,7 @@ export function Filters({ filters }: Props) {
       title: 'Другие',
       key: 'additional',
     },
+    { type: 'variant', filter: filters.sort, title: '', key: 'variant' },
   ] as Filter[];
 
   const leaveHandler = () => {

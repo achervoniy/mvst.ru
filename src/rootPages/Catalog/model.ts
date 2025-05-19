@@ -32,12 +32,13 @@ export const catalogQuery = createQuery({
       return Promise.reject(new Error('no category'));
     }
 
-    const seoURL = `/brand/${slug}/must-774534.html`;
+    const filtersParams = { query: { ...params, section, root_section: category.id } };
+    const catalogParams = { data: { limit: 60, ...params, section: section ?? category.id } };
 
     const [catalog, filters, seo] = await Promise.all([
-      fetchBrandCatalog({ data: { limit: 60, ...params, section: section ?? category.id } }),
-      fetchFiltersBrands({ query: { ...params, section, root_section: category.id } }),
-      fetchSEO({ data: { url: seoURL } }),
+      fetchBrandCatalog(catalogParams),
+      fetchFiltersBrands(filtersParams),
+      fetchSEO({ data: { url: `/brand/${slug}/must-774534.html` } }),
     ]);
 
     return { catalog, filters, category, seo };

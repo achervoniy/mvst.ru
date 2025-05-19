@@ -1,0 +1,28 @@
+.Segments {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  background: $Core-Overlays-light;
+  height: 32px;
+  border-radius: 4px;
+  padding: 2px;
+  position: relative;
+
+  &::before {
+    content: "";
+    background: #5465ff;
+    border-radius: 3px;
+    width: var(--highlight-width);
+    transform: translateX(var(--highlight-x-pos));
+    position: absolute;
+    top: 2px;
+    left: 0;
+    z-index: 0;
+    pointer-events: none;
+    height: calc(100% - 4px);
+    transition: transform 0s ease, width 0s ease;
+    background-color: $Core-Overlays-ExtraLight;
+    border-radius: 7px;
+    box-shadow: 0 2px 3px 0 rgba(27, 27, 27, 0.14);
+  }
+}

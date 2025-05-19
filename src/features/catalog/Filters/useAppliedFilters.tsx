@@ -140,3 +140,7 @@ export function useAppliedFilters(filters: FiltersResponse) {
 
   return { applied, updateAppliedFilters, syncApplied, applyFilters, resetFilter };
 }
+
+export function hasAppliedFilters(filter: AppliedFilters) {
+  return Object.keys(filter).some(key => filter[key].length > 0 && !['sort', 'section'].includes(key));
+}

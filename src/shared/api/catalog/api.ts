@@ -76,6 +76,11 @@ export const fetchFiltersBrands = createBaseRequest<FetchFiltersParams, FiltersR
   url: '/catalog/filter/brand',
 });
 
+export const fetchFilters = createBaseRequest<FetchFiltersParams, FiltersResponse>({
+  method: 'GET',
+  url: '/catalog/filter',
+});
+
 export const fetchCategoryBySlug = createBaseRequest<{ slug: string }, CategoryInfoResponse>({
   method: 'GET',
   url: ({ slug }) => `/v2/catalog/category/${slug}`,

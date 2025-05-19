@@ -24,8 +24,7 @@ export function DesktopFilters({ filters }: Props) {
   const appliedFilters = useAppliedFilters(filters);
 
   const additionalFilters = [
-    { type: 'sort', filter: filters.sort, title: 'Сортировка', key: 'sort' },
-    { type: 'variant', filter: filters.sort, title: 'Сортировка', key: 'variant' },
+    // { type: 'sort', filter: filters.sort, title: 'Сортировка', key: 'sort' },
     // В урл по типу хардкод
     { type: 'multiselect', filter: filters.color, title: 'Цвет', key: 'color' },
     { type: 'multiselect', filter: filters.size, title: 'Размер', key: 'size' },
@@ -45,6 +44,7 @@ export function DesktopFilters({ filters }: Props) {
       title: 'Другие',
       key: 'additional',
     },
+    { type: 'variant', filter: filters.sort, title: '', key: 'variant' },
   ] as Filter[];
 
   useScrollEventListener((_, { scrollDirection }) => {
@@ -95,6 +95,14 @@ export function DesktopFilters({ filters }: Props) {
             );
         }
       })}
+
+      {/* {hasAppliedFilters(appliedFilters.applied) && (
+        <li>
+          <Typography font="paragraph/regular" className={st.clearAction}>
+            Очистить фильтры
+          </Typography>
+        </li>
+      )} */}
     </ul>
   );
 }
