@@ -26,7 +26,7 @@ export function CatalogPage({ gender }: { gender?: 'w' | 'm' }) {
 
     return isEmpty(!q) ? `?${new URLSearchParams(q)}` : '';
   }, [search]);
-
+  console.log('data', data);
   return (
     <section className={st.catalogPage}>
       <div className={st.head}>

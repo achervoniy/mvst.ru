@@ -81,7 +81,7 @@ export function ProductsCarousel({ products, className, version, gender }: Props
                     {product.title}
                   </Typography>
                   <Typography font="body/regular" align="center">
-                    {transformPrice(product.skuList[0]?.price_original)}
+                    {transformPrice(product.skuList[0]?.price_discount || product.skuList[0]?.price_original)}
                   </Typography>
                 </a>
               </SwiperSlide>
@@ -104,7 +104,7 @@ export function ProductsCarousel({ products, className, version, gender }: Props
                         {product.title}
                       </Typography>
                       <Typography font="body/regular" align="center">
-                        {transformPrice(product.skuList[0]?.price_original)}
+                        {transformPrice(product.skuList[0]?.price_discount || product.skuList[0]?.price_original)}
                       </Typography>
                     </a>
                   );
