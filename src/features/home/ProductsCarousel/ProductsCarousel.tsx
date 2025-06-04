@@ -1,5 +1,5 @@
 import cn from 'classnames';
-import chunk from 'lodash-es/chunk';
+import { chunk } from 'es-toolkit/compat';
 import { useMemo, useRef } from 'react';
 import { Swiper as SwiperInstance } from 'swiper';
 import { Navigation, Pagination } from 'swiper/modules';

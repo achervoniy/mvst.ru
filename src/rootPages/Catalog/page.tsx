@@ -1,7 +1,7 @@
 'use client';
 
 import { useUnit } from 'effector-react';
-import { isEmpty, omit } from 'lodash-es';
+import { isEmpty, omit } from 'es-toolkit/compat';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useMemo } from 'react';
 
@@ -18,13 +18,13 @@ export function CatalogPage({ gender }: { gender?: 'w' | 'm' }) {
   const pathname = usePathname();
   const search = useSearchParams();
   const data = useUnit(catalogQuery.$data);
-
+  console.log('data', data);
   const categories = data?.filters?.category?.list ?? [];
 
   const queriesWithoutPage = useMemo(() => {
-    const q = omit(Object.fromEntries(search.entries()), 'page');
+    const q = omit(Object.fromEntries(search.entries()), 'page') as Record<string, string>;
 
-    return isEmpty(!q) ? `?${new URLSearchParams(q)}` : '';
+    return !isEmpty(q) ? `?${new URLSearchParams(q)}` : '';
   }, [search]);
   console.log('data', data);
   return (

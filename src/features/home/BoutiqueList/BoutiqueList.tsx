@@ -59,7 +59,7 @@ export function BoutiqueList() {
       >
         {boutiqueList.map(boutique => (
           <SwiperSlide key={boutique.title} className={st.slide}>
-            <Image src={boutique.image} alt={boutique.title} />
+            <Image src={boutique.image} alt={boutique.title} quality={30} />
             <div className={st.footer}>
               <Typography font="paragraph/bold" className={st.boutiqueTitle}>
                 {boutique.title}

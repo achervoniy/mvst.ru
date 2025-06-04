@@ -20,7 +20,7 @@ export function CallToBuy() {
       </Typography>
 
       <div className={st.appWithQr}>
-        <Image src={app} alt="" />
+        <Image src={app} alt="" quality={50} />
         <QRCodeSVG
           value={DOWNLOAD_APP_LINK}
           className={st.qrCode}

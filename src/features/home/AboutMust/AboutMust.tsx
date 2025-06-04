@@ -6,8 +6,8 @@ export function AboutMust() {
   return (
     <div className={st.aboutMust} target-id="mvst">
       <div className={st.head}>
-        <Typography font="leading/h2" className={st.title} align="center">
-          О Бренде
+        <Typography font="leading/h2" className={st.title} align="center" as="h1">
+          MVST - бренд мужской и женской одежды
         </Typography>
       </div>
 

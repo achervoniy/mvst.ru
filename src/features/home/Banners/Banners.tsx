@@ -38,9 +38,8 @@ export function Banner({ gender }: Props) {
     <Link className={st.banner} href={getLink(gender)}>
       {gender === 'all' ? (
         <>
-          <Image className={st.desktop} src={desktop} alt="" />
-
-          <Image className={st.mobile} src={mobile} alt="" />
+          <Image className={st.desktop} src={desktop} alt="" quality={50} />
+          <Image className={st.mobile} src={mobile} alt="" quality={50} />
         </>
       ) : (
         <>

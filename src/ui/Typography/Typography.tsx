@@ -1,5 +1,5 @@
 import cn from 'classnames';
-import React, { ReactNode } from 'react';
+import React, { ComponentPropsWithRef, ReactNode } from 'react';
 
 import st from './styles.module.scss';
 
@@ -28,7 +28,7 @@ type Props = {
       }
     | undefined;
   as?: 'p' | 'h1' | 'h2';
-};
+} & ComponentPropsWithRef<'p'>;
 
 export function Typography({
   children,
@@ -41,6 +41,7 @@ export function Typography({
   align,
   dangerouslySetInnerHTML,
   as = 'p',
+  ...rest
 }: Props) {
   const props = {
     ...(onClick
@@ -57,10 +58,10 @@ export function Typography({
 
   switch (as) {
     case 'h1':
-      return <h1 {...props} />;
+      return <h1 {...props} {...rest} />;
     case 'h2':
-      return <h1 {...props} />;
+      return <h1 {...props} {...rest} />;
     default:
-      return <p {...props} />;
+      return <p {...props} {...rest} />;
   }
 }

@@ -1,4 +1,4 @@
-import { isEqual, omit } from 'lodash-es';
+import { isEqual, omit } from 'es-toolkit/compat';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useRouter } from 'next-nprogress-bar';
 import { useEffect, useMemo, useState } from 'react';

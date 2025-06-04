@@ -35,12 +35,12 @@ declare type BaseMetaType = {
   ogDescription?: string;
   ogTitle?: string;
   ogType?: string;
-  ogImage?: string;
+  ogImage: string[];
   ogImageAlt?: string;
   ogUrl?: string;
   ogImageSecureUrl?: string;
   twitterCard?: string;
-  twitterImage?: string;
+  twitterImage: string[];
   twitterTitle?: string;
   twitterDescription?: string;
   ogAvailability?: string;
@@ -48,3 +48,8 @@ declare type BaseMetaType = {
   elementImageAlt?: string;
 } & SeoMeta &
   CatalogMeta;
+
+declare type GenerateMetaProps<T = any> = {
+  params: T;
+  searchParams: { [key: string]: string | string[] | undefined };
+};

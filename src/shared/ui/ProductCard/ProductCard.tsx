@@ -38,7 +38,7 @@ export const ProductCard = memo(
         <div className={st.content}>
           <div className={cn(st.photoContainer, st.opacity, { [st.hasSecondImage]: !!secondImage })}>
             <div className={st.photoContent}>
-              <ProductCardImage photo={firstImage} className={st.photo} itemProp="image" />
+              <ProductCardImage photo={firstImage} className={st.photo} itemProp="image" loading="eager" />
               {!!secondImage && <ProductCardImage photo={secondImage} className={st.photo} itemProp="image" />}
             </div>
           </div>
