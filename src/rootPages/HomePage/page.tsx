@@ -6,7 +6,7 @@ import { useEffect, useRef } from 'react';
 
 import { HOME_PAGE_VIDEO_URL, HOME_PAGE_VIDEO_URL_MOBILE } from '@/constants/runtimeConfig';
 
-import { AboutMust, Banner, BoutiqueList, CallToBuy, ProductsCarousel } from '@/features/home';
+import { AboutMust, Banner, CallToBuy, ProductsCarousel } from '@/features/home';
 
 import { useHash, usePageVisibility } from '@/lib/hooks';
 
@@ -70,8 +70,6 @@ export function HomePage() {
           )}
         </>
       )}
-
-      <BoutiqueList />
       <CallToBuy />
       <AboutMust />
     </div>

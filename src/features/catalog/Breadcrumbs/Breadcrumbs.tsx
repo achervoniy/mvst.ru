@@ -1,3 +1,4 @@
+import Head from 'next/head';
 import Link from 'next/link';
 
 import { CategoryInfoResponse } from '@/shared/api/catalog';
@@ -29,17 +30,29 @@ const links = ({ gender, category }: { gender?: 'w' | 'm'; category?: CategoryIn
 
 export function Breadcrumbs({ gender, category }: { gender?: 'w' | 'm'; category?: CategoryInfoResponse }) {
   return (
-    <div className={st.Breadcrumbs}>
+    <ol className={st.Breadcrumbs} itemScope itemType="https://schema.org/BreadcrumbList">
       {links({ gender, category }).map((link, index, arr) => {
-        return (
-          <Link href={link.link ?? '#'} key={index}>
-            <Typography font="body/regular">
-              {link.title}
-              {arr.length - 1 > index ? <>&nbsp;&nbsp;•&nbsp;&nbsp;</> : ''}
-            </Typography>
-          </Link>
+        const content = (
+          <Typography font="body/regular" itemProp="name">
+            {link.title}
+            {arr.length - 1 > index ? <>&nbsp;&nbsp;•&nbsp;&nbsp;</> : ''}
+          </Typography>
+        );
+        const meta = <meta itemProp="position" content={String(index + 1)} />;
+        return link.link ? (
+          <li key={index} itemProp="itemListElement" itemScope itemType="https://schema.org/ListItem">
+            <Link href={link.link ?? '#'} itemProp="item">
+              {content}
+            </Link>
+            {meta}
+          </li>
+        ) : (
+          <li key={index}>
+            {content}
+            {meta}
+          </li>
         );
       })}
-    </div>
+    </ol>
   );
 }

@@ -106,7 +106,7 @@ export const Pagination = ({
 
         return (
           <Link
-            href={pagePath}
+            href={page === 1 ? baseUrl! : pagePath}
             key={id}
             className={cn(st.numberBtn, { [st.active]: page === current, [st.dots]: page === DOTS })}
           >

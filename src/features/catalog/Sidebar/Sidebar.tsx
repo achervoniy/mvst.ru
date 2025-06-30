@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { isEmpty, omit } from 'lodash-es';
+import { isEmpty, omit } from 'es-toolkit/compat';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useMemo } from 'react';
@@ -21,9 +21,9 @@ export function Sidebar({ categories }: Props) {
   const search = useSearchParams();
 
   const queriesWithoutPage = useMemo(() => {
-    const q = omit(Object.fromEntries(search.entries()), 'page', 'section');
+    const q = omit(Object.fromEntries(search.entries()), 'page', 'section') as Record<string, string>;
 
-    return isEmpty(!q) ? `?${new URLSearchParams(q)}` : '';
+    return !isEmpty(q) ? `?${new URLSearchParams(q)}` : '';
   }, [search]);
 
   const pathWithoutSlug = useMemo(() => {

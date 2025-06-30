@@ -1,4 +1,4 @@
-import { debounce } from 'lodash-es';
+import { debounce } from 'es-toolkit/compat';
 import { usePathname } from 'next/navigation';
 import { useRouter } from 'next-nprogress-bar';
 import { useCallback, useEffect, useMemo, useState } from 'react';

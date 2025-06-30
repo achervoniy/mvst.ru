@@ -25,6 +25,12 @@ export const ProductCard = memo(
 
     const firstImage = imageSecondary ? (reversePhoto ? imageSecondary : imagePrimary) : imagePrimary;
     const secondImage = imageSecondary ? (reversePhoto ? imagePrimary : imageSecondary) : imageSecondary;
+    const price = transformPrice(
+      firstAvailableSku.internationalPrice.displayed.discounted ||
+        firstAvailableSku.internationalPrice.displayed.original,
+    );
+
+    const alt = `${product.title} MVST, ${price}`;
 
     return (
       <a
@@ -38,8 +44,10 @@ export const ProductCard = memo(
         <div className={st.content}>
           <div className={cn(st.photoContainer, st.opacity, { [st.hasSecondImage]: !!secondImage })}>
             <div className={st.photoContent}>
-              <ProductCardImage photo={firstImage} className={st.photo} itemProp="image" />
-              {!!secondImage && <ProductCardImage photo={secondImage} className={st.photo} itemProp="image" />}
+              <ProductCardImage photo={firstImage} className={st.photo} itemProp="image" loading="eager" alt={alt} />
+              {!!secondImage && (
+                <ProductCardImage photo={secondImage} className={st.photo} itemProp="image" alt={alt} />
+              )}
             </div>
           </div>
         </div>
@@ -63,7 +71,7 @@ export const ProductCard = memo(
                 [st.titleOnlyOneRow]: false,
               })}
             >
-              {transformPrice(firstAvailableSku.internationalPrice.displayed.original)}
+              {price}
             </Typography>
           )}
         </div>

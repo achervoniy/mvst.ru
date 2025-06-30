@@ -6,11 +6,11 @@ export type ProductCardPropsImage = { small: string; large?: string; middle?: st
 
 type ProductCardImageProps = { photo: ProductCardPropsImage } & ComponentPropsWithoutRef<'img'>;
 
-export function ProductCardImage({ photo, alt, loading, ...props }: ProductCardImageProps) {
+export function ProductCardImage({ photo, alt, loading = 'lazy', ...props }: ProductCardImageProps) {
   return (
     <picture>
       <source media={`(min-width: ${BREAKPOINTS.md}px)`} srcSet={`${photo.middle} 2x`} />
-      <img {...props} src={photo.small} srcSet={photo.small} loading="lazy" />
+      <img {...props} src={photo.small} srcSet={photo.small} loading={loading} alt={alt} />
     </picture>
   );
 }

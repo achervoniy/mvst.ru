@@ -1,40 +1,19 @@
 import { EffectorNext } from '@effector/next';
-import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 import { CatalogPage as Page, pageHooks } from '@/rootPages/Catalog';
-import { mapServerMetaToClient } from '@/shared/api/seo';
 
 import { DEFAULT_MVST_SLUGS } from '@/constants/slugs';
 
-import { type PageProps, createRSC, baseServices } from '@/lib/rsc';
+import { getCatalogSEO } from '@/lib/meta';
+import { type PageProps, createRSC } from '@/lib/rsc';
 
 const rsc = createRSC({ pageHooks });
 
-export async function generateMetadata(props: { params: { slug?: string } }) {
-  const slug = props.params?.slug || DEFAULT_MVST_SLUGS.women;
+export async function generateMetadata({ params, searchParams }: GenerateMetaProps<{ slug?: string }>) {
+  const slug = params?.slug || DEFAULT_MVST_SLUGS.women;
 
-  const seo = await baseServices.api.tsum
-    .post('/seo/info', { url: `/brand/${slug}/must-774534.html` })
-    .then(rs => mapServerMetaToClient(rs.data));
-
-  return {
-    title: seo.title,
-    description: seo.description,
-    keywords: seo.keywords,
-    openGraph: {
-      title: seo.ogTitle,
-      description: seo.ogDescription,
-      images: seo.ogImage,
-      ogType: seo.ogType,
-    },
-    twitter: {
-      title: seo.twitterTitle,
-      description: seo.twitterDescription,
-      card: seo.twitterCard,
-      images: seo.twitterImage,
-    },
-  } as Metadata;
+  return getCatalogSEO(`/brand/${slug}/must-774534.html`, { searchParams });
 }
 
 export default async function CatalogWomenPage(props: PageProps<{}>) {

@@ -57,8 +57,12 @@ export function Nav({ onLink }: { onLink?: () => void }) {
         </Link>
       </li>
 
-      <li className={st.item}>
-        <Link href="/#boutique" onClick={onLink}>
+      <li
+        className={cn(st.item, {
+          [st.active]: pathname.startsWith('/contacts'),
+        })}
+      >
+        <Link href="/contacts" onClick={onLink}>
           <Typography font="paragraph/regular" onClick={onLink}>
             Бутики
           </Typography>
