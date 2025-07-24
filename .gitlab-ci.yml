@@ -1,3 +1,11 @@
+default:
+  cache:
+    key:
+      files:
+        - package-lock.json
+    paths:
+      - node_modules/
+
 stages:
 - Test
 - Artifact
