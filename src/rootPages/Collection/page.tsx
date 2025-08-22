@@ -25,7 +25,7 @@ const getTitle = (gender: string) => {
       return 'Женская коллекция';
 
     default:
-      return 'Коллекция SS25';
+      return 'Коллекция FW25-26';
   }
 };
 
