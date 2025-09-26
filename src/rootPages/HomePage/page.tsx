@@ -4,13 +4,15 @@ import cn from 'classnames';
 import { useUnit } from 'effector-react';
 import { useEffect, useRef } from 'react';
 
-import { HOME_PAGE_VIDEO_URL, HOME_PAGE_VIDEO_URL_MOBILE } from '@/constants/runtimeConfig';
+// import { HOME_PAGE_VIDEO_URL, HOME_PAGE_VIDEO_URL_MOBILE } from '@/constants/runtimeConfig';
 
-import { AboutMust, Banner, CallToBuy, ProductsCarousel } from '@/features/home';
+import { AboutMust, Banner, CallToBuy, ProductsCarousel, StreamBanner } from '@/features/home';
 
 import { useHash, usePageVisibility } from '@/lib/hooks';
 
 import { catalogQuery } from './model';
+import fw25Desktop from './streamBanners/fashion-show-september_desktop.jpg';
+import fw25Mobile from './streamBanners/fashion-show-september_mobile.jpg';
 
 import st from './styles.module.scss';
 
@@ -44,13 +46,19 @@ export function HomePage() {
 
   return (
     <div className={st.page} ref={pageRef}>
-      <div className={st.video}>
+      {/* Убираем видео https://jira.int.tsum.com/browse/FRONTEND-6160 */}
+      {/* <div className={st.video}>
         <video autoPlay playsInline loop muted ref={videoRef}>
           <source src={HOME_PAGE_VIDEO_URL} type="video/mp4" media="(min-width:1023px)" />
           <source src={HOME_PAGE_VIDEO_URL_MOBILE} type="video/mp4" />
         </video>
-      </div>
+      </div> */}
 
+      <StreamBanner
+        title="MVST FW25/26"
+        images={{ desktop: fw25Desktop, mobile: fw25Mobile }}
+        link="/fashion-show-september"
+      />
       <Banner gender="all" />
 
       {!HIDE_CATALOG && (
