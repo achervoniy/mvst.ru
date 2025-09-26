@@ -6,23 +6,23 @@ import { Video } from './Video';
 
 import st from './styles.module.scss';
 
-const VIDEO_SRC = 'https://vkvideo.ru/video_ext.php?oid=-41200683&id=456239608&hd=1&autoplay=1';
+type Props = {
+  title: string;
+  description: JSX.Element;
+  videoSRC: string;
+};
 
-export function FashionShowPage() {
+export function FashionShowPage({ title, description, videoSRC }: Props) {
   return (
     <div className={st.page}>
       <Typography font="leading/display" align="center">
-        MVST SS25
+        {title}
       </Typography>
 
-      <Video src={VIDEO_SRC} />
+      <Video src={videoSRC} />
 
       <Typography font="body/regular" align="center" className={st.description}>
-        Безупречный крой, благородная палитра оттенков и натуральные материалы — отличительные черты бренда MVST.
-        <br />
-        <br />
-        Мужская и женская коллекции MVST SS25 включают блузы и брюки, рубашки и пиджаки, лёгкие платья, изделия из
-        тонкого трикотажа, а также верхнюю одежду.
+        {description}
       </Typography>
     </div>
   );

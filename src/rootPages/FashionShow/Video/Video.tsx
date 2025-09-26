@@ -28,13 +28,9 @@ export function Video({ src }: Props)  {
     return src;
   }, [src]);
 
-  if (!link) {
-    return null;
-  }
-
   return (
     <div className={st.video}>
-      <iframe className={st.videoMedia} src={link} title="video" frameBorder="0" allowFullScreen />
+      <iframe className={st.videoMedia} src={link ?? src} title="video" frameBorder="0" allowFullScreen />
     </div>
   );
 };

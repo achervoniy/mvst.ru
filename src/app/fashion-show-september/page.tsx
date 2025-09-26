@@ -11,15 +11,15 @@ export default async function FashionShowPage() {
     <EffectorNext>
       <MainTemplate header={<Header />} footer={<Footer />}>
         <Page
-          videoSRC="https://vkvideo.ru/video_ext.php?oid=-41200683&id=456239608&hd=1&autoplay=1"
-          title="MVST SS25"
+          videoSRC="https://vk.com/video_ext.php?oid=-41200683&id=456239639&autoplay=1"
+          title="MVST FW25/26"
           description={
             <>
               Безупречный крой, благородная палитра оттенков и натуральные материалы — отличительные черты бренда MVST.
               <br />
               <br />
-              Мужская и женская коллекции MVST SS25 включают блузы и брюки, рубашки и пиджаки, лёгкие платья, изделия из
-              тонкого трикотажа, а также верхнюю одежду.
+              Мужская и женская коллекции MVST FW25/26 включают блузы и брюки, рубашки и пиджаки, изделия из трикотажа,
+              а также верхнюю одежду.
             </>
           }
         />

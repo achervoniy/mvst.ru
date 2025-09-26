@@ -1,0 +1,30 @@
+.StreamBanner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  position: relative;
+  grid-column: 1/3;
+
+  .mobile {
+    display: flex;
+
+    @include desktop() {
+      display: none;
+    }
+  }
+
+  .desktop {
+    display: none;
+
+    @include desktop() {
+      display: flex;
+    }
+  }
+
+  img {
+    object-fit: cover;
+    width: 100%;
+    height: auto;
+  }
+}
