@@ -6,13 +6,11 @@ import { useEffect, useRef } from 'react';
 
 // import { HOME_PAGE_VIDEO_URL, HOME_PAGE_VIDEO_URL_MOBILE } from '@/constants/runtimeConfig';
 
-import { AboutMust, Banner, CallToBuy, ProductsCarousel, StreamBanner } from '@/features/home';
+import { AboutMust, Banner, CallToBuy, ProductsCarousel } from '@/features/home';
 
 import { useHash, usePageVisibility } from '@/lib/hooks';
 
 import { catalogQuery } from './model';
-import fw25Desktop from './streamBanners/fashion-show-september_desktop.jpg';
-import fw25Mobile from './streamBanners/fashion-show-september_mobile.jpg';
 
 import st from './styles.module.scss';
 
@@ -53,12 +51,6 @@ export function HomePage() {
           <source src={HOME_PAGE_VIDEO_URL_MOBILE} type="video/mp4" />
         </video>
       </div> */}
-
-      <StreamBanner
-        title="MVST FW25/26"
-        images={{ desktop: fw25Desktop, mobile: fw25Mobile }}
-        link="/fashion-show-september"
-      />
       <Banner gender="all" />
 
       {!HIDE_CATALOG && (
