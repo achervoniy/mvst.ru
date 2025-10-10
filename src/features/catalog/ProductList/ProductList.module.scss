@@ -11,12 +11,13 @@
 	@include desktop() {
 		grid-template-columns: repeat(3, minmax(240px, 1fr));
 		grid-gap: 16px;
+		align-items: flex-start;
 
 		.listWidget {
 			grid-column: 1/4;
 		}
 
-		&.nosidebar {
+		&.noSidebar {
 			grid-template-columns: repeat(4, minmax(240px, 1fr));
 
 			.listWidget {

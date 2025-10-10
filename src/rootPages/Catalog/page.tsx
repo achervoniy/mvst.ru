@@ -5,7 +5,7 @@ import { isEmpty, omit } from 'es-toolkit/compat';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useMemo } from 'react';
 
-import { Breadcrumbs, DesktopFilters, Filters, ProductList, Sidebar } from '@/features/catalog';
+import { Breadcrumbs, DesktopFilters, MobileFilters, ProductList, Sidebar } from '@/features/catalog';
 import { CatalogSidebarWrapper } from '@/features/catalog/Templates';
 
 import { Pagination, Responsive } from '@/ui/index';
@@ -18,7 +18,6 @@ export function CatalogPage({ gender }: { gender?: 'w' | 'm' }) {
   const pathname = usePathname();
   const search = useSearchParams();
   const data = useUnit(catalogQuery.$data);
-  console.log('data', data);
   const categories = data?.filters?.category?.list ?? [];
 
   const queriesWithoutPage = useMemo(() => {
@@ -26,7 +25,7 @@ export function CatalogPage({ gender }: { gender?: 'w' | 'm' }) {
 
     return !isEmpty(q) ? `?${new URLSearchParams(q)}` : '';
   }, [search]);
-  console.log('data', data);
+
   return (
     <section className={st.catalogPage}>
       <div className={st.head}>
@@ -41,16 +40,14 @@ export function CatalogPage({ gender }: { gender?: 'w' | 'm' }) {
 
       {data?.filters && (
         <>
-          <Responsive.TabletAndBelow>
-            <Filters filters={data?.filters} />
-          </Responsive.TabletAndBelow>
+          <MobileFilters filters={data?.filters} />
           <Responsive.Desktop className={st.filters}>
             <DesktopFilters filters={data?.filters} />
           </Responsive.Desktop>
         </>
       )}
 
-      <ProductList products={data?.catalog?.list ?? []} className={st.catalog} nosidebar={categories.length === 0} />
+      <ProductList products={data?.catalog?.list ?? []} className={st.catalog} noSidebar={categories.length === 0} />
 
       {data && (
         <div className={st.pagination}>

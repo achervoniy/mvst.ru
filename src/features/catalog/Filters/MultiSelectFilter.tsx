@@ -1,6 +1,5 @@
 'use client';
 import cn from 'classnames';
-import { useLayoutEffect, useState } from 'react';
 
 import { Button, Typography } from '@/ui/index';
 
@@ -41,20 +40,18 @@ function buildCells<Item>(list: Item[]) {
     }
   });
 
-  return cols;
+  return cols.filter(rows => rows.length > 0);
 }
 
 type Props = {
   filter: Filter;
   hoveredItem: null | string;
-  onMouseEnter: (_key: string) => void;
+  onClick: (_key: string) => void;
   leaveHandler: () => void;
   appliedFilters: ReturnType<typeof useAppliedFilters>;
 };
 
-export function MultiSelectFilter({ filter, hoveredItem, onMouseEnter, leaveHandler, appliedFilters }: Props) {
-  const distributedList = buildCells(filter.filter.items);
-
+export function MultiSelectFilter({ filter, hoveredItem, onClick, leaveHandler, appliedFilters }: Props) {
   if (filter.filter.items.length === 0) {
     return null;
   }
@@ -67,7 +64,7 @@ export function MultiSelectFilter({ filter, hoveredItem, onMouseEnter, leaveHand
         [st.sortTag]: filter.key === 'sort',
         [st.needToHide]: hoveredItem && filter.key === 'sort',
       })}
-      onMouseEnter={() => onMouseEnter(filter.title)}
+      onClick={() => onClick(filter.title)}
     >
       {filter.key === 'sort' ? (
         <Icon name="SortIcon" className={st.sortIcon} />
@@ -79,51 +76,46 @@ export function MultiSelectFilter({ filter, hoveredItem, onMouseEnter, leaveHand
       )}
 
       {hoveredItem === filter.title && (
-        <div className={st.inner} onMouseLeave={leaveHandler}>
+        <div className={st.inner}>
           <div className={st.navWrapper}>
             <div className={st.contentGrid}>
-              {distributedList.map((list, index) => {
-                return (
-                  <ul className={st.nav} key={index}>
-                    {list.map((item, index) => {
-                      const selected = !!appliedFilters.applied[filter.key]?.find(
-                        applied => applied.value === item.value,
-                      );
+              <ul className={st.nav}>
+                {filter.filter.items.map((item, index) => {
+                  const selected = !!appliedFilters.applied[filter.key]?.find(applied => applied.value === item.value);
 
-                      return (
-                        <li
-                          onClick={() => {
-                            appliedFilters.updateAppliedFilters({
-                              key: filter.key,
-                              filter: { ...item, items: [] },
-                              selected,
-                              applyImmediately: filter.type === 'sort',
-                            });
+                  return (
+                    <li
+                      onClick={() => {
+                        appliedFilters.updateAppliedFilters({
+                          key: filter.key,
+                          filter: { ...item, items: [] },
+                          selected,
+                          applyImmediately: filter.type === 'sort',
+                        });
 
-                            if (filter.type === 'sort') {
-                              leaveHandler();
-                            }
-                          }}
-                          key={item.value}
-                          className={cn({
-                            [st.last]: index >= filter.filter.items.length - 4,
-                          })}
-                        >
-                          <Typography font="paragraph/regular">{item.title}</Typography>
-                          {selected && <Icon name="CheckedIcon" />}
-                        </li>
-                      );
-                    })}
-                  </ul>
-                );
-              })}
+                        if (filter.type === 'sort') {
+                          leaveHandler();
+                        }
+                      }}
+                      key={item.value}
+                      className={cn({
+                        [st.last]: index >= filter.filter.items.length - 4,
+                      })}
+                    >
+                      <Typography font="paragraph/regular">{item.title}</Typography>
+                      {selected && <Icon name="CheckedIcon" />}
+                    </li>
+                  );
+                })}
+              </ul>
 
               {filter.type !== 'sort' && (
                 <div className={st.action}>
                   <Button
                     stretch
                     filled
-                    onClick={() => {
+                    onClick={e => {
+                      e.stopPropagation();
                       appliedFilters.applyFilters(appliedFilters.applied);
                       leaveHandler();
                     }}
@@ -134,8 +126,6 @@ export function MultiSelectFilter({ filter, hoveredItem, onMouseEnter, leaveHand
               )}
             </div>
           </div>
-
-          <div className={st.overlay} onMouseEnter={leaveHandler} />
         </div>
       )}
     </div>

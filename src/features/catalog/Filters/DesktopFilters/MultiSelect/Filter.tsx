@@ -39,7 +39,7 @@ export function MultiSelect({ filter, appliedFilters }: Props) {
           onClick={togglePopup}
         >
           <Typography font="paragraph/regular">
-            {isSortFilter ? appliedWithoutDefault[0]?.title ?? 'Сортировка' ?? filter.title : filter.title}
+            {isSortFilter ? (appliedWithoutDefault[0]?.title ?? filter.title ?? 'Сортировка') : filter.title}
             {appliedWithoutDefault.length > 0 && !isSortFilter && (
               <span className={st.counter}>{appliedWithoutDefault.length}</span>
             )}

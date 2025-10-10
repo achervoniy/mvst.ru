@@ -55,7 +55,8 @@ const buildQueryString = (filters: AppliedFilters) => {
 
 const sync = (filters: FiltersResponse) => ({
   color: filters.color.applied,
-  section: (filters.category.applied ?? []).map(pickLastNodeFromTrees),
+  // section: (filters.category.applied ?? []).map(pickLastNodeFromTrees),
+  section: filters.category.applied ?? [],
   size: filters.size.applied,
   sort: filters.sort.applied,
   attribute: filters.attribute.applied.flatMap(applied => applied.items),
@@ -101,8 +102,8 @@ export function useAppliedFilters(filters: FiltersResponse) {
               ? [filter]
               : []
             : selected
-            ? applied[key].filter(item => item.value !== filter.value)
-            : [...applied[key], filter],
+              ? applied[key].filter(item => item.value !== filter.value)
+              : [...applied[key], filter],
       };
 
       setApplied(filters);

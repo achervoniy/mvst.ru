@@ -1,5 +1,3 @@
-$filterPadding: 8px 0px 8px 24px;
-
 .filtersList {
   position: sticky;
   z-index: $z-minor+2;
@@ -17,8 +15,6 @@ $filterPadding: 8px 0px 8px 24px;
     left: 0;
     right: 0;
     top: 100%;
-    // bottom: 0px;
-    // transform: translateY(100%);
     background-color: $Core-Overlays-ExtraLight;
     z-index: $z-minor;
     transition-delay: 0.3s;
@@ -41,36 +37,6 @@ $filterPadding: 8px 0px 8px 24px;
       overflow: hidden;
     }
   }
-
-  @include desktop() {
-    padding: 8px 24px;
-    top: 72px;
-    gap: 16px;
-    // background-color: transparent;
-
-    .inner {
-      height: 100vh;
-      max-height: 411px;
-
-      .overlay {
-        display: block;
-        height: calc(100vh - 300px);
-      }
-    }
-  }
-
-  // &.scrollIsDown {
-  //   .inner {
-  //     // - filters - header
-  //     height: calc(100vh - 56px - 60px);
-  //   }
-
-  //   @include desktop() {
-  //     .inner {
-  //       height: calc(100vh - 120px);
-  //     }
-  //   }
-  // }
 }
 
 .navWrapper {
@@ -80,10 +46,6 @@ $filterPadding: 8px 0px 8px 24px;
   padding-top: 16px;
   padding-bottom: 16px;
   min-height: 100%;
-
-  @include desktop() {
-    min-height: auto;
-  }
 }
 
 .contentGrid {
@@ -92,19 +54,14 @@ $filterPadding: 8px 0px 8px 24px;
   display: flex;
   flex-direction: column;
   min-height: 100%;
-
-  @include desktop() {
-    min-height: auto;
-    display: grid;
-    grid-template-columns: repeat(4, minmax(220px, 1fr));
-    margin: 0 auto;
-  }
 }
 
 .nav {
   display: flex;
   flex-direction: column;
   column-gap: 24px;
+  overflow: auto;
+  overscroll-behavior: contain;
 
   li {
     position: relative;
@@ -115,6 +72,7 @@ $filterPadding: 8px 0px 8px 24px;
     cursor: pointer;
     justify-content: space-between;
     color: $Core-Dark-brown;
+    flex: 0 0 auto;
 
     &.action {
       grid-column: 1 / 5;
@@ -129,21 +87,6 @@ $filterPadding: 8px 0px 8px 24px;
 
       button {
         max-width: 368px;
-      }
-    }
-  }
-
-  @include desktop() {
-    height: auto;
-    max-width: 100%;
-    width: 100%;
-
-    li {
-      height: 42px;
-      flex: 0 0 auto;
-
-      &.last {
-        box-shadow: none
       }
     }
   }
@@ -199,12 +142,6 @@ $filterPadding: 8px 0px 8px 24px;
     border-bottom-color: transparent;
     padding: 0px;
   }
-
-  @include desktop() {
-    &.needToHide .sortIcon {
-      display: inline-flex;
-    }
-  }
 }
 
 .sortIcon {
@@ -230,15 +167,8 @@ $filterPadding: 8px 0px 8px 24px;
   gap: 8px;
   overflow: auto;
   max-width: 100%;
-  padding: 8px 0px 8px 24px;
-
-  @include desktop() {
-    gap: 16px;
-    max-width: $max-width-desktop;
-    margin: 0 auto;
-    width: 100%;
-    padding: 0;
-  }
+  padding: 8px 24px 8px 24px;
+  @include hide-scroll();
 }
 
 .variant {
