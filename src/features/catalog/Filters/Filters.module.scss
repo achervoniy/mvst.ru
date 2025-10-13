@@ -1,4 +1,4 @@
-.filtersList {
+.MobileFilters {
   position: sticky;
   z-index: $z-minor+2;
   top: 60px;
@@ -36,6 +36,10 @@
       width: 100vw;
       overflow: hidden;
     }
+  }
+
+  @include desktop() {
+    display: none;
   }
 }
 

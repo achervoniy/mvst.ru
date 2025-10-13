@@ -61,7 +61,7 @@ export function MobileFilters({ filters }: Props) {
   };
 
   return (
-    <div className={cn(st.filtersList, {})}>
+    <div className={cn(st.MobileFilters, {})}>
       <div className={st.filterListContent}>
         {activeFilter && (
           <div className={cn(st.tag, st.close)} onClick={leaveHandler}>
