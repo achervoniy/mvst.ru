@@ -9,14 +9,16 @@ import { CategoryFilterListCommonItem } from '@/shared/api/catalog';
 import { Typography } from '@/ui/index';
 
 import { Dropdown } from './Dropdown';
+import { hasOpenedChildren } from './lib';
 
 import st from './Sidebar.module.scss';
 
 type Props = {
   categories: CategoryFilterListCommonItem[];
+  isInner?: boolean;
 };
 
-export function Sidebar({ categories }: Props) {
+export function Sidebar({ categories, isInner }: Props) {
   const pathname = usePathname();
   const search = useSearchParams();
 
@@ -33,21 +35,32 @@ export function Sidebar({ categories }: Props) {
   }, [pathname]);
 
   return (
-    <ul className={st.Sidebar}>
-      {categories.map(cat => (
-        <li
-          key={cat.slug}
-          className={classNames({
-            [st.checked]: cat.items.length > 0,
-          })}
-        >
-          <Link href={`${pathWithoutSlug}/${cat.slug}${queriesWithoutPage}`}>
-            <Typography font="paragraph/regular">{cat.title}</Typography>
-          </Link>
+    <ul
+      className={classNames(st.Sidebar, {
+        [st.isInner]: isInner,
+      })}
+    >
+      {categories.map(cat => {
+        const type = typeof cat.items[0]?.checked === 'number' ? 'variants' : 'link';
+        const someAreOpened = hasOpenedChildren(cat);
 
-          {cat.items.length > 0 && <Dropdown category={cat} />}
-        </li>
-      ))}
+        return (
+          <li
+            key={cat.slug}
+            className={classNames({
+              [st.active]: cat.items.length > 0,
+              [st.transparent]: someAreOpened,
+            })}
+          >
+            <Link href={`${pathWithoutSlug}/${cat.slug}${queriesWithoutPage}`}>
+              <Typography font="paragraph/regular">{cat.title}</Typography>
+            </Link>
+
+            {cat.items.length > 0 &&
+              (type === 'link' ? <Sidebar categories={cat.items} isInner /> : <Dropdown category={cat} />)}
+          </li>
+        );
+      })}
     </ul>
   );
 }

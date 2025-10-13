@@ -1,7 +1,6 @@
 .Sidebar {
   display: flex;
   flex-direction: column;
-  // gap: 8px;
   gap: 0px;
   padding: 8px 0px;
 
@@ -12,20 +11,36 @@
   li {
     display: flex;
     color: $Core-Dark-brown;
-    // padding: 0px 16px;
     padding: 0px 8px;
     flex-direction: column;
 
-    &.checked {
+    &.active {
       background-color: $Core-Overlays-ExtraLight;
       padding-top: 8px;
       margin-top: 8px;
+
+      &.transparent {
+        background-color: #fff;
+      }
     }
 
     a {
       display: flex;
       height: 42px;
       align-items: center;
+    }
+  }
+
+  &.isInner {
+    padding: 0px;
+
+    li.active {
+      padding-top: 0px;
+      margin-top: 0px;
+    }
+
+    .checkboxes {
+      padding: 0px;
     }
   }
 }
@@ -35,7 +50,6 @@
   justify-content: center;
   align-items: flex-start;
   flex-direction: column;
-  // gap: 8px;
   gap: 0px;
   padding: 8px 0px;
 

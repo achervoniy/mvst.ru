@@ -11,16 +11,16 @@ import st from './ProductList.module.scss';
 type Props = {
   products: CatalogProduct[];
   className?: string;
-  nosidebar?: boolean;
+  noSidebar?: boolean;
 };
 
-export function ProductList({ products, className, nosidebar }: Props) {
+export function ProductList({ products, className, noSidebar }: Props) {
   const productCardVariant = useUnit(productCardVariantField.$value);
 
   return (
     <div
       className={cn(st.productList, className, {
-        [st.nosidebar]: nosidebar,
+        [st.noSidebar]: noSidebar,
       })}
     >
       {products.map(product => {

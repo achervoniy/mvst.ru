@@ -1,9 +1,7 @@
 import cn from 'classnames';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 
 import { FiltersResponse } from '@/shared/api/catalog';
-
-import { useScrollEventListener } from '@/lib/hooks';
 
 import { Icon } from '@/ui/assets/Icon';
 
@@ -19,10 +17,8 @@ type Props = {
   filters: FiltersResponse;
 };
 
-export function Filters({ filters }: Props) {
-  const [scrollIsDown, setScrollIsDown] = useState(false);
-  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
-  const idRef = useRef<NodeJS.Timeout | null>(null);
+export function MobileFilters({ filters }: Props) {
+  const [activeFilter, setActiveFilter] = useState<string | null>(null);
   const appliedFilters = useAppliedFilters(filters);
 
   const additionalFilters = [
@@ -56,31 +52,18 @@ export function Filters({ filters }: Props) {
   ] as Filter[];
 
   const leaveHandler = () => {
-    setHoveredItem(null);
-    clearTimeout(idRef.current!);
+    setActiveFilter(null);
+    appliedFilters.syncApplied();
   };
 
-  const onMouseEnter = (key: string) => {
-    clearTimeout(idRef.current!);
-    idRef.current = setTimeout(() => {
-      setHoveredItem(key);
-      appliedFilters.syncApplied();
-    }, 300);
+  const onClick = (key: string) => {
+    setActiveFilter(key);
   };
-
-  useScrollEventListener((_, { scrollDirection }) => {
-    setScrollIsDown(scrollDirection === 'down');
-  });
 
   return (
-    <div
-      onMouseLeave={leaveHandler}
-      className={cn(st.filtersList, {
-        [st.scrollIsDown]: scrollIsDown,
-      })}
-    >
+    <div className={cn(st.MobileFilters, {})}>
       <div className={st.filterListContent}>
-        {hoveredItem && (
+        {activeFilter && (
           <div className={cn(st.tag, st.close)} onClick={leaveHandler}>
             <Icon name="CloseIcon" />
           </div>
@@ -92,8 +75,8 @@ export function Filters({ filters }: Props) {
               <CategoryFilter
                 key={filter.key}
                 filter={filter}
-                hoveredItem={hoveredItem}
-                onMouseEnter={onMouseEnter}
+                activeFilter={activeFilter}
+                onClick={onClick}
                 leaveHandler={leaveHandler}
                 appliedFilters={appliedFilters}
               />
@@ -106,15 +89,15 @@ export function Filters({ filters }: Props) {
 
               return (
                 <MultiSelectFilter
-                  key={`${attribute.key}/${attribute.title}`}
+                  key={`${attribute.key}/${attribute.title}/${attribute.value}`}
                   filter={{
                     title: attribute.title,
                     filter: { items: attribute.items, applied: appliedAttributes?.items ?? [] },
                     key: attribute.key,
                     type: 'attribute',
                   }}
-                  hoveredItem={hoveredItem}
-                  onMouseEnter={onMouseEnter}
+                  hoveredItem={activeFilter}
+                  onClick={onClick}
                   leaveHandler={leaveHandler}
                   appliedFilters={appliedFilters}
                 />
@@ -130,8 +113,8 @@ export function Filters({ filters }: Props) {
             <MultiSelectFilter
               key={filter.key}
               filter={filter}
-              hoveredItem={hoveredItem}
-              onMouseEnter={onMouseEnter}
+              hoveredItem={activeFilter}
+              onClick={onClick}
               leaveHandler={leaveHandler}
               appliedFilters={appliedFilters}
             />

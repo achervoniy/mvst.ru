@@ -14,20 +14,8 @@ ul.category {
   li {
     transition: all 0.3s ease-in-out;
 
-    &:hover {
-      background-color: $Core-Overlays-light;
-    }
-
     &.active {
       background-color: $Core-Overlays-light;
-    }
-  }
-
-  @include desktop() {
-    max-width: 372px;
-
-    li.backAction {
-      display: none;
     }
   }
 }
@@ -48,18 +36,7 @@ ul.category {
     display: flex;
     flex-direction: row;
     gap: 8px;
-  }
-
-  @include desktop() {
-    // max-height: calc(100% - 85px);
     overflow: hidden;
-    min-height: auto;
-    display: block;
-
-    .contentWrapper {
-      max-height: calc(100% - 85px);
-      margin: 0 auto;
-    }
   }
 }
 
@@ -74,20 +51,4 @@ ul.category {
   position: sticky;
   bottom: 0px;
   margin-top: auto;
-
-  .resetFiltersAction {
-    display: none;
-
-    @include desktop() {
-      display: block;
-    }
-  }
-}
-
-.arrowRight {
-  display: none;
-
-  @include desktop() {
-    display: block;
-  }
 }
