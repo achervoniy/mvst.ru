@@ -2,10 +2,10 @@
 
 import { useUnit } from 'effector-react';
 import { isEmpty, omit } from 'es-toolkit/compat';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { useParams, usePathname, useSearchParams } from 'next/navigation';
 import { useMemo } from 'react';
 
-import { Breadcrumbs, DesktopFilters, MobileFilters, ProductList, Sidebar } from '@/features/catalog';
+import { BreadcrumbsSelection, DesktopFilters, MobileFilters, ProductList, Sidebar } from '@/features/catalog';
 import { CatalogSidebarWrapper } from '@/features/catalog/Templates';
 
 import { Pagination, Responsive } from '@/ui/index';
@@ -14,7 +14,8 @@ import { catalogQuery } from './model';
 
 import st from './styles.module.scss';
 
-export function CatalogPage({ gender }: { gender?: 'w' | 'm' }) {
+export function CatalogSelection() {
+  const { selection } = useParams() as { selection: string };
   const pathname = usePathname();
   const search = useSearchParams();
   const data = useUnit(catalogQuery.$data);
@@ -29,12 +30,12 @@ export function CatalogPage({ gender }: { gender?: 'w' | 'm' }) {
   return (
     <section className={st.catalogPage}>
       <div className={st.head}>
-        <Breadcrumbs gender={gender} category={data?.category} />
+        <BreadcrumbsSelection category={data?.category} selection={data?.selectionInfo} />
       </div>
 
       {categories.length > 0 && (
         <CatalogSidebarWrapper>
-          <Sidebar categories={categories} />
+          <Sidebar categories={categories} selection={selection} />
         </CatalogSidebarWrapper>
       )}
 
@@ -49,7 +50,7 @@ export function CatalogPage({ gender }: { gender?: 'w' | 'm' }) {
 
       <ProductList products={data?.catalog?.list ?? []} className={st.catalog} noSidebar={categories.length === 0} />
 
-      {data?.catalog && data?.catalog?.pageCount > 1 && (
+      {data && (
         <div className={st.pagination}>
           <Pagination
             current={data.catalog.currentPage}

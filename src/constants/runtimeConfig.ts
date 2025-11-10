@@ -3,8 +3,8 @@ export const runtimeConfig = {
   SSR_API_DOMAIN: process.env.SSR_API_DOMAIN,
 };
 
-export const HOME_PAGE_VIDEO_URL = 'https://st-cdn.tsum.com/static/upload/dv-mvst-0325.mp4?u=1743685271';
-export const HOME_PAGE_VIDEO_URL_MOBILE = 'https://st-cdn.tsum.com/static/upload/mob-mvst-0325low.mp4?u=1743670040';
+export const HOME_PAGE_VIDEO_URL = 'https://st-cdn.tsum.com/static/upload/mvst_desktop_26.mov?u=1762764722';
+export const HOME_PAGE_VIDEO_URL_MOBILE = 'https://st-cdn.tsum.com/static/upload/mvst_mobile_26.mov?u=1762764695';
 
 export const LOOK_SLUGS = {
   men: 'must-web-men',
@@ -14,11 +14,11 @@ export const LOOK_SLUGS = {
 
 export const HOME_PAGE_FILTERS = {
   men: {
-    section: 18327,
+    category: 18327,
     brand: 13037770,
   },
   female: {
-    section: 18368,
+    category: 18368,
     brand: 13037770,
   },
 };

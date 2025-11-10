@@ -1,30 +1,26 @@
 'use client';
 
-import cn from 'classnames';
-import { useUnit } from 'effector-react';
 import { useEffect, useRef } from 'react';
 
-// import { HOME_PAGE_VIDEO_URL, HOME_PAGE_VIDEO_URL_MOBILE } from '@/constants/runtimeConfig';
+import { HOME_PAGE_VIDEO_URL, HOME_PAGE_VIDEO_URL_MOBILE } from '@/constants/runtimeConfig';
 
-import { AboutMust, Banner, CallToBuy, ProductsCarousel } from '@/features/home';
+import { AboutMust, Banner, CallToBuy } from '@/features/home';
 
 import { useHash, usePageVisibility } from '@/lib/hooks';
 
-import { catalogQuery } from './model';
+// import { catalogQuery } from './model';
 
 import st from './styles.module.scss';
 
-const HIDE_CATALOG = true;
-
 export function HomePage() {
-  const catalog = useUnit(catalogQuery.$data);
+  // const catalog = useUnit(catalogQuery.$data);
   const hash = useHash();
   const pageRef = useRef<HTMLDivElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const documentVisible = usePageVisibility();
 
-  const menList = catalog?.men?.list ?? [];
-  const womenList = catalog?.women?.list ?? [];
+  // const menList = catalog?.men?.list ?? [];
+  // const womenList = catalog?.women?.list ?? [];
 
   useEffect(() => {
     const target = pageRef.current?.querySelector?.(`[target-id='${hash}']`);
@@ -44,16 +40,15 @@ export function HomePage() {
 
   return (
     <div className={st.page} ref={pageRef}>
-      {/* Убираем видео https://jira.int.tsum.com/browse/FRONTEND-6160 */}
-      {/* <div className={st.video}>
+      <div className={st.video}>
         <video autoPlay playsInline loop muted ref={videoRef}>
           <source src={HOME_PAGE_VIDEO_URL} type="video/mp4" media="(min-width:1023px)" />
           <source src={HOME_PAGE_VIDEO_URL_MOBILE} type="video/mp4" />
         </video>
-      </div> */}
+      </div>
       <Banner gender="all" />
 
-      {!HIDE_CATALOG && (
+      {/* {!HIDE_CATALOG && (
         <>
           {womenList.length > 0 && (
             <div className={st.productsRow}>
@@ -69,7 +64,7 @@ export function HomePage() {
             </div>
           )}
         </>
-      )}
+      )} */}
       <CallToBuy />
       <AboutMust />
     </div>

@@ -18,21 +18,21 @@ variables:
 
 #test_code:
 #  stage: Test
-#  image: repo.int.tsum.com:443/nodejs18:prod
+#  image: persistent-registry.int.tsum.com:443/nodejs20:prod
 #  script:
 #  - npm install
 #  - npm run test:code
 
 test_lint:
   stage: Test
-  image: repo.int.tsum.com:443/nodejs18:prod
+  image: persistent-registry.int.tsum.com:443/nodejs20:prod
   script:
   - npm install
   - npm run test:lint
 
 test_tsc:
   stage: Test
-  image: repo.int.tsum.com:443/nodejs18:prod
+  image: persistent-registry.int.tsum.com:443/nodejs20:prod
   script:
   - npm install
   - npm run test:tsc
@@ -42,7 +42,7 @@ include:
   file: 'include-ci/apps/front/must.yml'
 
 .build_script:
-  image: repo.int.tsum.com:443/nodejs18:prod
+  image: persistent-registry.int.tsum.com:443/nodejs20:prod
   stage: Artifact
   script:
   - npm install --frozen-lockfile

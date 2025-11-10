@@ -1,36 +1,39 @@
 import Link from 'next/link';
 
-import { CategoryInfoResponse } from '@/shared/api/catalog';
-
-import { HOME_PAGE_FILTERS } from '@/constants/runtimeConfig';
+import { CategoryInfoResponse, SelectionInfoResponse } from '@/shared/api/catalog';
 
 import { Typography } from '@/ui/index';
 
 import st from './styles.module.scss';
 
-const links = ({ gender, category }: { gender?: 'w' | 'm'; category?: CategoryInfoResponse | null }) => {
-  const isRootPage =
-    category && [HOME_PAGE_FILTERS.female.category, HOME_PAGE_FILTERS.men.category].includes(category.id);
-
+const links = ({
+  selection,
+  category,
+}: {
+  category?: CategoryInfoResponse | null;
+  selection?: SelectionInfoResponse | null;
+}) => {
   return [
     {
       title: 'Главная',
       link: '/',
     },
-    {
-      title: gender === 'w' ? 'Женское' : 'Мужское',
-      ...(!isRootPage ? { link: gender === 'w' ? '/catalog/women' : '/catalog/men' } : {}),
-    },
-    !isRootPage && {
-      title: category?.title,
-    },
+    selection && { title: selection.title, link: `/catalog/sel/${selection.slug}/` },
+    category && { title: category.title },
   ].filter(Boolean) as { title: string; link?: string }[];
 };
 
-export function Breadcrumbs({ gender, category }: { gender?: 'w' | 'm'; category?: CategoryInfoResponse | null }) {
+export function BreadcrumbsSelection({
+  selection,
+  category,
+}: {
+  gender?: 'w' | 'm';
+  category?: CategoryInfoResponse | null;
+  selection?: SelectionInfoResponse | null;
+}) {
   return (
     <ol className={st.Breadcrumbs} itemScope itemType="https://schema.org/BreadcrumbList">
-      {links({ gender, category }).map((link, index, arr) => {
+      {links({ category, selection }).map((link, index, arr) => {
         const content = (
           <Typography font="body/regular" itemProp="name">
             {link.title}

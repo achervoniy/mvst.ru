@@ -16,9 +16,10 @@ import st from './Sidebar.module.scss';
 type Props = {
   categories: CategoryFilterListCommonItem[];
   isInner?: boolean;
+  selection?: string;
 };
 
-export function Sidebar({ categories, isInner }: Props) {
+export function Sidebar({ categories, isInner, selection }: Props) {
   const pathname = usePathname();
   const search = useSearchParams();
 
@@ -43,6 +44,9 @@ export function Sidebar({ categories, isInner }: Props) {
       {categories.map(cat => {
         const type = typeof cat.items[0]?.checked === 'number' ? 'variants' : 'link';
         const someAreOpened = hasOpenedChildren(cat);
+        const link = selection
+          ? `${pathWithoutSlug}/${selection}/${cat.slug}${queriesWithoutPage}`
+          : `${pathWithoutSlug}/${cat.slug}${queriesWithoutPage}`;
 
         return (
           <li
@@ -52,7 +56,7 @@ export function Sidebar({ categories, isInner }: Props) {
               [st.transparent]: someAreOpened,
             })}
           >
-            <Link href={`${pathWithoutSlug}/${cat.slug}${queriesWithoutPage}`}>
+            <Link href={link}>
               <Typography font="paragraph/regular">{cat.title}</Typography>
             </Link>
 
