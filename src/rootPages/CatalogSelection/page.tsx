@@ -33,8 +33,6 @@ export function CatalogSelection() {
         <BreadcrumbsSelection category={data?.category} selection={data?.selectionInfo} />
       </div>
 
-      <h1 className={st.pageTitle}>pageTitle</h1>
-
       {categories.length > 0 && (
         <CatalogSidebarWrapper>
           <Sidebar categories={categories} selection={selection} />
