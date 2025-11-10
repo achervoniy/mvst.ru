@@ -55,11 +55,10 @@
     display: grid;
     column-gap: 24px;
     margin: 0 auto;
-    grid-template-rows: auto auto minmax(144px, 1fr) auto;
+    grid-template-rows: 42px auto minmax(144px, 1fr) auto;
     grid-template-columns: 264px 1fr;
     grid-template-areas:
       "head ."
-      "pageTitle ."
       "sidebar filters"
       "sidebar list"
       ". pagination";
