@@ -48,6 +48,10 @@ export const catalogQuery = createQuery({
       fetchFiltersSelection(filtersParams),
     ]);
 
+    console.log('filtersParams', filtersParams);
+    console.log('catalogParams', catalogParams);
+    console.log('filters result', filters.category.applied.length);
+
     return { selectionInfo, catalog, filters, category };
   },
 });

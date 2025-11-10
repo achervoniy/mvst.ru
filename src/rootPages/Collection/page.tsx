@@ -16,16 +16,19 @@ import { $collectionText, $collectionLooks, $collectionTitle, versionField } fro
 
 import st from './styles.module.scss';
 
-const getTitle = (gender: string) => {
-  switch (gender) {
+const getTitle = (slug: string) => {
+  switch (slug) {
     case LOOK_SLUGS.men:
       return 'Мужская коллекция';
 
     case LOOK_SLUGS.women:
       return 'Женская коллекция';
 
-    default:
+    case LOOK_SLUGS.all:
       return 'Коллекция FW25-26';
+
+    default:
+      return undefined;
   }
 };
 
@@ -39,7 +42,7 @@ export function CollectionPage() {
   const version = useUnit(versionField.$value);
 
   const lookLen = looks?.looks?.length;
-  const pageTitle = getTitle(params.slug as string);
+  const pageTitle = getTitle(params.slug as string) ?? title;
 
   useEffect(() => {
     collectionCounterChanged({ current: activeSlideIndex, length: lookLen });
@@ -74,14 +77,16 @@ export function CollectionPage() {
         gender={LOOK_SLUGS.women === params.slug ? 'women' : 'men'}
       />
 
-      <Responsive.Desktop>
-        <Typography
-          font="paragraph/regular"
-          align="center"
-          dangerouslySetInnerHTML={{ __html: text.text }}
-          className={st.lookDescription}
-        />
-      </Responsive.Desktop>
+      {text?.text && (
+        <Responsive.Desktop>
+          <Typography
+            font="paragraph/regular"
+            align="center"
+            dangerouslySetInnerHTML={{ __html: text?.text }}
+            className={st.lookDescription}
+          />
+        </Responsive.Desktop>
+      )}
 
       <Responsive.TabletAndBelow>
         <CallToBuy />

@@ -13,7 +13,7 @@ export type LooksBlock = {
 
 export type TextBlock = {
   type: 'text';
-  text: string;
+  text?: string;
 };
 
 export type LooksResponse = {

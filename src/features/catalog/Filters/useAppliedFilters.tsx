@@ -74,6 +74,7 @@ export function useAppliedFilters(filters: FiltersResponse) {
       debounce(
         (filters: AppliedFilters) => {
           const queryString = buildQueryString(filters);
+          console.log('applyFilters-filters', filters);
 
           router.push(`${pathname}${queryString}`);
         },
