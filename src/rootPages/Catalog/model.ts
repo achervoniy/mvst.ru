@@ -2,7 +2,7 @@ import { createQuery } from '@farfetched/core';
 import { invoke } from '@withease/factories';
 import { sample } from 'effector';
 
-import { fetchBrandCatalog, fetchCategoryBySlug, fetchFiltersBrands, fetchSEO } from '@/shared/api/catalog';
+import { fetchBrandCatalog, fetchCategoryBySlug, fetchFiltersBrands } from '@/shared/api/catalog';
 import { declarePage } from '@/shared/pageRouting';
 
 import { HOME_PAGE_FILTERS } from '@/constants/runtimeConfig';
@@ -33,15 +33,15 @@ export const catalogQuery = createQuery({
     }
 
     const filtersParams = { query: { ...params, section, root_section: category.id } };
-    const catalogParams = { data: { limit: 60, ...params, section: section ?? category.id } };
+    const catalogParams = { data: { limit: 60, ...params, category: section ?? category.id } };
 
-    const [catalog, filters, seo] = await Promise.all([
+    const [catalog, filters] = await Promise.all([
       fetchBrandCatalog(catalogParams),
       fetchFiltersBrands(filtersParams),
-      fetchSEO({ data: { url: `/brand/${slug}/must-774534.html` } }),
+      // fetchSEO({ data: { url: `/brand/${slug}/must-774534.html` } }),
     ]);
 
-    return { catalog, filters, category, seo };
+    return { catalog, filters, category };
   },
 });
 
@@ -51,7 +51,7 @@ sample({
     const slug = params?.slug || (url?.endsWith('women') ? DEFAULT_MVST_SLUGS.women : DEFAULT_MVST_SLUGS.men);
 
     return {
-      brand: url?.endsWith('women') ? HOME_PAGE_FILTERS.female.brand : HOME_PAGE_FILTERS.men.brand,
+      brand: HOME_PAGE_FILTERS.female.brand,
       page: query.page ? +query.page : 1,
       ...validateFiltersToRequest(query),
       slug,

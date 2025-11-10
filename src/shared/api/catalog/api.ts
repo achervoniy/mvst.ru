@@ -2,72 +2,41 @@ import { createBaseRequest } from '@/lib/request';
 
 import { mapServerMetaToClient } from '../seo';
 
+import { transformProductsBySelCatalog, transformSearchCatalogResult } from './helpers';
 import {
-  CatalogProduct,
   CatalogProductsParams,
   CategoryInfoResponse,
   FetchedCatalogResult,
   FetchFiltersParams,
   FiltersResponse,
+  SearchCatalogProduct,
+  SelCatalogProduct,
+  SelectionInfoResponse,
 } from './types';
-
-export const fetchCatalog = createBaseRequest<
-  CatalogProductsParams & FetchFiltersParams,
-  CatalogProduct[],
-  FetchedCatalogResult
->({
-  method: 'POST',
-  url: '/v3/catalog/search',
-  mapResult: (catalog, headers) => {
-    const slice = {
-      pagination: {
-        pageCount: Number(headers['x-pagination-page-count']),
-        currentPage: Number(headers['x-pagination-current-page']),
-        perPage: Number(headers['x-pagination-per-page']),
-        total: Number(headers['x-pagination-total-count']),
-      },
-      catalogRedirect: headers['x-catalog-location'],
-      correctedSearchTerm: headers['x-search-corrected-string'],
-    };
-
-    return {
-      pageCount: slice.pagination.pageCount ?? 1,
-      currentPage: slice.pagination.currentPage ?? 1,
-      perPage: slice.pagination.perPage ?? 60,
-      total: slice.pagination.total ?? 0,
-      correctedSearchTerm: slice.correctedSearchTerm,
-      list: catalog,
-    };
-  },
-});
 
 export const fetchBrandCatalog = createBaseRequest<
   CatalogProductsParams & FetchFiltersParams,
-  CatalogProduct[],
+  SearchCatalogProduct[],
   FetchedCatalogResult
 >({
   method: 'POST',
-  url: '/catalog/search/brand',
+  url: '/v2/catalog/search/brand',
   mapResult: (catalog, headers) => {
-    const slice = {
-      pagination: {
-        pageCount: Number(headers['x-pagination-page-count']),
-        currentPage: Number(headers['x-pagination-current-page']),
-        perPage: Number(headers['x-pagination-per-page']),
-        total: Number(headers['x-pagination-total-count']),
-      },
-      catalogRedirect: headers['x-catalog-location'],
-      correctedSearchTerm: headers['x-search-corrected-string'],
-    };
+    return transformSearchCatalogResult({ data: catalog, headers });
+  },
+});
 
-    return {
-      pageCount: slice.pagination.pageCount ?? 1,
-      currentPage: slice.pagination.currentPage ?? 1,
-      perPage: slice.pagination.perPage ?? 60,
-      total: slice.pagination.total ?? 0,
-      correctedSearchTerm: slice.correctedSearchTerm,
-      list: catalog,
-    };
+export const fetchCatalogSelProducts = createBaseRequest<
+  CatalogProductsParams & FetchFiltersParams,
+  SelCatalogProduct[],
+  FetchedCatalogResult
+>({
+  url: '/v2/catalog/search/selection',
+  method: 'post',
+  mapResult: (catalog, headers) => {
+    const searchCatalog = transformProductsBySelCatalog(catalog);
+
+    return transformSearchCatalogResult({ data: searchCatalog, headers });
   },
 });
 
@@ -76,14 +45,19 @@ export const fetchFiltersBrands = createBaseRequest<FetchFiltersParams, FiltersR
   url: '/catalog/filter/brand',
 });
 
-export const fetchFilters = createBaseRequest<FetchFiltersParams, FiltersResponse>({
+export const fetchFiltersSelection = createBaseRequest<FetchFiltersParams, FiltersResponse>({
   method: 'GET',
-  url: '/catalog/filter',
+  url: '/catalog/filter/selection',
 });
 
 export const fetchCategoryBySlug = createBaseRequest<{ slug: string }, CategoryInfoResponse>({
   method: 'GET',
   url: ({ slug }) => `/v2/catalog/category/${slug}`,
+});
+
+export const fetchSelectionInfo = createBaseRequest<{ selection: string }, SelectionInfoResponse>({
+  url: ({ selection }) => `/catalog/selection/${selection}?expand=detail_photo,preview_photo`,
+  method: 'get',
 });
 
 export const fetchSEO = createBaseRequest<{ url: string }, BaseMetaType>({
