@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { HOME_PAGE_VIDEO_URL, HOME_PAGE_VIDEO_URL_MOBILE } from '@/constants/runtimeConfig';
 
-import { AboutMust, Banner, CallToBuy, StreamBanner } from '@/features/home';
+import { AboutMust, CallToBuy, StreamBanner } from '@/features/home';
 
 import { useHash, usePageVisibility } from '@/lib/hooks';
 
@@ -63,7 +63,8 @@ export function HomePage() {
           <source src={HOME_PAGE_VIDEO_URL_MOBILE} type="video/mp4" />
         </video>
       </div>
-      <Banner gender="all" />
+      {/* @/features/home */}
+      {/* <Banner gender="all" /> */}
       <CallToBuy />
       <AboutMust />
     </div>
