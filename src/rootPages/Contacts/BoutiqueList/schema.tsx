@@ -13,7 +13,7 @@ export const boutiqueList = [
     time: <>Ежедневно с&nbsp;10-&#8288;00 до&nbsp;22-&#8288;00</>,
   },
   {
-    title: 'Barvikha Luxury Village',
+    title: 'Барвиха Luxury Village',
     image: barviha,
     address: 'Москва, Рублево-Успенское шоссе, д. 114с7',
     time: <>Ежедневно с&nbsp;11-&#8288;00 до&nbsp;22-&#8288;00, пт-вс с&nbsp;11-00 до&nbsp;23-&#8288;00</>,
@@ -31,7 +31,7 @@ export const boutiqueList = [
     time: <>Ежедневно с&nbsp;11-&#8288;00 до&nbsp;22-&#8288;00</>,
   },
   {
-    title: 'Торговый Дом Москва',
+    title: 'Кутузовский, 31',
     image: td,
     address: 'Москва, Кутузовский проспект, д.31',
     time: <>Ежедневно с&nbsp;11-&#8288;00 до&nbsp;22-&#8288;00</>,
