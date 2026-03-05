@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import { HOME_PAGE_VIDEO_URL, HOME_PAGE_VIDEO_URL_MOBILE } from '@/constants/runtimeConfig';
+// import { HOME_PAGE_VIDEO_URL, HOME_PAGE_VIDEO_URL_MOBILE } from '@/constants/runtimeConfig';
 
 import { AboutMust, CallToBuy, StreamBanner } from '@/features/home';
 
@@ -57,12 +57,12 @@ export function HomePage() {
         link={streamEnded ? '/collection/must-web' : '/fashion-show-december'}
       />
 
-      <div className={st.video}>
+      {/* <div className={st.video}>
         <video autoPlay playsInline loop muted ref={videoRef}>
           <source src={HOME_PAGE_VIDEO_URL} type="video/mp4" media="(min-width:1023px)" />
           <source src={HOME_PAGE_VIDEO_URL_MOBILE} type="video/mp4" />
         </video>
-      </div>
+      </div> */}
       {/* @/features/home */}
       {/* <Banner gender="all" /> */}
       <CallToBuy />

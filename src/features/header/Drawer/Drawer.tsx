@@ -31,7 +31,7 @@ export function Nav({ onLink }: { onLink?: () => void }) {
         })}
       >
         <Link href={`/collection/${LOOK_SLUGS.all}`} onClick={onLink}>
-          <Typography font="paragraph/regular">Коллекция FW25-26</Typography>
+          <Typography font="paragraph/regular">Коллекция SS26</Typography>
           <Icon name="ArrowRight" />
         </Link>
       </li>
