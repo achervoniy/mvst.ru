@@ -25,7 +25,7 @@ const getTitle = (slug: string) => {
       return 'Женская коллекция';
 
     case LOOK_SLUGS.all:
-      return 'Коллекция FW25-26';
+      return 'Коллекция SS26';
 
     default:
       return undefined;

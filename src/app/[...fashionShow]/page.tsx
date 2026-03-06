@@ -13,6 +13,7 @@ import { PageProps } from '@/lib/rsc';
 
 export default function DynamicFashionShow({ params }: PageProps<{ fashionShow: string | string[] }>) {
   const path = Array.isArray(params.fashionShow) ? params.fashionShow.join('/') : params.fashionShow;
+
   const FASHION_SHOW_PREFIX = 'fashion-show-';
 
   if (!path.startsWith(FASHION_SHOW_PREFIX)) {
