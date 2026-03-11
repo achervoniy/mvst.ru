@@ -25,6 +25,10 @@ export const baseRequestFx = attach({
 
     return services.api[service]({
       ...reqParams,
+      headers: {
+        'x-app-platform': 'must',
+        ...reqParams.headers,
+      },
       data: params.data,
       params: query,
       url: typeof url === 'string' ? url : url(params.data),
