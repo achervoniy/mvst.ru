@@ -10,6 +10,8 @@ import { useHash, usePageVisibility } from '@/lib/hooks';
 
 import homeBannerDesktop from './homeBannerDesktop.jpg';
 import homeBannerMobile from './homeBannerMobile.jpg';
+import beforeStreamHomeBannerDesktop from './streamBanners/fs-match-before-stream_desktop.jpg';
+import beforeStreamHomeBannerMobile from './streamBanners/fs-match-before-stream_mobile.jpg';
 
 import st from './styles.module.scss';
 
@@ -18,7 +20,7 @@ export function HomePage() {
   const pageRef = useRef<HTMLDivElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const documentVisible = usePageVisibility();
-  // const [streamEnded, setStreamEnded] = useState(true);
+  const [streamEnded, setStreamEnded] = useState(true);
 
   useEffect(() => {
     const target = pageRef.current?.querySelector?.(`[target-id='${hash}']`);
@@ -37,24 +39,23 @@ export function HomePage() {
   }, [documentVisible]);
 
   // Проверка стрима
-  // useEffect(() => {
-  //   const now = new Date();
-  //   const target = new Date(2025, 11, 17, 21, 0, 0);
+  useEffect(() => {
+    const now = new Date();
+    const target = new Date(2026, 3, 28, 20, 0, 0);
 
-  //   setStreamEnded(now > target);
-  // }, []);
+    setStreamEnded(now > target);
+  }, []);
 
   return (
     <div className={st.page} ref={pageRef}>
       <StreamBanner
         title="MVST SS26"
-        images={{ desktop: homeBannerDesktop, mobile: homeBannerMobile }}
-        // images={
-        //   streamEnded
-        //     ? { desktop: fw25DesktopAfter, mobile: fw25MobileAfter }
-        //     : { desktop: fw25Desktop, mobile: fw25Mobile }
-        // }
-        link={true ? '/collection/must-web' : '/fashion-show-december'}
+        images={
+          streamEnded
+            ? { desktop: homeBannerDesktop, mobile: homeBannerMobile }
+            : { desktop: beforeStreamHomeBannerDesktop, mobile: beforeStreamHomeBannerMobile }
+        }
+        link={streamEnded ? '/collection/must-web' : '/fashion-show-march'}
       />
 
       {/* <div className={st.video}>
