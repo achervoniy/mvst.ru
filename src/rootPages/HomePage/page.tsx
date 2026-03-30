@@ -41,7 +41,7 @@ export function HomePage() {
   // Проверка стрима
   useEffect(() => {
     const now = new Date();
-    const target = new Date(2026, 3, 28, 20, 0, 0);
+    const target = new Date(2026, 2, 28, 20, 0, 0);
 
     setStreamEnded(now > target);
   }, []);
