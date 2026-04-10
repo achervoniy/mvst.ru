@@ -41,6 +41,10 @@
 .appWithQr {
   position: relative;
 
+  img {
+    mix-blend-mode: multiply;
+  }
+
   .qrCode {
     position: absolute;
     bottom: 40px;
