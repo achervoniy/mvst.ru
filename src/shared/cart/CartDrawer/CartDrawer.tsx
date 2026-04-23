@@ -19,6 +19,8 @@ import {
   $count,
   $isOpen,
   $items,
+  $requestError,
+  $requestPending,
   $selectedBoutiqueId,
   $step,
   $total,
@@ -29,6 +31,7 @@ import {
   contactNameChanged,
   contactPhoneChanged,
   removeFromCart,
+  requestError,
   requestReset,
   requestSubmitted,
   type CartItem,
@@ -44,7 +47,7 @@ const STEPS: { id: CartStep; title: string }[] = [
 ];
 
 export function CartDrawer() {
-  const [isOpen, items, step, count, total, selectedBoutiqueId, name, phone] = useUnit([
+  const [isOpen, items, step, count, total, selectedBoutiqueId, name, phone, pending, submitErr] = useUnit([
     $isOpen,
     $items,
     $step,
@@ -53,6 +56,8 @@ export function CartDrawer() {
     $selectedBoutiqueId,
     $contactName,
     $contactPhone,
+    $requestPending,
+    $requestError,
   ]);
 
   const [
@@ -219,16 +224,21 @@ export function CartDrawer() {
             )}
 
             {step === 'contacts' && (
-              <button
-                type="button"
-                className={st.primaryBtn}
-                disabled={!canSubmit}
-                onClick={() => {
-                  doSubmit();
-                }}
-              >
-                Отправить запрос
-              </button>
+              <>
+                {submitErr && (
+                  <p style={{ color: '#c0392b', fontSize: 13, marginBottom: 8, textAlign: 'center' }}>
+                    Ошибка: {submitErr}
+                  </p>
+                )}
+                <button
+                  type="button"
+                  className={st.primaryBtn}
+                  disabled={!canSubmit || pending}
+                  onClick={() => { requestError(null); doSubmit(); }}
+                >
+                  {pending ? 'Отправляем…' : 'Отправить запрос'}
+                </button>
+              </>
             )}
           </div>
         )}
@@ -408,21 +418,28 @@ function DoneStep({
 }) {
   return (
     <div className={st.done}>
-      <div className={st.doneBadge}>
-        <Icon name="CheckedIcon" />
+      <div className={st.doneContent}>
+        <div className={st.doneBadge}>
+          <Icon name="CheckedIcon" />
+        </div>
+        <h3 className={st.doneTitle}>Запрос на примерку принят</h3>
+        <p className={st.doneText}>
+          Мы свяжемся с вами в ближайшее время для подтверждения визита
+        </p>
+        {boutique && (
+          <span className={st.doneboutiquePill}>{boutique}</span>
+        )}
       </div>
-      <h3 className={st.doneTitle}>Запрос на примерку отправлен</h3>
-      <p className={st.doneText}>
-        Мы свяжемся с вами в ближайшее время для подтверждения визита
-        {boutique ? <> в&nbsp;бутик <b>{boutique}</b></> : null}.
-      </p>
-      <div className={st.doneActions}>
-        <button type="button" className={st.primaryBtn} onClick={onMore}>
-          Продолжить покупки
-        </button>
-        <button type="button" className={st.secondaryBtn} onClick={onReset}>
-          Закрыть
-        </button>
+      <div className={st.doneBottom}>
+        <div className={st.doneSeparator} />
+        <div className={st.doneActions}>
+          <button type="button" className={st.primaryBtn} onClick={onMore}>
+            Продолжить покупки
+          </button>
+          <button type="button" className={st.doneGhostBtn} onClick={onReset}>
+            Закрыть
+          </button>
+        </div>
       </div>
     </div>
   );
