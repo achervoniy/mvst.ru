@@ -1,0 +1,723 @@
+/* ============================
+   CART DRAWER — primary + steps
+   ============================ */
+
+.drawer {
+  background: $Core-Pure-white !important;
+  max-width: 100vw !important;
+
+  @include media-breakpoint-down(sm) {
+    width: 100vw !important;
+    max-width: 100vw !important;
+  }
+}
+
+.root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: $Core-Pure-white;
+  font-family: Circe, Manrope, sans-serif;
+  color: $Core-Reach-black;
+
+  @include media-breakpoint-down(sm) {
+    font-size: 15px;
+  }
+}
+
+/* ── head ── */
+.head {
+  display: grid;
+  grid-template-columns: 40px 1fr 40px;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba($Core-Reach-black, 0.07);
+}
+
+.headBack,
+.headClose {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: $Core-Reach-black;
+  transition: opacity 0.15s ease;
+
+  &:hover {
+    opacity: 0.6;
+  }
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.headBackSpacer {
+  display: block;
+  width: 32px;
+  height: 32px;
+}
+
+.headClose {
+  justify-self: end;
+}
+
+.headTitle {
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: $Core-Reach-black;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.headCount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  background: $Core-Light-brass;
+  color: $Core-Pure-white;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  border-radius: 999px;
+}
+
+/* ── stepper ── */
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 18px 24px 14px;
+  border-bottom: 1px solid rgba($Core-Reach-black, 0.07);
+
+  @include media-breakpoint-down(sm) {
+    padding: 14px 12px 12px;
+  }
+}
+
+.stepperItem {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: rgba($Core-Dark-brown, 0.45);
+  position: relative;
+  transition: color 0.15s ease;
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+
+  &:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 13px;
+    right: -50%;
+    width: 100%;
+    height: 1px;
+    background: rgba($Core-Reach-black, 0.1);
+  }
+}
+
+.stepperItemActive {
+  color: $Core-Reach-black;
+
+  .stepperIdx {
+    background: $Core-Reach-black;
+    color: $Core-Pure-white;
+    border-color: $Core-Reach-black;
+  }
+}
+
+.stepperItemDone {
+  color: $Core-Light-brass;
+
+  .stepperIdx {
+    background: $Core-Light-brass;
+    color: $Core-Pure-white;
+    border-color: $Core-Light-brass;
+  }
+
+  &::after {
+    background: $Core-Light-brass;
+  }
+}
+
+.stepperIdx {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid rgba($Core-Reach-black, 0.2);
+  background: $Core-Pure-white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  z-index: 1;
+}
+
+.stepperLabel {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 700;
+  white-space: nowrap;
+
+  @include media-breakpoint-down(sm) {
+    font-size: 9px;
+    letter-spacing: 0.08em;
+  }
+}
+
+/* ── body ── */
+.body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px 24px;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba($Core-Reach-black, 0.15);
+  }
+
+  @include media-breakpoint-down(sm) {
+    padding: 16px 14px 16px;
+  }
+}
+
+/* ── empty ── */
+.empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 24px;
+  gap: 8px;
+}
+
+.emptyTitle {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: $Core-Reach-black;
+}
+
+.emptyHint {
+  margin: 0;
+  max-width: 300px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: rgba($Core-Dark-brown, 0.7);
+}
+
+/* ── list ── */
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.listItem {
+  display: grid;
+  grid-template-columns: 84px 1fr 28px;
+  gap: 14px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba($Core-Reach-black, 0.06);
+
+  &:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  @include media-breakpoint-down(sm) {
+    grid-template-columns: 70px 1fr 24px;
+    gap: 10px;
+    padding-bottom: 16px;
+  }
+}
+
+.listImage {
+  width: 84px;
+  height: 108px;
+  background: $Core-Overlays-ExtraLight;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  @include media-breakpoint-down(sm) {
+    width: 70px;
+    height: 90px;
+  }
+}
+
+.listImagePh {
+  width: 100%;
+  height: 100%;
+  background: $Core-Overlays-ExtraLight;
+}
+
+.listInfo {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.listBrand {
+  margin: 0;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: rgba($Core-Dark-brown, 0.55);
+}
+
+.listTitle {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: $Core-Reach-black;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.listMeta {
+  margin: 0;
+  font-size: 12px;
+  color: rgba($Core-Dark-brown, 0.7);
+}
+
+.listPrice {
+  margin: 4px 0 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: $Core-Reach-black;
+}
+
+.listRemove {
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: rgba($Core-Reach-black, 0.4);
+  transition: color 0.15s ease;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    color: $Core-Reach-black;
+  }
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.clearBtn {
+  margin: 20px 0 0;
+  background: transparent;
+  border: none;
+  color: rgba($Core-Dark-brown, 0.6);
+  cursor: pointer;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: $Core-Reach-black;
+  }
+}
+
+.helper {
+  margin: 24px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid rgba($Core-Reach-black, 0.07);
+  font-size: 12px;
+  line-height: 1.6;
+  color: rgba($Core-Dark-brown, 0.65);
+
+  b {
+    color: $Core-Reach-black;
+  }
+}
+
+/* ── boutique step ── */
+.sectionHelp {
+  margin: 0 0 14px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: rgba($Core-Dark-brown, 0.7);
+}
+
+.boutiqueList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.boutiqueCard {
+  display: grid;
+  grid-template-columns: 96px 1fr 20px;
+  gap: 14px;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid rgba($Core-Reach-black, 0.1);
+  background: $Core-Pure-white;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+
+  &:hover {
+    border-color: rgba($Core-Reach-black, 0.35);
+  }
+}
+
+.boutiqueCardActive {
+  border-color: $Core-Reach-black;
+  background: $Core-Overlays-ExtraLight;
+
+  .boutiqueCheck {
+    background: $Core-Reach-black;
+    border-color: $Core-Reach-black;
+
+    &::after {
+      opacity: 1;
+    }
+  }
+}
+
+.boutiqueRadio {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.boutiqueImage {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  overflow: hidden;
+  background: $Core-Overlays-ExtraLight;
+
+  img {
+    object-fit: cover;
+  }
+}
+
+.boutiqueInfo {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.boutiqueTitle {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: $Core-Burnt-umber;
+}
+
+.boutiqueAddress {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: $Core-Dark-brown;
+}
+
+.boutiqueTime {
+  margin: 2px 0 0;
+  font-size: 11px;
+  line-height: 1.5;
+  color: rgba($Core-Dark-brown, 0.55);
+}
+
+.boutiqueCheck {
+  width: 20px;
+  height: 20px;
+  border: 1px solid rgba($Core-Reach-black, 0.25);
+  border-radius: 50%;
+  justify-self: center;
+  position: relative;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 5px;
+    border-radius: 50%;
+    background: $Core-Pure-white;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+}
+
+/* ── contacts step ── */
+.contacts {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pickSummary {
+  padding: 14px 16px;
+  background: $Core-Overlays-ExtraLight;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.pickLabel {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: rgba($Core-Dark-brown, 0.6);
+}
+
+.pickValue {
+  font-size: 14px;
+  font-weight: 700;
+  color: $Core-Reach-black;
+  letter-spacing: 0.02em;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fieldLabel {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: rgba($Core-Dark-brown, 0.6);
+}
+
+.fieldInput {
+  border: none;
+  border-bottom: 1px solid rgba($Core-Reach-black, 0.2);
+  background: transparent;
+  padding: 10px 0;
+  font-family: inherit;
+  font-size: 15px;
+  color: $Core-Reach-black;
+  outline: none;
+  transition: border-color 0.15s ease;
+
+  &::placeholder {
+    color: rgba($Core-Dark-brown, 0.4);
+  }
+
+  &:focus {
+    border-bottom-color: $Core-Reach-black;
+  }
+}
+
+.privacy {
+  margin: 4px 0 0;
+  font-size: 11px;
+  line-height: 1.55;
+  color: rgba($Core-Dark-brown, 0.55);
+}
+
+/* ── done step ── */
+.done {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 40px 12px;
+  gap: 14px;
+}
+
+.doneBadge {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: $Core-Overlays-ExtraLight;
+  border: 1px solid $Core-Light-brass;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $Core-Light-brass;
+
+  svg {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+.doneTitle {
+  margin: 4px 0 0;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: $Core-Burnt-umber;
+}
+
+.doneText {
+  margin: 0;
+  max-width: 320px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: $Core-Dark-brown;
+
+  b {
+    color: $Core-Reach-black;
+  }
+}
+
+.doneActions {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-self: stretch;
+}
+
+/* ── footer & buttons ── */
+.footer {
+  padding: 16px 24px 24px;
+  border-top: 1px solid rgba($Core-Reach-black, 0.07);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: $Core-Pure-white;
+
+  @include media-breakpoint-down(sm) {
+    padding: 12px 14px 16px;
+    gap: 10px;
+  }
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.totalLabel {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: rgba($Core-Dark-brown, 0.6);
+}
+
+.totalValue {
+  font-size: 20px;
+  font-weight: 700;
+  color: $Core-Reach-black;
+}
+
+.primaryBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 52px;
+  padding: 0 24px;
+  background: $Core-Reach-black;
+  color: $Core-Pure-white;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  transition:
+    opacity 0.15s ease,
+    background 0.15s ease;
+
+  &:hover:not(:disabled) {
+    opacity: 0.88;
+  }
+
+  &:disabled {
+    background: rgba($Core-Reach-black, 0.25);
+    cursor: not-allowed;
+  }
+
+  @include media-breakpoint-down(sm) {
+    min-height: 48px;
+    padding: 0 12px;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+  }
+}
+
+.secondaryBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 48px;
+  padding: 0 24px;
+  background: transparent;
+  color: $Core-Reach-black;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border: 1px solid rgba($Core-Reach-black, 0.2);
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+
+  &:hover {
+    border-color: $Core-Reach-black;
+  }
+}
