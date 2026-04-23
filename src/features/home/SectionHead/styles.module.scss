@@ -1,0 +1,65 @@
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 40px 24px 16px;
+
+  &::before {
+    content: '';
+    display: block;
+    width: 48px;
+    height: 1px;
+    background: $Core-Light-brass;
+    margin-bottom: 16px;
+  }
+
+  &.center {
+    align-items: center;
+    text-align: center;
+
+    &::before {
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+
+  &.left {
+    align-items: flex-start;
+    text-align: left;
+
+    &::before {
+      margin-left: 0;
+    }
+  }
+
+  @include desktop() {
+    padding: 64px 24px 28px;
+    gap: 8px;
+
+    &::before {
+      width: 64px;
+    }
+  }
+}
+
+.eyebrow {
+  color: $Core-Light-brass;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 11px;
+}
+
+.title {
+  color: $Core-Burnt-umber;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.link {
+  margin-top: 4px;
+  text-decoration: none;
+}
+
+.linkText {
+  color: $Core-Dark-brown;
+}

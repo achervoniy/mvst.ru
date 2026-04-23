@@ -2,11 +2,21 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-// import { HOME_PAGE_VIDEO_URL, HOME_PAGE_VIDEO_URL_MOBILE } from '@/constants/runtimeConfig';
-
-import { AboutMust, CallToBuy, StreamBanner } from '@/features/home';
+import {
+  AboutMust,
+  Bestsellers,
+  CallToBuy,
+  CollectionBanners,
+  EditorialBanners,
+  FashionShow,
+  LooksPreview,
+  NewArrivals,
+  StreamBanner,
+} from '@/features/home';
 
 import { useHash, usePageVisibility } from '@/lib/hooks';
+
+import { RevealOnScroll } from '@/shared/ui/RevealOnScroll/RevealOnScroll';
 
 import homeBannerDesktop from './homeBannerDesktop.jpg';
 import homeBannerMobile from './homeBannerMobile.jpg';
@@ -38,7 +48,6 @@ export function HomePage() {
     }
   }, [documentVisible]);
 
-  // Проверка стрима
   useEffect(() => {
     const now = new Date();
     const target = new Date(2026, 2, 28, 20, 0, 0);
@@ -58,16 +67,41 @@ export function HomePage() {
         link={streamEnded ? '/collection/must-web' : '/fashion-show-march'}
       />
 
-      {/* <div className={st.video}>
-        <video autoPlay playsInline loop muted ref={videoRef}>
-          <source src={HOME_PAGE_VIDEO_URL} type="video/mp4" media="(min-width:1023px)" />
-          <source src={HOME_PAGE_VIDEO_URL_MOBILE} type="video/mp4" />
-        </video>
-      </div> */}
-      {/* @/features/home */}
-      {/* <Banner gender="all" /> */}
-      <CallToBuy />
-      <AboutMust />
+      <RevealOnScroll><CollectionBanners /></RevealOnScroll>
+
+      <RevealOnScroll delay={100}><NewArrivals gender="women" /></RevealOnScroll>
+      <RevealOnScroll delay={100}><NewArrivals gender="men" /></RevealOnScroll>
+
+      <RevealOnScroll>
+        <LooksPreview
+          eyebrow="лукбук SS26"
+          title="образы сезона"
+          linkText="Смотреть все образы"
+          limit={8}
+        />
+      </RevealOnScroll>
+
+      <RevealOnScroll><EditorialBanners /></RevealOnScroll>
+
+      <RevealOnScroll><Bestsellers /></RevealOnScroll>
+
+      <RevealOnScroll><FashionShow gender="women" /></RevealOnScroll>
+      <RevealOnScroll><FashionShow gender="men" /></RevealOnScroll>
+
+      <RevealOnScroll>
+        <LooksPreview
+          variant="compact"
+          eyebrow="MVST collection"
+          title="история коллекции"
+          linkText="Перейти в лукбук"
+          limit={8}
+          offset={8}
+        />
+      </RevealOnScroll>
+
+      <RevealOnScroll><AboutMust /></RevealOnScroll>
+
+      <RevealOnScroll><CallToBuy /></RevealOnScroll>
     </div>
   );
 }

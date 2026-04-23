@@ -14,6 +14,13 @@ export function StreamBanner({ link, title, images }: Props) {
     <Link className={st.StreamBanner} href={link}>
       <Image className={st.desktop} src={images.desktop} alt={title} quality={50} />
       <Image className={st.mobile} src={images.mobile} alt={title} quality={50} />
+      <div className={st.overlay} />
+      <div className={st.titleOverlay}>
+        <span>{title}</span>
+      </div>
+      <div className={st.scrollHint}>
+        <span>↓</span>
+      </div>
     </Link>
   );
 }

@@ -5,6 +5,7 @@
   justify-content: flex-end;
   position: relative;
   grid-column: 1/3;
+  overflow: hidden;
 
   .mobile {
     display: flex;
@@ -26,5 +27,60 @@
     object-fit: cover;
     width: 100%;
     height: auto;
+    transition: transform 8s cubic-bezier(0.2, 0, 0, 1);
   }
+
+  &:hover img {
+    transform: scale(1.02);
+    transition: transform 8s cubic-bezier(0.2, 0, 0, 1);
+  }
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.1) 40%, transparent 70%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.titleOverlay {
+  position: absolute;
+  bottom: 48px;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+
+  span {
+    font-size: clamp(32px, 5vw, 72px);
+    font-weight: 300;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.92);
+    font-family: inherit;
+  }
+}
+
+.scrollHint {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: none;
+  color: rgba(255,255,255,0.6);
+  font-size: 20px;
+  animation: bounceDown 2s ease infinite;
+
+  @include desktop() {
+    display: flex;
+  }
+}
+
+@keyframes bounceDown {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(6px); }
 }
