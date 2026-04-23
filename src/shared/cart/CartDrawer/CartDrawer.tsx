@@ -185,6 +185,7 @@ export function CartDrawer() {
                 closeCart();
               }}
               onMore={() => {
+                doClear();
                 doReset();
                 closeCart();
               }}

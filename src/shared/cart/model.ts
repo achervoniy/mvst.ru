@@ -171,12 +171,8 @@ $requestPending
 
 sample({
   clock: submitFittingRequestFx.done,
-  target: cartStepSet.prepend(() => 'done' as CartStep),
-});
-
-sample({
-  clock: submitFittingRequestFx.done,
-  target: clearCart,
+  fn: () => 'done' as CartStep,
+  target: cartStepSet,
 });
 
 sample({
