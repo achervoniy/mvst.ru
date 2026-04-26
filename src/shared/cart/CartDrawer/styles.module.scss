@@ -283,7 +283,7 @@
 .listImage {
   width: 96px;
   height: 128px;
-  background: $Core-Overlays-ExtraLight;
+  background: transparent;
   overflow: hidden;
   flex-shrink: 0;
   display: flex;
@@ -308,7 +308,7 @@
 .listImagePh {
   width: 100%;
   height: 100%;
-  background: $Core-Overlays-ExtraLight;
+  background: transparent;
 }
 
 .listInfo {
