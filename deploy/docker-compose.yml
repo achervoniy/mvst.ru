@@ -27,7 +27,7 @@ services:
     env_file:
       - ./site.env
     ports:
-      - "127.0.0.1:3000:3000"
+      - "127.0.0.1:${SITE_HOST_PORT:-3000}:3000"
     networks: [mvst]
     depends_on:
       - mvst-crm
@@ -41,7 +41,7 @@ services:
     env_file:
       - ./crm.env
     ports:
-      - "127.0.0.1:3101:3001"
+      - "127.0.0.1:${CRM_HOST_PORT:-3101}:3001"
     networks: [mvst]
     depends_on:
       postgres:
