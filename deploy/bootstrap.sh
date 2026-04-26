@@ -4,11 +4,14 @@ set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 CRM_DIR="$REPO_ROOT/mvst-crm"
-CRM_REPO="${CRM_REPO:-https://github.com/dnikolay95/mvst-crm.git}"
+# CRM lives in the same dnikolay95/mvst repo on an unrelated `crm` branch.
+# Override either via env (CRM_REPO=... CRM_BRANCH=... ./bootstrap.sh).
+CRM_REPO="${CRM_REPO:-git@github.com:dnikolay95/mvst.git}"
+CRM_BRANCH="${CRM_BRANCH:-crm}"
 
 if [ ! -d "$CRM_DIR/.git" ]; then
-  echo "[bootstrap] cloning mvst-crm into $CRM_DIR"
-  git clone "$CRM_REPO" "$CRM_DIR"
+  echo "[bootstrap] cloning $CRM_REPO ($CRM_BRANCH) into $CRM_DIR"
+  git clone -b "$CRM_BRANCH" "$CRM_REPO" "$CRM_DIR"
 else
   echo "[bootstrap] mvst-crm already present, pulling latest"
   git -C "$CRM_DIR" pull --ff-only
