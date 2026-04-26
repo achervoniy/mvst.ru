@@ -285,19 +285,21 @@ function ItemsStep({
             >
               <div className={st.listImage}>
                 {item.image ? (
-                  <Image src={item.image} alt={item.title} width={84} height={108} />
+                  <Image src={item.image} alt={item.title} width={96} height={128} />
                 ) : (
                   <div className={st.listImagePh} />
                 )}
               </div>
               <div className={st.listInfo}>
-                <p className={st.listBrand}>{item.brand}</p>
-                <p className={st.listTitle}>{item.title}</p>
-                <p className={st.listMeta}>
-                  {item.color ? <>{item.color} · </> : null}
-                  Размер {item.sizeLabel}
-                  {item.qty > 1 ? <> · {item.qty} шт.</> : null}
-                </p>
+                <div className={st.listInfoTop}>
+                  <p className={st.listBrand}>{item.brand}</p>
+                  <p className={st.listTitle}>{item.title}</p>
+                  <p className={st.listMeta}>
+                    {item.color ? <>{item.color} · </> : null}
+                    Размер {item.sizeLabel}
+                    {item.qty > 1 ? <> · {item.qty} шт.</> : null}
+                  </p>
+                </div>
                 <p className={st.listPrice}>{transformPrice(item.price * item.qty)}</p>
               </div>
             </Link>
