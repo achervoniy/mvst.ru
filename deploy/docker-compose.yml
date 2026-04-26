@@ -41,7 +41,7 @@ services:
     env_file:
       - ./crm.env
     ports:
-      - "127.0.0.1:3001:3001"
+      - "127.0.0.1:3101:3001"
     networks: [mvst]
     depends_on:
       postgres:
