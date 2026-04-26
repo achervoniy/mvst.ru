@@ -94,7 +94,7 @@ export function Nav({ onLink }: { onLink?: () => void }) {
           }}
         >
           <Typography font="paragraph/regular">
-            Корзина{count > 0 ? <span className={st.cartCount}>{count}</span> : null}
+            Корзина{count > 0 ? <span className={st.cartCount}>{count > 9 ? '9+' : count}</span> : null}
           </Typography>
           <Icon name="ArrowRight" />
         </button>
