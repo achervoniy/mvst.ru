@@ -4,10 +4,12 @@ import { useUnit } from 'effector-react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { usePopupState, useScrollEventListener } from '@/lib/hooks';
 import { useViewport } from '@/lib/useViewport';
+
+import { CartButton, CartDrawer } from '@/shared/cart';
 
 import { BREAKPOINTS } from '@/ui/breakpoints';
 import { Responsive, Typography } from '@/ui/index';
@@ -29,6 +31,7 @@ export function Header({ className }: Props) {
   const pathname = usePathname();
   const counter = useUnit($collectionCounter);
   const [scrollIsDown, setScrollIsDown] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   const isCollectionPage = pathname.startsWith('/collection/');
 
@@ -49,40 +52,65 @@ export function Header({ className }: Props) {
     }
   });
 
+  useEffect(() => {
+    const onScroll = () => {
+      // trigger only after the promo strip is already out of view —
+      // prevents content reflow / jump as glass kicks in
+      setIsScrolled(window.scrollY > 80);
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   return (
     <>
+      {!isCollectionPage && (
+        <div className={st.promoStrip} role="region" aria-label="Promo">
+          <span>Бесплатная доставка по Москве</span>
+          <span className={st.promoDivider} />
+          <span>Запись на частную примерку в бутик</span>
+          <span className={st.promoDivider} />
+          <span>Весна — лето 2026</span>
+        </div>
+      )}
       <header
         className={cn(st.header, className, {
           [st.isCollectionPage]: isCollectionPage,
-          // [st.scrollIsDown]: scrollIsDown,
+          [st.glass]: isScrolled,
         })}
       >
-        <Responsive.TabletAndBelow className={st.responsive}>
-          <div className={st.content}>
-            {/* @ts-ignore */}
-            <Link href="/" onClick={onIconClicked}>
-              <Icon name={backIcon} />
-            </Link>
-            <Link href="/" className={st.logo}>
-              <Icon name="LogoFull" />
-            </Link>
+        <div className={st.bar}>
+          <Responsive.TabletAndBelow className={st.responsive}>
+            <div className={st.content}>
+              {/* @ts-ignore */}
+              <Link href="/" onClick={onIconClicked}>
+                <Icon name={backIcon} />
+              </Link>
+              <Link href="/" className={st.logo}>
+                <Icon name="LogoFull" />
+              </Link>
 
-            {counter && isCollectionPage && (
-              <Typography font="paragraph/regular" className={st.counter}>
-                {counter.current} / {counter.length}
-              </Typography>
-            )}
-          </div>
-        </Responsive.TabletAndBelow>
+              {counter && isCollectionPage && (
+                <Typography font="paragraph/regular" className={st.counter}>
+                  {counter.current} / {counter.length}
+                </Typography>
+              )}
 
-        <Responsive.Desktop className={st.responsive}>
-          <div className={st.content}>
-            <DesktopHeader scrollIsDown={scrollIsDown} />
-          </div>
-        </Responsive.Desktop>
+              {!isCollectionPage && <CartButton className={st.cartBtn} compact />}
+            </div>
+          </Responsive.TabletAndBelow>
+
+          <Responsive.Desktop className={st.responsive}>
+            <div className={st.content}>
+              <DesktopHeader scrollIsDown={scrollIsDown} />
+            </div>
+          </Responsive.Desktop>
+        </div>
       </header>
 
       {isTabletAndBelow && <MobileDrawer popup={popup} />}
+      <CartDrawer />
     </>
   );
 }

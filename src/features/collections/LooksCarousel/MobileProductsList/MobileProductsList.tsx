@@ -1,6 +1,6 @@
-import { Look } from '@/shared/api/catalog';
+import Link from 'next/link';
 
-import { buildProductLink } from '@/constants/runtimeConfig';
+import { Look } from '@/shared/api/catalog';
 
 import { transformPrice } from '@/lib/currency';
 
@@ -28,10 +28,10 @@ export function MobileProductsList({ activeSlideIndex, looks }: Props) {
 
       <div className={st.MobileProductsList}>
         {activeLook.products.map(product => (
-          <a
+          <Link
             key={`${product.slug}-${product.id}`}
-            href={buildProductLink(product.slug)}
-            target="_blank"
+            href={`/product/${product.slug}`}
+            prefetch={false}
             className={st.product}
           >
             <img loading="lazy" src={product.photos[0]?.middle} alt={product.title} />
@@ -42,7 +42,7 @@ export function MobileProductsList({ activeSlideIndex, looks }: Props) {
             <Typography font="body/regular" align="center">
               {transformPrice(product.skuList[0]?.price_discount || product.skuList[0]?.price_original)}
             </Typography>
-          </a>
+          </Link>
         ))}
       </div>
     </div>

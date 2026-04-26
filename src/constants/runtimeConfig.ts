@@ -12,6 +12,8 @@ export const LOOK_SLUGS = {
   all: 'must-web',
 };
 
+export const MVST_BRAND_TITLE = 'MVST';
+
 export const HOME_PAGE_FILTERS = {
   men: {
     category: 18327,
@@ -40,3 +42,48 @@ export const TSUM_SITE_LINK_BY_GENDER = {
 };
 
 export const TG_LINK = 'https://t.me/mvst_fashion';
+export const INSTAGRAM_LINK = 'https://www.instagram.com/mvst_fashion/';
+export const WHATSAPP_LINK = 'https://wa.me/74951234567';
+
+export const BOUTIQUE_INFO = {
+  title: 'Бутик MVST',
+  address: 'Москва, Рублёво-Успенское шоссе, д. 114с7',
+  hours: 'Ежедневно с 11:00 до 22:00',
+  phone: '+7 (495) 933-79-00',
+};
+
+// Ручной список бестселлеров — slug'и товаров, которые показываются
+// в блоке «Бестселлеры» на главной. Сохраняется порядок.
+export const HOME_PAGE_BESTSELLERS_SLUGS: string[] = [];
+
+// Кураторские подборки — плитки-ссылки в блоке «Особые подборки».
+// Каждая плитка ведёт на /collection/* или /catalog/*.
+export const HOME_PAGE_SELECTIONS: Array<{
+  eyebrow?: string;
+  title: string;
+  subtitle?: string;
+  href: string;
+  tone?: 'dark' | 'cream' | 'ochre';
+}> = [
+  {
+    eyebrow: 'весна-лето 26',
+    title: 'новая коллекция',
+    subtitle: 'Первая поставка SS26 уже в&nbsp;бутиках и&nbsp;онлайн',
+    href: `/collection/${LOOK_SLUGS.all}`,
+    tone: 'dark',
+  },
+  {
+    eyebrow: 'тренд сезона',
+    title: 'лён и хлопок',
+    subtitle: 'Лёгкие природные ткани с&nbsp;характером',
+    href: `/catalog/women`,
+    tone: 'cream',
+  },
+  {
+    eyebrow: 'классика',
+    title: 'вязаный трикотаж',
+    subtitle: 'Тонкая шерсть, кашемир, мерино',
+    href: `/catalog/men`,
+    tone: 'ochre',
+  },
+];

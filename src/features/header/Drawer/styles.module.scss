@@ -32,7 +32,7 @@
   @include desktop() {
     flex-direction: row;
     padding-top: 0px;
-    gap: 32px;
+    gap: 40px;
 
     svg {
       display: none;
@@ -41,17 +41,50 @@
     li.item {
       height: 56px;
       padding: 0px;
-      border-bottom: 2px solid transparent;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.25s cubic-bezier(0.2,0,0,1);
 
-      &:hover {
-        border-bottom: 2px solid $Core-Light-brass
-      }
+      a, button { color: $Core-Burnt-umber; }
 
-      &.active {
-        border-bottom: 2px solid $Core-Light-brass
-      }
+      &:hover { border-bottom: 1px solid $Core-Light-brass; }
+      &.active { border-bottom: 1px solid $Core-Light-brass; }
+    }
+
+    li.item a > p,
+    li.item button > p {
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      font-size: 11px;
+      font-weight: 400;
     }
   }
+}
+
+.cartItemBtn {
+  all: unset;
+  cursor: pointer;
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  color: $Core-Dark-brown;
+}
+
+.cartCount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 8px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: $Core-Burnt-umber;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  vertical-align: middle;
 }
 
 .footer {

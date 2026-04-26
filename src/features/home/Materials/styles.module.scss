@@ -1,0 +1,263 @@
+.materials {
+  padding: 0 24px;
+  grid-column: 1 / 3;
+
+  @include desktop() {
+    padding: 0 24px;
+  }
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  padding-bottom: 40px;
+
+  @include desktop() {
+    padding-bottom: 96px;
+    gap: 16px;
+  }
+}
+
+.eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: $Core-Light-brass;
+}
+
+.title {
+  font-family: Circe;
+  font-weight: 300;
+  font-size: 32px;
+  line-height: 1.15;
+  letter-spacing: 0.03em;
+  text-transform: lowercase;
+  color: $Core-Burnt-umber;
+  margin: 0;
+
+  em {
+    font-style: italic;
+    font-weight: 300;
+    color: $Core-Light-brass;
+  }
+
+  @include desktop() {
+    font-size: 64px;
+  }
+}
+
+.intro {
+  max-width: 540px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: $Core-Dark-brown;
+  margin: 0;
+
+  @include desktop() {
+    font-size: 16px;
+  }
+}
+
+// editorial 3-col grid with vertical stagger:
+// middle column drops down — adds magazine rhythm,
+// avoids the "checkerboard" feel of uniform tiles
+.row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 56px;
+
+  @media (min-width: 600px) {
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 24px;
+    row-gap: 64px;
+  }
+
+  @include desktop() {
+    grid-template-columns: repeat(3, 1fr);
+    column-gap: 24px;
+    row-gap: 96px;
+    align-items: start;
+
+    > .card[data-pos='1'] {
+      transform: translateY(64px);
+    }
+  }
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  @include desktop() {
+    gap: 24px;
+  }
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 4px;
+}
+
+.metaRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(74, 56, 38, 0.18);
+  margin-bottom: 6px;
+}
+
+.index {
+  font-family: Circe;
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: $Core-Burnt-umber;
+}
+
+.indexTotal {
+  color: $Core-Light-brass;
+  margin-left: 4px;
+}
+
+.cardLabel {
+  font-family: Circe;
+  font-weight: 300;
+  font-size: 32px;
+  text-transform: lowercase;
+  letter-spacing: 0.04em;
+  color: $Core-Burnt-umber;
+
+  @include desktop() {
+    font-size: 40px;
+  }
+}
+
+.origin {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: $Core-Light-brass;
+}
+
+.text {
+  font-size: 13px;
+  line-height: 1.7;
+  color: $Core-Dark-brown;
+  margin: 0;
+  max-width: 320px;
+
+  @include desktop() {
+    font-size: 14px;
+  }
+}
+
+// ---------- Swatches: woven fabric textures (CSS-only) ----------
+// Real photos can be dropped at /public/static/materials/{id}.jpg —
+// they overlay the texture cleanly. Until then, these are recognizable
+// as fabric, not flat color chips.
+
+.swatch {
+  aspect-ratio: 4 / 5;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.swatchImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  z-index: 2;
+  transition: transform 12s cubic-bezier(0.2, 0, 0, 1);
+  transform: scale(1.02);
+}
+
+.card:hover .swatchImage {
+  transform: scale(1.06);
+}
+
+// fine-grain noise — sits above the woven background but below any real photo,
+// makes flat color feel like fibre even when no photo is present
+.swatchGrain {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  opacity: 0.55;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.55 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  background-size: 240px 240px;
+}
+
+// ---- woven base per material ----
+
+// linen: open cross-hatch threads, warm cream
+.swatch_cream {
+  background:
+    repeating-linear-gradient(0deg,   rgba(110,90,60,0.10) 0 1px, transparent 1px 6px),
+    repeating-linear-gradient(90deg,  rgba(110,90,60,0.12) 0 1px, transparent 1px 6px),
+    linear-gradient(135deg, #ECE3D0 0%, #D8C9A8 100%);
+}
+
+// cotton: tight fine grid, almost paper
+.swatch_paper {
+  background:
+    repeating-linear-gradient(0deg,   rgba(120,100,70,0.07) 0 1px, transparent 1px 4px),
+    repeating-linear-gradient(90deg,  rgba(120,100,70,0.07) 0 1px, transparent 1px 4px),
+    linear-gradient(135deg, #F8F4EC 0%, #E8DFCE 100%);
+}
+
+// denim: classic 45° twill, deep indigo
+.swatch_indigo {
+  background:
+    repeating-linear-gradient(45deg,
+      rgba(255,255,255,0.07) 0 2px,
+      rgba(0,0,0,0.16) 2px 5px),
+    linear-gradient(135deg, #2A3A55 0%, #0F1A2E 100%);
+}
+
+// suede: soft vertical fibres, deep cocoa
+.swatch_cocoa {
+  background:
+    repeating-linear-gradient(90deg, rgba(0,0,0,0.12) 0 1px, transparent 1px 5px),
+    radial-gradient(closest-side at 30% 30%, rgba(255,255,255,0.10), transparent 70%),
+    linear-gradient(135deg, #4E2C1E 0%, #2A1610 100%);
+}
+
+// leather: pebbled grain via layered radial dots, warm tan
+.swatch_leather {
+  background:
+    radial-gradient(circle at 18% 24%, rgba(0,0,0,0.18) 0 2px, transparent 3px),
+    radial-gradient(circle at 62% 38%, rgba(0,0,0,0.16) 0 2px, transparent 3px),
+    radial-gradient(circle at 82% 72%, rgba(0,0,0,0.20) 0 2px, transparent 3px),
+    radial-gradient(circle at 36% 78%, rgba(0,0,0,0.14) 0 2px, transparent 3px),
+    radial-gradient(closest-side at 30% 30%, rgba(255,255,255,0.10), transparent 60%),
+    linear-gradient(135deg, #6B3A22 0%, #38190E 100%);
+  background-size:
+    32px 32px,
+    28px 28px,
+    36px 36px,
+    24px 24px,
+    auto,
+    auto;
+}
+
+// cashmere: soft diagonal fibres, tobacco
+.swatch_tobacco {
+  background:
+    repeating-linear-gradient(20deg, rgba(255,255,255,0.06) 0 1px, transparent 1px 7px),
+    repeating-linear-gradient(160deg, rgba(0,0,0,0.10) 0 1px, transparent 1px 9px),
+    linear-gradient(135deg, #4A3826 0%, #2D211A 100%);
+}

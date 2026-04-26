@@ -1,75 +1,87 @@
-import cn from 'classnames';
+'use client';
+
 import Image from 'next/image';
-import { useRef, useState } from 'react';
-import { Swiper as SwiperInstance } from 'swiper';
-import { Navigation, Pagination } from 'swiper/modules';
-import { Swiper, SwiperSlide } from 'swiper/react';
+import { useMemo } from 'react';
+
+import { BOUTIQUES } from '@/shared/boutiques';
 
 import { Typography } from '@/ui/index';
 
-import { Icon } from '@/ui/assets/Icon';
-
-import { boutiqueList } from './schema';
-
 import st from './styles.module.scss';
 
-const SLIDES_LEN = 6;
-
 export function BoutiqueList() {
-  const [activeIndex, setActiveIndex] = useState(1);
-  const prevBtnRef = useRef<SVGSVGElement>(null);
-  const nextBtnRef = useRef<SVGSVGElement>(null);
-
-  const onBeforeInit = (swiper: SwiperInstance) => {
-    if (swiper.params.navigation && typeof swiper.params.navigation !== 'boolean') {
-      // @ts-ignore
-      swiper.params.navigation.prevEl = prevBtnRef.current;
-      // @ts-ignore
-      swiper.params.navigation.nextEl = nextBtnRef.current;
-    }
-  };
+  const groups = useMemo(() => {
+    const map = new Map<string, typeof BOUTIQUES>();
+    BOUTIQUES.forEach(b => {
+      const arr = map.get(b.city) ?? [];
+      arr.push(b);
+      map.set(b.city, arr);
+    });
+    return Array.from(map.entries());
+  }, []);
 
   return (
-    <div className={st.BoutiqueList} target-id="boutique">
-      <div className={st.head}>
+    <section className={st.BoutiqueList} target-id="boutique">
+      <header className={st.head}>
         <Typography font="leading/h2" className={st.title} align="center">
           Бутики
         </Typography>
-        <Typography font="paragraph/regular" className={st.counter}>
-          {activeIndex} / {SLIDES_LEN}
+        <Typography font="paragraph/regular" className={st.intro} align="center">
+          Шесть&nbsp;адресов&nbsp;— Москва и&nbsp;Санкт-Петербург. Приходите примерить,
+          выбрать и&nbsp;познакомиться с&nbsp;коллекцией MVST лично.
         </Typography>
-      </div>
+      </header>
 
-      <Icon name="CarouselArrow" className={st.arrow} ref={nextBtnRef} />
-      <Icon name="CarouselArrow" className={cn(st.arrow, st.left)} ref={prevBtnRef} />
-      <Swiper
-        navigation
-        pagination={{ clickable: true }}
-        onBeforeInit={onBeforeInit}
-        spaceBetween={6}
-        slidesPerView={1.1}
-        breakpoints={{
-          1024: {
-            slidesPerView: 3,
-            spaceBetween: 24,
-          },
-        }}
-        modules={[Navigation, Pagination]}
-        onSlideChange={swiper => setActiveIndex(swiper.activeIndex + 1)}
-      >
-        {boutiqueList.map(boutique => (
-          <SwiperSlide key={boutique.title} className={st.slide}>
-            <Image src={boutique.image} alt={boutique.title} quality={30} />
-            <div className={st.footer}>
-              <Typography font="paragraph/bold" className={st.boutiqueTitle}>
-                {boutique.title}
-              </Typography>
-              <Typography font="paragraph/regular">{boutique.address}</Typography>
-              <Typography font="paragraph/regular">{boutique.time}</Typography>
-            </div>
-          </SwiperSlide>
-        ))}
-      </Swiper>
-    </div>
+      {groups.map(([city, items]) => (
+        <div key={city} className={st.cityBlock}>
+          <div className={st.cityTitleWrap}>
+            <span className={st.cityRule} />
+            <Typography font="paragraph/bold" className={st.cityTitle}>
+              {city}
+            </Typography>
+            <span className={st.cityRule} />
+          </div>
+
+          <div className={st.grid}>
+            {items.map(boutique => (
+              <article key={boutique.id} className={st.card}>
+                <div className={st.cardMedia}>
+                  <Image
+                    src={boutique.image}
+                    alt={boutique.title}
+                    fill
+                    sizes="(min-width: 1024px) 33vw, 100vw"
+                    className={st.cardImage}
+                  />
+                </div>
+                <div className={st.cardBody}>
+                  <Typography font="paragraph/bold" className={st.cardTitle}>
+                    {boutique.title}
+                  </Typography>
+                  <p className={st.cardRow}>
+                    <span className={st.cardLabel}>Адрес</span>
+                    <span className={st.cardValue}>
+                      {boutique.city}, {boutique.address}
+                    </span>
+                  </p>
+                  <p className={st.cardRow}>
+                    <span className={st.cardLabel}>Режим</span>
+                    <span className={st.cardValue}>{boutique.schedule}</span>
+                  </p>
+                  {boutique.phone && (
+                    <p className={st.cardRow}>
+                      <span className={st.cardLabel}>Телефон</span>
+                      <a className={st.cardValueLink} href={`tel:${boutique.phone.replace(/\D/g, '')}`}>
+                        {boutique.phone}
+                      </a>
+                    </p>
+                  )}
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      ))}
+    </section>
   );
 }

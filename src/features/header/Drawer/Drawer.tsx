@@ -1,9 +1,11 @@
 import cn from 'classnames';
+import { useUnit } from 'effector-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Drawer from 'react-modern-drawer';
 import 'react-modern-drawer/dist/index.css';
 
+import { $count, cartOpened } from '@/shared/cart';
 import { InAppActions } from '@/shared/ui';
 
 import { LOOK_SLUGS } from '@/constants/runtimeConfig';
@@ -22,6 +24,7 @@ type Props = {
 
 export function Nav({ onLink }: { onLink?: () => void }) {
   const pathname = usePathname();
+  const [count, openCart] = useUnit([$count, cartOpened]);
 
   return (
     <ul className={st.nav}>
@@ -69,13 +72,32 @@ export function Nav({ onLink }: { onLink?: () => void }) {
           <Icon name="ArrowRight" />
         </Link>
       </li>
-      <li className={st.item}>
-        <Link href="/#mvst" onClick={onLink}>
+      <li
+        className={cn(st.item, {
+          [st.active]: pathname.startsWith('/about'),
+        })}
+      >
+        <Link href="/about" onClick={onLink}>
           <Typography font="paragraph/regular" onClick={onLink}>
             О бренде
           </Typography>
           <Icon name="ArrowRight" />
         </Link>
+      </li>
+      <li className={cn(st.item, st.cartItem)}>
+        <button
+          type="button"
+          className={st.cartItemBtn}
+          onClick={() => {
+            onLink?.();
+            openCart();
+          }}
+        >
+          <Typography font="paragraph/regular">
+            Корзина{count > 0 ? <span className={st.cartCount}>{count}</span> : null}
+          </Typography>
+          <Icon name="ArrowRight" />
+        </button>
       </li>
     </ul>
   );

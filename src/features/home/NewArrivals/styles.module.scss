@@ -1,0 +1,9 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  @include desktop() {
+    gap: 24px;
+  }
+}

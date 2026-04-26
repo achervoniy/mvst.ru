@@ -30,19 +30,22 @@
 
 .badge {
   position: absolute;
-  top: 4px;
-  right: 2px;
-  min-width: 16px;
+  top: 2px;
+  right: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
   height: 16px;
-  padding: 0 4px;
-  border-radius: 999px;
+  padding: 0;
+  border-radius: 50%;
   background: $Core-Light-brass;
   color: $Core-Pure-white;
   font-family: Circe, Manrope, sans-serif;
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.02em;
-  line-height: 16px;
+  letter-spacing: 0;
+  line-height: 1;
   text-align: center;
   pointer-events: none;
 }

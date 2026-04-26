@@ -1,5 +1,6 @@
 import ArrowBack from './icons/ArrowBack.svg?react';
 import ArrowRight from './icons/ArrowRight.svg?react';
+import Bag from './icons/Bag.svg?react';
 import CarouselArrow from './icons/CarouselArrow.svg?react';
 import CheckedIcon from './icons/Checked.svg?react';
 import Chevron from './icons/Chevron.svg?react';
@@ -24,4 +25,5 @@ export const Icons = {
   Chevron,
   CheckedIcon,
   SortIcon,
+  Bag,
 };

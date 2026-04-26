@@ -1,0 +1,568 @@
+/* ============================
+   ABOUT — brand page
+   ============================ */
+
+.about {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  color: $Core-Dark-brown;
+}
+
+.sectionEyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  color: $Core-Light-brass;
+  font-size: 11px;
+}
+
+/* ─────────────── HERO ─────────────── */
+.hero {
+  position: relative;
+  width: 100%;
+  min-height: 540px;
+  display: flex;
+  align-items: flex-end;
+  color: $Core-Pure-white;
+  overflow: hidden;
+  isolation: isolate;
+
+  @include desktop() {
+    min-height: 640px;
+    height: calc(100vh - 120px);
+    max-height: 780px;
+  }
+}
+
+.heroMedia {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.heroImageDesktop {
+  object-fit: cover;
+  display: none !important;
+
+  @include desktop() {
+    display: block !important;
+  }
+}
+
+.heroImageMobile {
+  object-fit: cover;
+  display: block !important;
+
+  @include desktop() {
+    display: none !important;
+  }
+}
+
+.heroOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(35, 13, 9, 0.05) 0%,
+    rgba(35, 13, 9, 0.25) 45%,
+    rgba(35, 13, 9, 0.7) 100%
+  );
+}
+
+.heroContent {
+  position: relative;
+  z-index: 1;
+  padding: 0 24px 56px;
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+
+  @include desktop() {
+    padding: 0 48px 80px;
+    gap: 22px;
+  }
+}
+
+.heroEyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.32em;
+  font-size: 11px;
+  color: rgba($Core-Pure-white, 0.8);
+}
+
+.heroTitle {
+  color: $Core-Pure-white;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  line-height: 0.95;
+  font-size: clamp(44px, 8.2vw, 112px);
+  font-weight: 400;
+  max-width: 18ch;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.18);
+}
+
+.heroLead {
+  color: rgba($Core-Pure-white, 0.92);
+  max-width: 480px;
+  line-height: 1.55;
+}
+
+/* ─────────────── MANIFESTO ─────────────── */
+.manifest {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 64px 24px 48px;
+  max-width: 640px;
+  margin: 0 auto;
+
+  @include desktop() {
+    padding: 96px 24px 72px;
+    gap: 28px;
+  }
+}
+
+.manifestText {
+  color: $Core-Burnt-umber;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+  font-weight: 400;
+
+  @include desktop() {
+    font-size: 26px;
+  }
+}
+
+.manifestSub {
+  color: $Core-Dark-brown;
+  line-height: 1.7;
+  max-width: 520px;
+}
+
+/* ─────────────── FABRICS ─────────────── */
+.fabrics {
+  padding: 40px 24px 56px;
+  max-width: 760px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+
+  @include desktop() {
+    padding: 56px 24px 80px;
+    gap: 48px;
+  }
+}
+
+.fabricsHead {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fabricsTitle {
+  color: $Core-Burnt-umber;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+.fabricsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.fabricsItem {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 20px 0;
+  border-top: 1px solid rgba($Core-Burnt-umber, 0.12);
+
+  &:last-child {
+    border-bottom: 1px solid rgba($Core-Burnt-umber, 0.12);
+  }
+
+  @include desktop() {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 32px;
+    padding: 24px 0;
+  }
+}
+
+.fabricsLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex-shrink: 0;
+
+  @include desktop() {
+    width: 220px;
+  }
+}
+
+.fabricsName {
+  font-family: Circe, Manrope, sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: $Core-Burnt-umber;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.fabricsOrigin {
+  font-family: Circe, Manrope, sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: $Core-Light-brass;
+  text-transform: uppercase;
+}
+
+.fabricsNote {
+  color: $Core-Dark-brown;
+  line-height: 1.65;
+  flex: 1;
+}
+
+/* ─────────────── PRINCIPLES ─────────────── */
+.principles {
+  display: grid;
+  grid-template-columns: 1fr;
+  max-width: 760px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 24px 56px;
+  gap: 0;
+
+  @include desktop() {
+    grid-template-columns: repeat(3, 1fr);
+    padding: 0 24px 72px;
+  }
+}
+
+.principleItem {
+  padding: 24px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px solid rgba($Core-Burnt-umber, 0.12);
+
+  &:last-child {
+    border-bottom: 1px solid rgba($Core-Burnt-umber, 0.12);
+  }
+
+  @include desktop() {
+    padding: 32px 24px 32px 0;
+    border-top: 1px solid rgba($Core-Burnt-umber, 0.12);
+    border-bottom: 1px solid rgba($Core-Burnt-umber, 0.12);
+    border-right: 1px solid rgba($Core-Burnt-umber, 0.08);
+
+    &:first-child {
+      padding-left: 0;
+    }
+
+    &:last-child {
+      border-right: none;
+      padding-right: 0;
+    }
+  }
+}
+
+.principleLabel {
+  font-family: Circe, Manrope, sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  color: $Core-Light-brass;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.principleText {
+  color: $Core-Dark-brown;
+  line-height: 1.65;
+}
+
+/* ─────────────── STORY ─────────────── */
+.story {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 28px;
+  padding: 0 0 72px;
+
+  @include desktop() {
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    align-items: center;
+    padding: 40px 24px 96px;
+    max-width: 960px;
+    margin: 0 auto;
+  }
+}
+
+.storyMedia {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  width: 100%;
+
+  @include desktop() {
+    aspect-ratio: 4 / 5;
+    max-height: 640px;
+  }
+}
+
+.storyImage {
+  object-fit: cover;
+}
+
+.storyContent {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 0 20px;
+
+  @include desktop() {
+    padding: 0 0 0 16px;
+    gap: 24px;
+  }
+}
+
+.storyTitle {
+  color: $Core-Burnt-umber;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-weight: 400;
+  line-height: 1.1;
+  max-width: 16ch;
+}
+
+.storyText {
+  color: $Core-Dark-brown;
+  line-height: 1.7;
+  max-width: 52ch;
+}
+
+/* ─────────────── STATS ─────────────── */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  background: rgba($Core-Burnt-umber, 0.12);
+  border-top: 1px solid rgba($Core-Burnt-umber, 0.12);
+  border-bottom: 1px solid rgba($Core-Burnt-umber, 0.12);
+  width: 100%;
+
+  @include desktop() {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.statCard {
+  background: $Core-Overlays-ExtraLight;
+  padding: 32px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+
+  @include desktop() {
+    padding: 56px 24px;
+    gap: 10px;
+  }
+}
+
+.statValue {
+  color: $Core-Burnt-umber;
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+
+.statLabel {
+  color: $Core-Light-brass;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 11px;
+}
+
+/* ─────────────── QUOTE ─────────────── */
+.quote {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding: 80px 24px 64px;
+  max-width: 920px;
+  margin: 0 auto;
+  position: relative;
+
+  &::before {
+    content: '“';
+    position: absolute;
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 120px;
+    color: rgba($Core-Light-brass, 0.25);
+    line-height: 1;
+  }
+
+  @include desktop() {
+    padding: 128px 24px 104px;
+    gap: 32px;
+
+    &::before {
+      top: 48px;
+      font-size: 180px;
+    }
+  }
+}
+
+.quoteText {
+  color: $Core-Burnt-umber;
+  line-height: 1.35;
+  font-weight: 400;
+  font-style: italic;
+  max-width: 20ch;
+  position: relative;
+  z-index: 1;
+
+  @include desktop() {
+    font-size: 30px;
+    max-width: 22ch;
+  }
+}
+
+.quoteAuthor {
+  color: $Core-Light-brass;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  font-size: 11px;
+}
+
+/* ─────────────── GALLERY ─────────────── */
+.gallery {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4px;
+  width: 100%;
+
+  @include desktop() {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+}
+
+.galleryItem {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+
+  img {
+    object-fit: cover;
+    transition: transform 0.8s ease;
+  }
+
+  &:hover img {
+    transform: scale(1.04);
+  }
+
+  @include desktop() {
+    aspect-ratio: 3 / 4;
+  }
+}
+
+/* ─────────────── CTA ─────────────── */
+.cta {
+  background: $Core-Champagne;
+  width: 100%;
+  padding: 72px 24px 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+
+  @include desktop() {
+    padding: 120px 24px;
+    gap: 20px;
+  }
+}
+
+.ctaTitle {
+  color: $Core-Burnt-umber;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 400;
+  max-width: 18ch;
+}
+
+.ctaText {
+  color: $Core-Dark-brown;
+  max-width: 480px;
+  line-height: 1.55;
+}
+
+.ctaActions {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 360px;
+
+  @include desktop() {
+    flex-direction: row;
+    max-width: none;
+    width: auto;
+    gap: 16px;
+  }
+}
+
+.ctaPrimary,
+.ctaSecondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  padding: 14px 36px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: Circe, Manrope, sans-serif;
+  text-decoration: none;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.ctaPrimary {
+  background: $Core-Burnt-umber;
+  color: $Core-Pure-white;
+
+  &:hover {
+    background: $Core-Dark-brown;
+  }
+}
+
+.ctaSecondary {
+  background: transparent;
+  color: $Core-Burnt-umber;
+  border: 1px solid $Core-Burnt-umber;
+
+  &:hover {
+    background: $Core-Burnt-umber;
+    color: $Core-Pure-white;
+  }
+}

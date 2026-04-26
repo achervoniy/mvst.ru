@@ -1,4 +1,5 @@
 import cn from 'classnames';
+import Link from 'next/link';
 import { forwardRef, memo } from 'react';
 
 import { CatalogProduct } from '@/shared/api/catalog';
@@ -33,13 +34,13 @@ export const ProductCard = memo(
     const alt = `${product.title} MVST, ${price}`;
 
     return (
-      <a
+      <Link
         ref={ref}
         className={cn(st.ProductCard, {
           [st.photoVisibility]: photoVisibility,
         })}
-        href={`https://www.tsum.ru/product/${product.slug}/`}
-        target="_blank"
+        href={`/product/${product.slug}`}
+        prefetch={false}
       >
         <div className={st.content}>
           <div className={cn(st.photoContainer, st.opacity, { [st.hasSecondImage]: !!secondImage })}>
@@ -75,7 +76,7 @@ export const ProductCard = memo(
             </Typography>
           )}
         </div>
-      </a>
+      </Link>
     );
   }),
 );

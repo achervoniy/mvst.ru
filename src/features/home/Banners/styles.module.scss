@@ -1,10 +1,9 @@
 .banner {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
+  align-items: stretch;
   position: relative;
-  overflow: hidden;
+  text-decoration: none;
 
   grid-column: 1/3;
 
@@ -24,37 +23,46 @@
     }
   }
 
-  img {
-    object-fit: cover;
-    width: 100%;
-    height: auto;
-    transition: transform 0.8s cubic-bezier(0.2, 0, 0, 1) !important;
+  .imageWrap {
+    overflow: hidden;
     display: block;
+
+    img {
+      object-fit: cover;
+      width: 100%;
+      height: auto;
+      transition: transform 0.8s cubic-bezier(0.2, 0, 0, 1) !important;
+      display: block;
+    }
   }
 
-  &:hover img {
+  &:hover .imageWrap img {
     transform: scale(1.04);
   }
 
   .footer {
-    position: absolute;
-    z-index: 2;
-    color: $Core-Pure-white;
-    padding-bottom: 24px;
-    padding-top: 32px;
-    background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 100%);
-    width: 100%;
-    gap: 6px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 6px;
+    padding: 20px 24px 24px;
+    background: $Core-Champagne;
+    color: $Core-Burnt-umber;
+    transition: background 0.3s ease;
+
+    .link {
+      color: $Core-Wild-tobacco;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-size: 11px;
+    }
+  }
+
+  &:hover .footer {
+    background: darken(#f0ebe3, 4%);
   }
 
   @include desktop() {
     flex: 1;
-
-    img {
-      //height: 871px;
-    }
   }
 }

@@ -24,10 +24,9 @@
   position: sticky;
   top: 0px;
   z-index: $z-regular + 2;
-  background-color: $Core-Pure-white;
 
   @include desktop() {
-    top: -101px;
+    top: 0px;
   }
 }
 
@@ -46,20 +45,11 @@
 
 .footer {
   grid-area: footer;
-  background-color: $Core-Champagne;
   margin-top: 32px;
   position: relative;
   z-index: $z-minor + 1;
-  padding: 8px 24px;
 
   @include desktop() {
     margin-top: 72px;
-    height: 152px;
-    display: flex;
-    align-items: center;
-
-    >div {
-      flex: 1;
-    }
   }
 }

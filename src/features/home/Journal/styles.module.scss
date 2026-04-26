@@ -1,0 +1,106 @@
+.journal {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  grid-column: 1 / 3;
+
+  @include desktop() {
+    gap: 24px;
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+  padding: 0 24px;
+
+  @include desktop() {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+  }
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  text-decoration: none;
+  color: inherit;
+
+  &:hover .cardTitle {
+    color: $Core-Light-brass;
+  }
+
+  &:hover .meta svg {
+    transform: translateX(4px);
+  }
+}
+
+%thumb-base {
+  aspect-ratio: 4 / 5;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.thumb_a {
+  @extend %thumb-base;
+  background:
+    radial-gradient(closest-side at 70% 30%, rgba(255,255,255,0.18), transparent 70%),
+    linear-gradient(135deg, #4A3826 0%, #230D09 100%);
+}
+
+.thumb_b {
+  @extend %thumb-base;
+  background:
+    radial-gradient(closest-side at 30% 30%, rgba(255,255,255,0.45), transparent 70%),
+    linear-gradient(135deg, #ECE3D0 0%, #C9B891 100%);
+}
+
+.thumb_c {
+  @extend %thumb-base;
+  background:
+    radial-gradient(closest-side at 50% 60%, rgba(255,255,255,0.1), transparent 70%),
+    linear-gradient(135deg, #4E2C1E 0%, #2A1610 100%);
+}
+
+.cardEyebrow {
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: $Core-Light-brass;
+}
+
+.cardTitle {
+  font-family: Circe;
+  font-weight: 300;
+  font-size: 22px;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+  text-transform: lowercase;
+  color: $Core-Burnt-umber;
+  margin: 0;
+  transition: color 0.25s cubic-bezier(0.2,0,0,1);
+
+  @include desktop() {
+    font-size: 26px;
+  }
+}
+
+.meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: $Core-Dark-brown;
+  margin-top: 4px;
+
+  svg {
+    width: 12px;
+    height: 12px;
+    transition: transform 0.25s cubic-bezier(0.2,0,0,1);
+  }
+}

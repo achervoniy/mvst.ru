@@ -1,6 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'st-cdn.tsum.com',
+        pathname: '/**',
+      },
+    ],
+  },
   typescript: {
     // !! WARN !!
     // Dangerously allow production builds to successfully complete even if
@@ -17,6 +26,14 @@ const nextConfig = {
   },
   experimental: {
     scrollRestoration: true,
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/api/tsum/:path*',
+        destination: 'https://api.tsum.ru/:path*',
+      },
+    ];
   },
   sassOptions: {
     sourceMap: false,

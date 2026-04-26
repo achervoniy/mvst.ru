@@ -43,15 +43,15 @@ export function Banner({ gender }: Props) {
         </>
       ) : (
         <>
-          <Image src={gender === 'f' ? w : m} alt="" />
+          <div className={st.imageWrap}>
+            <Image src={gender === 'f' ? w : m} alt="" />
+          </div>
 
           <div className={st.footer}>
             <Typography font="leading/h2" align="center">
               {gender === 'f' ? 'женская коллекция' : 'мужская коллекция'}
             </Typography>
-            <Typography font="paragraph/regular" decoration="underline" align="center">
-              Подробнее
-            </Typography>
+            <span className={st.link}>Подробнее →</span>
           </div>
         </>
       )}

@@ -1,36 +1,133 @@
-.header {
-  height: 60px;
-  padding: 0px 64px 0px 24px;
-  margin-bottom: 8px;
-
-  &.isCollectionPage {}
+// ---------- Promo strip (above the header, scrolls naturally) ----------
+.promoStrip {
+  background: $Core-Reach-black;
+  color: $Core-Pure-white;
+  font-family: Circe;
+  font-size: 10px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  text-align: center;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  white-space: nowrap;
+  overflow: hidden;
 
   @include desktop() {
-    padding: 48px 0px 24px 0px;
-    height: auto;
-    padding-bottom: 0px;
-    margin-bottom: 0px;
-    transform: translateY(0px);
-    transition: transform .3s ease-in-out;
+    font-size: 11px;
+    gap: 32px;
+    padding: 12px 24px;
+  }
 
-    &.scrollIsDown {
-      transform: translateY(-100px);
-      // padding-bottom: 0px;
+  span {
+    line-height: 1;
+  }
+
+  .promoDivider {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: rgba(232, 223, 206, 0.5);
+    display: inline-block;
+    flex-shrink: 0;
+  }
+
+  // hide middle messages on small phones
+  > span:nth-child(3),
+  > span:nth-child(4) {
+    display: none;
+
+    @media (min-width: 600px) {
+      display: inline-block;
+    }
+  }
+
+  > span:nth-child(5) {
+    display: none;
+
+    @include desktop() {
+      display: inline-block;
     }
   }
 }
 
+// ---------- Header ----------
+// Classic luxury fashion header:
+//   • outer <header> is sticky + full-width but transparent — so the page bg
+//     shows on either side of the centered bar
+//   • inner .bar is constrained to the page content max-width, sharp edges,
+//     ALWAYS visible while scrolling (no jumps — height is constant)
+//   • on scroll: .bar fades white → translucent + backdrop-filter blur + hairline
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: transparent;
+  margin-bottom: 0;
+
+  &.isCollectionPage {}
+}
+
+.bar {
+  width: 100%;
+  height: 56px;
+  background-color: $Core-Pure-white;
+  border-bottom: 1px solid transparent;
+  transition:
+    background-color .35s ease,
+    backdrop-filter .35s ease,
+    -webkit-backdrop-filter .35s ease,
+    border-color .35s ease,
+    box-shadow .35s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @include desktop() {
+    height: 64px;
+  }
+}
+
+.header.glass .bar {
+  background-color: rgba(255, 255, 255, 0.65);
+  backdrop-filter: saturate(180%) blur(18px);
+  -webkit-backdrop-filter: saturate(180%) blur(18px);
+  border-bottom-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 24px -20px rgba(0, 0, 0, 0.18);
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .header.glass .bar {
+    background-color: rgba(255, 255, 255, 0.96);
+  }
+}
+
+// ---------- Content slots ----------
 .content {
   display: flex;
   gap: 16px;
   align-items: center;
   width: 100%;
+  max-width: $max-width-desktop;
+  margin: 0 auto;
   height: 100%;
+  padding: 0 16px;
   position: relative;
 
   @include desktop() {
-    flex-direction: column;
+    gap: 32px;
+    padding: 0 24px;
+    justify-content: space-between;
   }
+}
+
+.responsive {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
 }
 
 .logo {
@@ -39,24 +136,35 @@
   align-items: center;
 
   svg {
-    height: 31px;
-    width: 84px;
+    height: 26px;
+    width: 72px;
 
     @include desktop() {
-      height: 24px;
-      width: 190px;
+      height: 22px;
+      width: 168px;
     }
   }
 }
 
-.responsive {
-  width: 100%;
-  height: 100%;
-}
-
 .counter {
   position: absolute;
-  right: 0px;
+  right: 0;
   color: $Core-Light-brass;
   transform: translateX(40px);
+}
+
+.cartBtn {
+  position: absolute;
+  right: -48px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: $Core-Reach-black;
+}
+
+.cartBtnDesktop {
+  position: absolute;
+  top: 0;
+  right: 24px;
+  color: $Core-Reach-black;
+  z-index: 2;
 }

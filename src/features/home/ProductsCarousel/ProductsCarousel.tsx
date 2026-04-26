@@ -5,9 +5,11 @@ import { Swiper as SwiperInstance } from 'swiper';
 import { Navigation, Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
+import Link from 'next/link';
+
 import { CatalogProduct } from '@/shared/api/catalog';
 
-import { TSUM_SITE_LINK_BY_GENDER, buildProductLink } from '@/constants/runtimeConfig';
+import { TSUM_SITE_LINK_BY_GENDER } from '@/constants/runtimeConfig';
 
 import { transformPrice } from '@/lib/currency';
 
@@ -68,12 +70,12 @@ export function ProductsCarousel({ products, className, version, gender }: Props
           ? products.map((product, id) => (
               // @ts-ignore
               <SwiperSlide key={`outer-${id}-${product.slug}`} className={st.slide}>
-                <a
+                <Link
                   // @ts-ignore
                   key={`inner-${product.itemId ?? product.slug}`}
                   className={st.product}
-                  href={buildProductLink(product.slug)}
-                  target="_blank"
+                  href={`/product/${product.slug}`}
+                  prefetch={false}
                 >
                   <img loading="lazy" src={product.photos[0]?.middle} alt={product.title} />
 
@@ -83,7 +85,7 @@ export function ProductsCarousel({ products, className, version, gender }: Props
                   <Typography font="body/regular" align="center">
                     {transformPrice(product.skuList[0]?.price_discount || product.skuList[0]?.price_original)}
                   </Typography>
-                </a>
+                </Link>
               </SwiperSlide>
             ))
           : slides.map((items, id) => (
@@ -91,12 +93,12 @@ export function ProductsCarousel({ products, className, version, gender }: Props
               <SwiperSlide key={`outer-${id}-${items[0].itemId ?? items[0].slug}`} className={st.slide}>
                 {items.map(product => {
                   return (
-                    <a
+                    <Link
                       // @ts-ignore
                       key={`inner-${product.itemId ?? product.slug}`}
                       className={st.product}
-                      href={buildProductLink(product.slug)}
-                      target="_blank"
+                      href={`/product/${product.slug}`}
+                      prefetch={false}
                     >
                       <img loading="lazy" src={product.photos[0]?.middle} alt={product.title} />
 
@@ -106,7 +108,7 @@ export function ProductsCarousel({ products, className, version, gender }: Props
                       <Typography font="body/regular" align="center">
                         {transformPrice(product.skuList[0]?.price_discount || product.skuList[0]?.price_original)}
                       </Typography>
-                    </a>
+                    </Link>
                   );
                 })}
               </SwiperSlide>

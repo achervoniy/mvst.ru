@@ -3,13 +3,15 @@
 import { useEffect, useRef, useState } from 'react';
 
 import {
-  AboutMust,
-  Bestsellers,
+  Atelier,
+  ByAppointment,
   CallToBuy,
   CollectionBanners,
   EditorialBanners,
   FashionShow,
+  Journal,
   LooksPreview,
+  Materials,
   NewArrivals,
   StreamBanner,
 } from '@/features/home';
@@ -69,8 +71,9 @@ export function HomePage() {
 
       <RevealOnScroll><CollectionBanners /></RevealOnScroll>
 
+      <RevealOnScroll><Materials /></RevealOnScroll>
+
       <RevealOnScroll delay={100}><NewArrivals gender="women" /></RevealOnScroll>
-      <RevealOnScroll delay={100}><NewArrivals gender="men" /></RevealOnScroll>
 
       <RevealOnScroll>
         <LooksPreview
@@ -83,23 +86,13 @@ export function HomePage() {
 
       <RevealOnScroll><EditorialBanners /></RevealOnScroll>
 
-      <RevealOnScroll><Bestsellers /></RevealOnScroll>
+      <RevealOnScroll><Atelier /></RevealOnScroll>
 
       <RevealOnScroll><FashionShow gender="women" /></RevealOnScroll>
-      <RevealOnScroll><FashionShow gender="men" /></RevealOnScroll>
 
-      <RevealOnScroll>
-        <LooksPreview
-          variant="compact"
-          eyebrow="MVST collection"
-          title="история коллекции"
-          linkText="Перейти в лукбук"
-          limit={8}
-          offset={8}
-        />
-      </RevealOnScroll>
+      <RevealOnScroll><ByAppointment /></RevealOnScroll>
 
-      <RevealOnScroll><AboutMust /></RevealOnScroll>
+      <RevealOnScroll><Journal /></RevealOnScroll>
 
       <RevealOnScroll><CallToBuy /></RevealOnScroll>
     </div>

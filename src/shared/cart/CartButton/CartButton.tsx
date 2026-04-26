@@ -24,7 +24,7 @@ export function CartButton({ className, compact }: Props) {
       aria-label="Открыть корзину"
     >
       <Icon name="Bag" className={st.icon} />
-      {count > 0 && <span className={st.badge}>{count}</span>}
+      {count > 0 && <span className={st.badge}>{count > 9 ? '9+' : count}</span>}
     </button>
   );
 }

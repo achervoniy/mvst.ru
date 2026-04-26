@@ -157,7 +157,6 @@ export function CartDrawer() {
           {step === 'items' && (
             <ItemsStep
               items={items}
-              total={total}
               onRemove={key => doRemove(key)}
               onClear={() => doClear()}
             />
@@ -261,12 +260,10 @@ export function CartDrawer() {
 
 function ItemsStep({
   items,
-  total,
   onRemove,
   onClear,
 }: {
   items: CartItem[];
-  total: number;
   onRemove: (key: string) => void;
   onClear: () => void;
 }) {
@@ -309,11 +306,6 @@ function ItemsStep({
           Очистить корзину
         </button>
       )}
-      {/* сноска о сервисе */}
-      <p className={st.helper}>
-        Корзина сформирует запрос на&nbsp;примерку в&nbsp;выбранном бутике MVST. Оплата — на&nbsp;месте.
-        Итого: <b>{transformPrice(total)}</b>
-      </p>
     </>
   );
 }

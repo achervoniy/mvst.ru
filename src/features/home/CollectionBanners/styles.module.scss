@@ -1,0 +1,15 @@
+.pair {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  @include desktop() {
+    flex-direction: row;
+    gap: 16px;
+
+    > * {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+  }
+}

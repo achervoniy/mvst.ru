@@ -11,15 +11,13 @@ type Props = {
 
 export function StreamBanner({ link, title, images }: Props) {
   return (
-    <Link className={st.StreamBanner} href={link}>
-      <Image className={st.desktop} src={images.desktop} alt={title} quality={50} />
-      <Image className={st.mobile} src={images.mobile} alt={title} quality={50} />
-      <div className={st.overlay} />
-      <div className={st.titleOverlay}>
-        <span>{title}</span>
+    <Link className={st.StreamBanner} href={link} aria-label={title}>
+      <div className={st.imageWrap}>
+        <Image className={st.desktop} src={images.desktop} alt={title} quality={75} priority />
+        <Image className={st.mobile} src={images.mobile} alt={title} quality={75} priority />
       </div>
-      <div className={st.scrollHint}>
-        <span>↓</span>
+      <div className={st.scrollHint} aria-hidden>
+        <span className={st.scrollLine} />
       </div>
     </Link>
   );

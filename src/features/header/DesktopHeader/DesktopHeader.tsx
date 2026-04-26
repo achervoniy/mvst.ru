@@ -1,4 +1,3 @@
-import cn from 'classnames';
 import Link from 'next/link';
 
 import { Icon } from '@/ui/assets/Icon';
@@ -11,22 +10,13 @@ type Props = {
   scrollIsDown: boolean;
 };
 
-export function DesktopHeader({ scrollIsDown }: Props) {
+export function DesktopHeader(_: Props) {
   return (
     <>
-      <Link href="/" className={st.logo}>
+      <Link href="/" className={st.logo} aria-label="MVST">
         <Icon name="LogoFull" />
       </Link>
-
-      <div className={st.navWrapper}>
-        <Icon
-          name="LogoFull"
-          className={cn(st.shortLogo, {
-            [st.scrollIsDown]: scrollIsDown,
-          })}
-        />
-        <Nav />
-      </div>
+      <Nav />
     </>
   );
 }
