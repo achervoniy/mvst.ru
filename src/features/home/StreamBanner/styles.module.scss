@@ -1,17 +1,16 @@
 .StreamBanner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
+  display: block;
   position: relative;
   grid-column: 1/3;
   overflow: hidden;
   text-decoration: none;
-  height: 72vh;
-  min-height: 440px;
-  max-height: 640px;
+  width: 100%;
 
   @include desktop() {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
     height: 78vh;
     min-height: 520px;
     max-height: 720px;
@@ -19,12 +18,19 @@
 }
 
 .imageWrap {
-  position: absolute;
-  inset: 0;
+  position: relative;
+  width: 100%;
   overflow: hidden;
+
+  @include desktop() {
+    position: absolute;
+    inset: 0;
+  }
 
   .mobile {
     display: block;
+    width: 100% !important;
+    height: auto !important;
     @include desktop() { display: none; }
   }
 
@@ -33,12 +39,14 @@
     @include desktop() { display: block; }
   }
 
-  img {
-    object-fit: cover;
-    width: 100% !important;
-    height: 100% !important;
-    transition: transform 12s cubic-bezier(0.2, 0, 0, 1);
-    transform: scale(1.02);
+  @include desktop() {
+    img {
+      object-fit: cover;
+      width: 100% !important;
+      height: 100% !important;
+      transition: transform 12s cubic-bezier(0.2, 0, 0, 1);
+      transform: scale(1.02);
+    }
   }
 }
 

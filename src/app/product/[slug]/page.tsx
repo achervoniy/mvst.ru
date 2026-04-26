@@ -12,18 +12,33 @@ export async function generateMetadata({ params }: { params: PageParams }): Prom
   const product = await fetchProductById(params.slug);
 
   if (!product) {
-    return { title: 'Товар не найден — MVST' };
+    return { title: 'Товар не найден', robots: { index: false, follow: false } };
   }
 
-  const title = `${product.title} — ${product.brand.title} — MVST`;
-  const description = [product.category?.title, product.color?.title].filter(Boolean).join(' · ');
+  const title = `${product.title} — ${product.brand.title}`;
+  const description =
+    [product.category?.title, product.color?.title].filter(Boolean).join(' · ') ||
+    `${product.title} от ${product.brand.title}. Купить в официальном магазине MVST.`;
+
+  const ogImage = product.images?.[0]?.w2000 || product.images?.[0]?.w400 || product.images?.[0]?.w200;
+  const url = `https://mvst.ru/product/${params.slug}`;
 
   return {
     title,
-    description: description || title,
+    description,
+    alternates: { canonical: url },
     openGraph: {
+      type: 'website',
       title,
-      description: description || undefined,
+      description,
+      url,
+      images: ogImage ? [{ url: ogImage, alt: product.title }] : undefined,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: ogImage ? [ogImage] : undefined,
     },
   };
 }

@@ -3,12 +3,59 @@
   flex-direction: column;
   height: 100%;
   height: -webkit-fill-available;
+  background: $Core-Pure-white;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.head {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 56px;
+  padding: 0 16px;
+  background: $Core-Pure-white;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+  @include desktop() {
+    display: none;
+  }
+}
+
+.headLogo {
+  display: flex;
+  align-items: center;
+  color: $Core-Reach-black;
+
+  svg {
+    height: 26px;
+    width: 72px;
+  }
+}
+
+.headClose {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: 0;
+  padding: 8px;
+  margin: 0;
+  cursor: pointer;
+  color: $Core-Reach-black;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .nav {
   display: flex;
   flex-direction: column;
-  padding-top: 68px;
+  padding-top: 24px;
 
   li {
     height: 48px;

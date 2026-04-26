@@ -3,6 +3,7 @@
 import cn from 'classnames';
 import { useUnit } from 'effector-react';
 import Image from 'next/image';
+import Link from 'next/link';
 import Drawer from 'react-modern-drawer';
 import 'react-modern-drawer/dist/index.css';
 import { useMemo, useState } from 'react';
@@ -159,6 +160,7 @@ export function CartDrawer() {
               items={items}
               onRemove={key => doRemove(key)}
               onClear={() => doClear()}
+              onNavigate={() => closeCart()}
             />
           )}
 
@@ -262,10 +264,12 @@ function ItemsStep({
   items,
   onRemove,
   onClear,
+  onNavigate,
 }: {
   items: CartItem[];
   onRemove: (key: string) => void;
   onClear: () => void;
+  onNavigate: () => void;
 }) {
   if (items.length === 0) return null;
   return (
@@ -273,23 +277,30 @@ function ItemsStep({
       <ul className={st.list}>
         {items.map(item => (
           <li key={item.key} className={st.listItem}>
-            <div className={st.listImage}>
-              {item.image ? (
-                <Image src={item.image} alt={item.title} width={84} height={108} />
-              ) : (
-                <div className={st.listImagePh} />
-              )}
-            </div>
-            <div className={st.listInfo}>
-              <p className={st.listBrand}>{item.brand}</p>
-              <p className={st.listTitle}>{item.title}</p>
-              <p className={st.listMeta}>
-                {item.color ? <>{item.color} · </> : null}
-                Размер {item.sizeLabel}
-                {item.qty > 1 ? <> · {item.qty} шт.</> : null}
-              </p>
-              <p className={st.listPrice}>{transformPrice(item.price * item.qty)}</p>
-            </div>
+            <Link
+              href={`/product/${item.slug || item.productId}`}
+              className={st.listLink}
+              onClick={onNavigate}
+              prefetch={false}
+            >
+              <div className={st.listImage}>
+                {item.image ? (
+                  <Image src={item.image} alt={item.title} width={84} height={108} />
+                ) : (
+                  <div className={st.listImagePh} />
+                )}
+              </div>
+              <div className={st.listInfo}>
+                <p className={st.listBrand}>{item.brand}</p>
+                <p className={st.listTitle}>{item.title}</p>
+                <p className={st.listMeta}>
+                  {item.color ? <>{item.color} · </> : null}
+                  Размер {item.sizeLabel}
+                  {item.qty > 1 ? <> · {item.qty} шт.</> : null}
+                </p>
+                <p className={st.listPrice}>{transformPrice(item.price * item.qty)}</p>
+              </div>
+            </Link>
             <button
               type="button"
               className={st.listRemove}

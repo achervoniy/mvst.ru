@@ -13,18 +13,24 @@ import { type PageProps, baseServices, createRSC } from '@/lib/rsc';
 const rsc = createRSC({ pageHooks });
 
 export async function generateMetadata({ params }: PageProps<{ slug: string }>): Promise<Metadata> {
+  const url = `https://mvst.ru/collection/${params.slug}`;
   const hasSlug = [LOOK_SLUGS.men, LOOK_SLUGS.women].includes(params.slug);
 
   if (hasSlug) {
+    const isMen = params.slug === LOOK_SLUGS.men;
+    const title = isMen
+      ? 'Мужская коллекция — стиль и комфорт на каждый день'
+      : 'Женская коллекция — элегантность и яркость в каждой детали';
+    const description = isMen
+      ? 'Мужская коллекция MVST: элегантная и практичная одежда для активных мужчин, которые ценят качество и уникальность в каждом элементе гардероба.'
+      : 'Женская коллекция MVST: идеальные наряды для любого события — от повседневных образов до вечерних мероприятий.';
+
     return {
-      title:
-        params.slug === LOOK_SLUGS.men
-          ? 'MVST Мужская Коллекция - Стиль и Комфорт на Каждый День'
-          : 'MVST Женская Коллекция - Элегантность и Яркость в Каждой Детали',
-      description:
-        params.slug === LOOK_SLUGS.men
-          ? `Изучите MVST Мужскую Коллекцию, где стиль встречает комфорт. Элегантная и практичная одежда для активных мужчин, которые ценят качество и уникальность в каждом элементе гардероба.`
-          : `Погрузитесь в MVST Женскую Коллекцию, где каждая вещь отражает ваш стиль. Найдите идеальные наряды для любого события — от повседневных образов до вечерних мероприятий.`,
+      title,
+      description,
+      alternates: { canonical: url },
+      openGraph: { title, description, url, type: 'website' },
+      twitter: { card: 'summary_large_image', title, description },
     };
   }
 
@@ -38,10 +44,13 @@ export async function generateMetadata({ params }: PageProps<{ slug: string }>):
     return {
       title: collection.title,
       description,
+      alternates: { canonical: url },
+      openGraph: { title: collection.title, description, url, type: 'website' },
+      twitter: { card: 'summary_large_image', title: collection.title, description },
     };
   }
 
-  return {};
+  return { alternates: { canonical: url } };
 }
 
 export default async function FashionPage(props: PageProps<{ slug: string }>) {

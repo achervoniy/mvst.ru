@@ -28,6 +28,11 @@ yarn-error.log*
 # local env files
 .env*.local
 
+# deploy secrets (only *.env.example is committed)
+deploy/.env
+deploy/site.env
+deploy/crm.env
+
 # vercel
 .vercel
 

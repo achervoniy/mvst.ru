@@ -22,7 +22,7 @@ const STORAGE_KEY = 'mvst_cart_v1';
 function readStorage(): CartItem[] {
   if (typeof window === 'undefined') return [];
   try {
-    const raw = window.sessionStorage.getItem(STORAGE_KEY);
+    const raw = window.localStorage.getItem(STORAGE_KEY) ?? window.sessionStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed) ? parsed : [];
@@ -34,7 +34,7 @@ function readStorage(): CartItem[] {
 function writeStorage(items: CartItem[]) {
   if (typeof window === 'undefined') return;
   try {
-    window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
   } catch {
     /* quota or unavailable */
   }
@@ -43,6 +43,7 @@ function writeStorage(items: CartItem[]) {
 /* ── события ── */
 
 export const cartHydrated = createEvent();
+export const cartItemsReplaced = createEvent<CartItem[]>();
 export const cartOpened = createEvent<{ step?: CartStep } | void>();
 export const cartClosed = createEvent();
 export const cartStepSet = createEvent<CartStep>();
@@ -75,6 +76,7 @@ export const $contactPhone = createStore('');
 
 $items
   .on(cartHydrated, () => readStorage())
+  .on(cartItemsReplaced, (_, next) => next)
   .on(addToCart, (items, payload) => {
     const key = `${payload.productId}_${payload.offerId}`;
     const existing = items.find(i => i.key === key);

@@ -2,6 +2,7 @@ import cn from 'classnames';
 import { useUnit } from 'effector-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useEffect } from 'react';
 import Drawer from 'react-modern-drawer';
 import 'react-modern-drawer/dist/index.css';
 
@@ -104,9 +105,43 @@ export function Nav({ onLink }: { onLink?: () => void }) {
 }
 
 export function MobileDrawer({ popup }: Props) {
+  useEffect(() => {
+    if (!popup.isOpen) return;
+    const prevOverflow = document.body.style.overflow;
+    const prevTouchAction = document.body.style.touchAction;
+    document.body.style.overflow = 'hidden';
+    document.body.style.touchAction = 'none';
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      document.body.style.touchAction = prevTouchAction;
+    };
+  }, [popup.isOpen]);
+
   return (
-    <Drawer open={popup.isOpen} onClose={popup.closePopup} direction="left" size="100vw" duration={200}>
+    <Drawer
+      open={popup.isOpen}
+      onClose={popup.closePopup}
+      direction="left"
+      size="100vw"
+      duration={200}
+      lockBackgroundScroll
+      zIndex={500}
+    >
       <div className={st.drawer}>
+        <div className={st.head}>
+          <Link href="/" onClick={popup.closePopup} className={st.headLogo} aria-label="MVST">
+            <Icon name="LogoFull" />
+          </Link>
+          <button
+            type="button"
+            className={st.headClose}
+            onClick={popup.closePopup}
+            aria-label="Закрыть"
+          >
+            <Icon name="CloseIcon" />
+          </button>
+        </div>
+
         <Nav onLink={popup.closePopup} />
 
         <div className={st.footer}>

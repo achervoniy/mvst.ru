@@ -131,9 +131,13 @@
 }
 
 .logo {
-  margin: 0 auto;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   display: flex;
   align-items: center;
+  pointer-events: auto;
 
   svg {
     height: 26px;
@@ -143,6 +147,12 @@
       height: 22px;
       width: 168px;
     }
+  }
+
+  @include desktop() {
+    position: static;
+    transform: none;
+    margin: 0;
   }
 }
 

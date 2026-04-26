@@ -1,5 +1,5 @@
 .materials {
-  padding: 0 24px;
+  padding: 0;
   grid-column: 1 / 3;
 
   @include desktop() {
@@ -13,10 +13,10 @@
   align-items: center;
   text-align: center;
   gap: 12px;
-  padding-bottom: 40px;
+  padding: 0 24px 40px;
 
   @include desktop() {
-    padding-bottom: 96px;
+    padding: 0 24px 96px;
     gap: 16px;
   }
 }
@@ -65,14 +65,24 @@
 // middle column drops down — adds magazine rhythm,
 // avoids the "checkerboard" feel of uniform tiles
 .row {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 56px;
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 24px 8px;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar { display: none; }
 
   @media (min-width: 600px) {
+    display: grid;
     grid-template-columns: repeat(2, 1fr);
     column-gap: 24px;
     row-gap: 64px;
+    overflow: visible;
+    padding: 0 24px;
+    scroll-snap-type: none;
   }
 
   @include desktop() {
@@ -80,6 +90,7 @@
     column-gap: 24px;
     row-gap: 96px;
     align-items: start;
+    padding: 0;
 
     > .card[data-pos='1'] {
       transform: translateY(64px);
@@ -91,6 +102,15 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+  flex: 0 0 72%;
+  max-width: 280px;
+  scroll-snap-align: start;
+
+  @media (min-width: 600px) {
+    flex: 1 1 auto;
+    max-width: none;
+    scroll-snap-align: none;
+  }
 
   @include desktop() {
     gap: 24px;

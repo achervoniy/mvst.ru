@@ -27,7 +27,7 @@ const MobileDrawer = dynamic(() => import('./Drawer'), { ssr: false });
 
 export function Header({ className }: Props) {
   const popup = usePopupState();
-  const { isTabletAndBelow, isDesktop } = useViewport();
+  const { isDesktop } = useViewport();
   const pathname = usePathname();
   const counter = useUnit($collectionCounter);
   const [scrollIsDown, setScrollIsDown] = useState(false);
@@ -109,7 +109,7 @@ export function Header({ className }: Props) {
         </div>
       </header>
 
-      {isTabletAndBelow && <MobileDrawer popup={popup} />}
+      <MobileDrawer popup={popup} />
       <CartDrawer />
     </>
   );

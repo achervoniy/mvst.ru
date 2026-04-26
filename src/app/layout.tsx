@@ -18,19 +18,61 @@ type Props = Readonly<{
   children: React.ReactNode;
 }>;
 
-export async function generateMetadata() {
+export async function generateMetadata(): Promise<Metadata> {
   const headersList = headers();
+  const url = canonical(headersList.get('x-current-path'));
+  const title = 'MVST — купить мужскую и женскую одежду, обувь и аксессуары в официальном магазине';
+  const description =
+    'MVST — официальный магазин модной одежды и аксессуаров для мужчин и женщин. Купить куртки, брюки, футболки, сумки и обувь с доставкой по России. Оригинальные вещи, гарантия качества, примерка перед покупкой. Новые коллекции 2026 года.';
 
   return {
+    metadataBase: new URL('https://mvst.ru'),
+    title: {
+      default: title,
+      template: '%s — MVST',
+    },
+    description,
+    keywords: [
+      'MVST',
+      'мвст',
+      'мужская одежда',
+      'женская одежда',
+      'премиальная одежда',
+      'дизайнерская одежда',
+      'купить одежду',
+      'коллекция SS26',
+    ],
+    applicationName: 'MVST',
+    referrer: 'origin-when-cross-origin',
+    formatDetection: { telephone: false, email: false, address: false },
     openGraph: {
       type: 'website',
-      images: ['https://mvst.ru/static/logo.png'],
-      url: canonical(headersList.get('x-current-path')),
+      siteName: 'MVST',
+      locale: 'ru_RU',
+      title,
+      description,
+      images: [{ url: 'https://mvst.ru/static/logo.png', width: 1200, height: 630, alt: 'MVST' }],
+      url,
     },
-    alternates: { canonical: canonical(headersList.get('x-current-path')) },
-    title: 'MVST - купить мужскую и женскую одежду, обувь и аксессуары в официальном магазине',
-    description: `MVST — официальный магазин модной одежды и аксессуаров для мужчин и женщин. Купить куртки, брюки, футболки, сумки и обувь с доставкой по России. Оригинальные вещи, гарантия качества, примерка перед покупкой. Новые коллекции 2025 года.`,
-  } as Metadata;
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: ['https://mvst.ru/static/logo.png'],
+    },
+    alternates: { canonical: url },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+        'max-video-preview': -1,
+      },
+    },
+  };
 }
 
 export default function RootLayout({ children }: Props) {

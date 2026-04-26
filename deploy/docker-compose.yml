@@ -1,0 +1,55 @@
+name: mvst
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: mvst-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-mvst_crm}
+      POSTGRES_USER: ${POSTGRES_USER:-crm}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+    volumes:
+      - mvst_pg_data:/var/lib/postgresql/data
+    networks: [mvst]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-crm} -d ${POSTGRES_DB:-mvst_crm}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mvst-site:
+    build:
+      context: ../
+      dockerfile: Dockerfile
+    container_name: mvst-site
+    restart: unless-stopped
+    env_file:
+      - ./site.env
+    ports:
+      - "127.0.0.1:3000:3000"
+    networks: [mvst]
+    depends_on:
+      - mvst-crm
+
+  mvst-crm:
+    build:
+      context: ../../mvst-crm
+      dockerfile: Dockerfile
+    container_name: mvst-crm
+    restart: unless-stopped
+    env_file:
+      - ./crm.env
+    ports:
+      - "127.0.0.1:3001:3001"
+    networks: [mvst]
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+networks:
+  mvst:
+    driver: bridge
+
+volumes:
+  mvst_pg_data:
