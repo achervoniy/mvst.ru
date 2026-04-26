@@ -177,6 +177,15 @@ sample({
   target: cartStepSet,
 });
 
+// After a successful submit, drop cart items immediately (UI + localStorage).
+// Boutique/contact fields are intentionally kept so the done-step still shows
+// the boutique pill; they reset when the user closes the drawer.
+sample({
+  clock: submitFittingRequestFx.done,
+  fn: () => [] as CartItem[],
+  target: [cartItemsReplaced, persistFx],
+});
+
 sample({
   clock: submitFittingRequestFx.fail,
   fn: ({ error }) => error.message,
