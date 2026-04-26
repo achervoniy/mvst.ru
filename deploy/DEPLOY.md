@@ -42,11 +42,13 @@ docker compose version
 ```bash
 sudo mkdir -p /opt/mvst && sudo chown $USER:$USER /opt/mvst
 cd /opt/mvst
-git clone https://github.com/dnikolay95/mvst.git mvst.ru
+git clone -b develop https://github.com/dnikolay95/mvst.git mvst.ru
 cd mvst.ru/deploy
 chmod +x bootstrap.sh
 ./bootstrap.sh
 ```
+
+> The storefront repo's active branch is `develop`. The CRM repo's branch is `main` (default). If you make a different branch the GitHub default later, drop the `-b develop` flag.
 
 `bootstrap.sh` clones `mvst-crm` next to `mvst.ru`, then copies the three `*.env.example` files to `*.env`. Final layout:
 
@@ -157,7 +159,7 @@ curl -I https://crmmvst.tsumteam.ru
 
 **Storefront only:**
 ```bash
-cd /opt/mvst/mvst.ru && git pull
+cd /opt/mvst/mvst.ru && git pull origin develop
 cd deploy && docker compose up -d --build mvst-site
 ```
 
@@ -169,7 +171,7 @@ cd /opt/mvst/mvst.ru/deploy && docker compose up -d --build mvst-crm
 
 **Both:**
 ```bash
-cd /opt/mvst/mvst.ru && git pull
+cd /opt/mvst/mvst.ru && git pull origin develop
 cd /opt/mvst/mvst-crm && git pull
 cd /opt/mvst/mvst.ru/deploy && docker compose up -d --build
 ```
