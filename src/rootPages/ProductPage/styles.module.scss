@@ -3,8 +3,8 @@
    breakpoints: mobile <768px | tablet 768-1023 | desktop ≥1024px
    ============================ */
 
-$info-w: 420px;
-$info-gap: 72px;
+$info-w: 360px;
+$info-gap: 48px;
 
 /* ── page ── */
 .page {
@@ -26,7 +26,7 @@ $info-gap: 72px;
   letter-spacing: 0.04em;
 
   @include desktop() {
-    padding: 22px 40px 18px;
+    padding: 22px 0 18px;
     font-size: 12px;
   }
 }
@@ -66,7 +66,6 @@ $info-gap: 72px;
     grid-template-columns: 1fr $info-w;
     gap: 0 $info-gap;
     align-items: start;
-    padding: 0 40px;
   }
 }
 
