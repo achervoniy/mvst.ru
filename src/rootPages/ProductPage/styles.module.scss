@@ -8,7 +8,7 @@ $info-gap: 72px;
 
 /* ── page ── */
 .page {
-  max-width: 1440px;
+  max-width: $max-width-desktop;
   margin: 0 auto;
   color: $Core-Reach-black;
 }
@@ -184,19 +184,7 @@ $info-gap: 72px;
 
   @include desktop() {
     padding: 20px 0 80px;
-    position: sticky;
-    top: 24px;
     align-self: start;
-    max-height: calc(100vh - 48px);
-    overflow-y: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-
-    &::-webkit-scrollbar {
-      display: none;
-      width: 0;
-      height: 0;
-    }
   }
 }
 
