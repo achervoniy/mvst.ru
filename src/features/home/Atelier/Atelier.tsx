@@ -2,7 +2,7 @@ import st from './styles.module.scss';
 
 const stats = [
   { num: '12', label: 'ателье\nв Москве и СПб' },
-  { num: '4', label: 'фирменных\nбутика' },
+  { num: '6', label: 'фирменных\nбутиков' },
   { num: '2018', label: 'год основания\nдома' },
   { num: '38', label: 'мастеров\nкройки и шитья' },
 ];

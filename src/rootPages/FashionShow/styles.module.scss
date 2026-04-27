@@ -9,7 +9,8 @@
   padding: 8px 16px;
 
   @include desktop() {
-    margin-left: 200px;
-    margin-right: 200px;
+    max-width: $max-width-desktop;
+    margin: 0 auto;
+    padding: 8px 24px;
   }
 }

@@ -23,10 +23,10 @@ type Props = {
 const getLink = (gender: string) => {
   switch (gender) {
     case 'm':
-      return `/collection/${LOOK_SLUGS.men}`;
+      return '/catalog/men';
 
     case 'f':
-      return `/collection/${LOOK_SLUGS.women}`;
+      return '/catalog/women';
 
     default:
       return `/collection/${LOOK_SLUGS.all}`;
