@@ -51,6 +51,10 @@ export const Route = createRootRoute({
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/6bb15364-b112-4cba-8590-ee503a595eda/id-preview-3933bbea--e943f3b8-7ae0-46e2-adb6-43f69b9afd8d.lovable.app-1776724775048.png" },
     ],
     links: [
+      { rel: "icon", type: "image/svg+xml", href: "/favicon/favicon.svg" },
+      { rel: "icon", type: "image/png", sizes: "96x96", href: "/favicon/favicon-96x96.png" },
+      { rel: "shortcut icon", href: "/favicon/favicon.ico" },
+      { rel: "apple-touch-icon", sizes: "180x180", href: "/favicon/apple-touch-icon.png" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
