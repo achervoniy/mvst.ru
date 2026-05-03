@@ -2,10 +2,12 @@
 FROM node:22-alpine AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
-COPY package.json package-lock.json* ./
-# `npm install` (not `npm ci`) lets npm resolve platform-specific optional deps
-# such as @rollup/rollup-linux-x64-musl and @tailwindcss/oxide-linux-x64-musl,
-# which the host-generated lockfile may omit. https://github.com/npm/cli/issues/4828
+COPY package.json ./
+# Lockfile is intentionally NOT copied: even with `npm install`, the presence
+# of a lockfile generated on a different platform makes npm skip platform
+# optional deps (rollup native, tailwindcss/oxide native), causing build to
+# fail with "Cannot find module @rollup/rollup-linux-x64-musl".
+# See https://github.com/npm/cli/issues/4828
 RUN npm install --no-audit --no-fund
 
 FROM node:22-alpine AS builder
