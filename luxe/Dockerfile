@@ -23,6 +23,7 @@ ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 RUN addgroup -S -g 1001 nodejs && adduser -S -u 1001 -G nodejs luxe
 COPY --from=builder --chown=luxe:nodejs /app/dist ./dist
+# dist contains both /server (SSR handler) and /client (static assets served by srvx)
 COPY --from=builder --chown=luxe:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=luxe:nodejs /app/package.json ./package.json
 COPY --from=builder --chown=luxe:nodejs /app/server-node.mjs ./server-node.mjs
