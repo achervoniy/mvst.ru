@@ -1,8 +1,9 @@
 # MVST production deployment
 
-Two Next.js apps + Postgres in Docker, fronted by host nginx + certbot.
+Three Node apps + Postgres in Docker, fronted by host nginx + certbot.
 
-- **mvst.tsumteam.ru** → storefront (`mvst.ru`) on `127.0.0.1:3000`
+- **mvst.tsumteam.ru** → new luxe storefront (`luxe/`, TanStack Start) on `127.0.0.1:3002`
+- **mvst2.tsumteam.ru** → old storefront (`mvst.ru`, Next.js) on `127.0.0.1:3000`
 - **crmmvst.tsumteam.ru** → admin (`mvst-crm`) on `127.0.0.1:3001`
 - Postgres on internal docker network only.
 
@@ -50,15 +51,17 @@ chmod +x bootstrap.sh
 
 > The storefront repo's active branch is `develop`. The CRM repo's branch is `main` (default). If you make a different branch the GitHub default later, drop the `-b develop` flag.
 
-`bootstrap.sh` clones `mvst-crm` next to `mvst.ru`, then copies the three `*.env.example` files to `*.env`. Final layout:
+`bootstrap.sh` clones `mvst-crm` next to `mvst.ru`, then copies the four `*.env.example` files to `*.env`. Final layout:
 
 ```
 /opt/mvst
 ├── mvst.ru/
+│   ├── luxe/            <- new storefront (TanStack Start)
 │   └── deploy/
 │       ├── docker-compose.yml
 │       ├── .env         <- postgres password
-│       ├── site.env     <- storefront env
+│       ├── site.env     <- old storefront env
+│       ├── luxe.env     <- new storefront env
 │       ├── crm.env      <- crm env
 │       └── nginx/
 └── mvst-crm/
@@ -75,11 +78,20 @@ POSTGRES_USER=crm
 POSTGRES_PASSWORD=<openssl rand -base64 24>
 ```
 
-### `site.env` (storefront)
+### `site.env` (old storefront, mvst2.tsumteam.ru)
 ```
 NODE_ENV=production
 API_DOMAIN=api.tsum.ru
 SSR_API_DOMAIN=https://api.tsum.ru
+CRM_URL=http://mvst-crm:3001
+CRM_INGEST_KEY=<same secret as in crm.env below>
+```
+
+### `luxe.env` (new storefront, mvst.tsumteam.ru)
+```
+NODE_ENV=production
+PORT=3000
+HOSTNAME=0.0.0.0
 CRM_URL=http://mvst-crm:3001
 CRM_INGEST_KEY=<same secret as in crm.env below>
 ```
@@ -125,7 +137,8 @@ docker compose up -d mvst-crm
 
 Sanity check from the host:
 ```bash
-curl -I http://127.0.0.1:3000        # storefront
+curl -I http://127.0.0.1:3000        # old storefront
+curl -I http://127.0.0.1:3002        # new luxe storefront
 curl -I http://127.0.0.1:3001        # crm
 ```
 
@@ -134,30 +147,41 @@ curl -I http://127.0.0.1:3001        # crm
 ```bash
 cd /opt/mvst/mvst.ru/deploy
 sudo cp nginx/mvst.tsumteam.ru.conf      /etc/nginx/sites-available/
+sudo cp nginx/mvst2.tsumteam.ru.conf     /etc/nginx/sites-available/
 sudo cp nginx/crmmvst.tsumteam.ru.conf   /etc/nginx/sites-available/
 sudo ln -sf /etc/nginx/sites-available/mvst.tsumteam.ru.conf     /etc/nginx/sites-enabled/
+sudo ln -sf /etc/nginx/sites-available/mvst2.tsumteam.ru.conf    /etc/nginx/sites-enabled/
 sudo ln -sf /etc/nginx/sites-available/crmmvst.tsumteam.ru.conf  /etc/nginx/sites-enabled/
 sudo nginx -t && sudo systemctl reload nginx
 
-sudo certbot --nginx -d mvst.tsumteam.ru -d crmmvst.tsumteam.ru
+sudo certbot --nginx -d mvst.tsumteam.ru -d mvst2.tsumteam.ru -d crmmvst.tsumteam.ru
 # choose: redirect HTTP to HTTPS
 
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
-Certbot rewrites the two site files in place, adding `listen 443 ssl`, cert paths, and a 301 from :80. Auto-renew is already wired via the certbot systemd timer.
+Certbot rewrites the three site files in place, adding `listen 443 ssl`, cert paths, and a 301 from :80. Auto-renew is already wired via the certbot systemd timer.
+
+> **Note:** `mvst.tsumteam.ru` previously served the old Next.js storefront. After this release it serves the new luxe storefront, and the old one moves to `mvst2.tsumteam.ru`. There is no 301 redirect between them.
 
 Verify:
 ```bash
-curl -I https://mvst.tsumteam.ru
-curl -I https://crmmvst.tsumteam.ru
+curl -I https://mvst.tsumteam.ru     # luxe
+curl -I https://mvst2.tsumteam.ru    # old storefront
+curl -I https://crmmvst.tsumteam.ru  # crm
 ```
 
 ---
 
 ## Updates after the initial deploy
 
-**Storefront only:**
+**Luxe storefront only (mvst.tsumteam.ru):**
+```bash
+cd /opt/mvst/mvst.ru && git pull origin develop
+cd deploy && docker compose up -d --build mvst-luxe
+```
+
+**Old storefront only (mvst2.tsumteam.ru):**
 ```bash
 cd /opt/mvst/mvst.ru && git pull origin develop
 cd deploy && docker compose up -d --build mvst-site
@@ -169,7 +193,7 @@ cd /opt/mvst/mvst-crm && git pull
 cd /opt/mvst/mvst.ru/deploy && docker compose up -d --build mvst-crm
 ```
 
-**Both:**
+**Everything:**
 ```bash
 cd /opt/mvst/mvst.ru && git pull origin develop
 cd /opt/mvst/mvst-crm && git pull
