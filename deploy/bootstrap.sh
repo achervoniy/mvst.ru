@@ -18,7 +18,7 @@ else
 fi
 
 cd "$(dirname "$0")"
-for f in .env site.env crm.env; do
+for f in .env site.env crm.env luxe.env; do
   if [ ! -f "$f" ]; then
     cp "${f}.example" "$f"
     echo "[bootstrap] created $f from example — EDIT BEFORE STARTING"

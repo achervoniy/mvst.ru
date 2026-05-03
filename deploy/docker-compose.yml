@@ -32,6 +32,20 @@ services:
     depends_on:
       - mvst-crm
 
+  mvst-luxe:
+    build:
+      context: ../luxe
+      dockerfile: Dockerfile
+    container_name: mvst-luxe
+    restart: unless-stopped
+    env_file:
+      - ./luxe.env
+    ports:
+      - "127.0.0.1:${LUXE_HOST_PORT:-3002}:3000"
+    networks: [mvst]
+    depends_on:
+      - mvst-crm
+
   mvst-crm:
     build:
       context: ../../mvst-crm

@@ -1,0 +1,216 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * MVST design system — warm beige luxury (Brunello Cucinelli inspired).
+ * Tokens are defined in oklch and registered with Tailwind via @theme inline.
+ */
+
+@theme inline {
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-2xl: 0px;
+  --radius-3xl: 0px;
+  --radius-4xl: 0px;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+  --color-cream: var(--cream);
+  --color-sand: var(--sand);
+  --color-stone: var(--stone);
+  --color-ochre: var(--ochre);
+  --color-ink: var(--ink);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --font-serif: "Cormorant Garamond", "Playfair Display", Georgia, serif;
+  --font-sans: "Inter", "Manrope", system-ui, sans-serif;
+}
+
+:root {
+  --radius: 0px;
+
+  /* Warm cream background, deep cocoa foreground */
+  --background: oklch(0.965 0.014 80);
+  --foreground: oklch(0.27 0.025 55);
+
+  --cream: oklch(0.975 0.012 82);
+  --sand: oklch(0.92 0.022 78);
+  --stone: oklch(0.74 0.022 70);
+  --ochre: oklch(0.55 0.085 65);
+  --ink: oklch(0.27 0.025 55);
+
+  --card: oklch(0.975 0.012 82);
+  --card-foreground: oklch(0.27 0.025 55);
+  --popover: oklch(0.975 0.012 82);
+  --popover-foreground: oklch(0.27 0.025 55);
+
+  --primary: oklch(0.27 0.025 55);
+  --primary-foreground: oklch(0.975 0.012 82);
+
+  --secondary: oklch(0.92 0.022 78);
+  --secondary-foreground: oklch(0.27 0.025 55);
+
+  --muted: oklch(0.92 0.022 78);
+  --muted-foreground: oklch(0.5 0.022 65);
+
+  --accent: oklch(0.55 0.085 65);
+  --accent-foreground: oklch(0.975 0.012 82);
+
+  --destructive: oklch(0.5 0.18 28);
+  --destructive-foreground: oklch(0.975 0.012 82);
+
+  --border: oklch(0.27 0.025 55 / 12%);
+  --input: oklch(0.27 0.025 55 / 18%);
+  --ring: oklch(0.55 0.085 65);
+
+  --chart-1: oklch(0.55 0.085 65);
+  --chart-2: oklch(0.74 0.022 70);
+  --chart-3: oklch(0.5 0.022 65);
+  --chart-4: oklch(0.92 0.022 78);
+  --chart-5: oklch(0.27 0.025 55);
+
+  --sidebar: oklch(0.965 0.014 80);
+  --sidebar-foreground: oklch(0.27 0.025 55);
+  --sidebar-primary: oklch(0.27 0.025 55);
+  --sidebar-primary-foreground: oklch(0.975 0.012 82);
+  --sidebar-accent: oklch(0.92 0.022 78);
+  --sidebar-accent-foreground: oklch(0.27 0.025 55);
+  --sidebar-border: oklch(0.27 0.025 55 / 12%);
+  --sidebar-ring: oklch(0.55 0.085 65);
+}
+
+.dark {
+  --background: oklch(0.18 0.012 60);
+  --foreground: oklch(0.94 0.012 80);
+  --card: oklch(0.22 0.014 60);
+  --card-foreground: oklch(0.94 0.012 80);
+  --popover: oklch(0.22 0.014 60);
+  --popover-foreground: oklch(0.94 0.012 80);
+  --primary: oklch(0.94 0.012 80);
+  --primary-foreground: oklch(0.18 0.012 60);
+  --secondary: oklch(0.28 0.014 60);
+  --secondary-foreground: oklch(0.94 0.012 80);
+  --muted: oklch(0.28 0.014 60);
+  --muted-foreground: oklch(0.72 0.018 70);
+  --accent: oklch(0.62 0.09 65);
+  --accent-foreground: oklch(0.18 0.012 60);
+  --destructive: oklch(0.6 0.18 28);
+  --destructive-foreground: oklch(0.94 0.012 80);
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 16%);
+  --ring: oklch(0.62 0.09 65);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html,
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-serif);
+    font-weight: 300;
+    letter-spacing: -0.005em;
+  }
+
+  ::selection {
+    background-color: var(--color-accent);
+    color: var(--color-accent-foreground);
+  }
+}
+
+@layer utilities {
+  .font-serif {
+    font-family: var(--font-serif);
+  }
+  .font-sans {
+    font-family: var(--font-sans);
+  }
+  .eyebrow {
+    font-family: var(--font-sans);
+    text-transform: uppercase;
+    letter-spacing: 0.32em;
+    font-size: 10px;
+    font-weight: 400;
+  }
+  .eyebrow-lg {
+    font-family: var(--font-sans);
+    text-transform: uppercase;
+    letter-spacing: 0.4em;
+    font-size: 11px;
+    font-weight: 400;
+  }
+  .hairline {
+    border-color: oklch(0.27 0.025 55 / 12%);
+  }
+  .fade-in-up {
+    animation: fadeInUp 0.9s ease-out both;
+  }
+  .look-fade {
+    animation: lookFade 450ms ease-out both;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes lookFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
