@@ -7,6 +7,7 @@ export function ProductCard({ product }: { product: CatalogProduct }) {
     <Link
       to="/product/$slug"
       params={{ slug: product.slug }}
+      preload="intent"
       className="group block"
     >
       <div className="relative aspect-[3/4]">
@@ -15,7 +16,8 @@ export function ProductCard({ product }: { product: CatalogProduct }) {
             src={product.primaryImage}
             alt={product.title}
             loading="lazy"
-            className="absolute inset-0 size-full object-contain p-2 md:p-6 mix-blend-multiply group-hover:opacity-0"
+            decoding="async"
+            className="absolute inset-0 size-full object-contain p-2 md:p-6 mix-blend-multiply transition-opacity duration-150 md:group-hover:opacity-0 motion-reduce:transition-none"
           />
         )}
         {product.hoverImage && product.hoverImage !== product.primaryImage && (
@@ -23,7 +25,8 @@ export function ProductCard({ product }: { product: CatalogProduct }) {
             src={product.hoverImage}
             alt=""
             loading="lazy"
-            className="absolute inset-0 size-full object-contain p-2 md:p-6 mix-blend-multiply opacity-0 group-hover:opacity-100"
+            decoding="async"
+            className="absolute inset-0 hidden md:block size-full object-contain p-2 md:p-6 mix-blend-multiply opacity-0 transition-opacity duration-150 group-hover:opacity-100 motion-reduce:hidden"
           />
         )}
         {product.hasDiscount && (

@@ -10,41 +10,93 @@ export function Footer() {
         <div>
           <div className="eyebrow text-foreground/60 mb-4">Покупки</div>
           <ul className="space-y-2 text-sm">
-            <li><Link to="/women" className="hover:text-accent">Для неё</Link></li>
-            <li><Link to="/men" className="hover:text-accent">Для него</Link></li>
-            <li><Link to="/collection-ss26" className="hover:text-accent">Коллекция SS26</Link></li>
+            <li>
+              <Link
+                to="/catalog/$gender"
+                params={{ gender: "women" }}
+                preload="intent"
+                className="hover:text-accent"
+              >
+                Для неё
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/catalog/$gender"
+                params={{ gender: "men" }}
+                preload="intent"
+                className="hover:text-accent"
+              >
+                Для него
+              </Link>
+            </li>
+            <li>
+              <Link to="/collection-ss26" preload="intent" className="hover:text-accent">
+                Коллекция SS26
+              </Link>
+            </li>
           </ul>
         </div>
         <div>
           <div className="eyebrow text-foreground/60 mb-4">Сервис</div>
           <ul className="space-y-2 text-sm">
-            <li><Link to="/contacts" className="hover:text-accent">Клиентский сервис</Link></li>
-            <li><Link to="/boutiques" className="hover:text-accent">Бутики</Link></li>
-            <li><span className="text-foreground/60">Доставка и возврат</span></li>
+            <li>
+              <Link to="/contacts" preload="intent" className="hover:text-accent">
+                Клиентский сервис
+              </Link>
+            </li>
+            <li>
+              <Link to="/boutiques" preload="intent" className="hover:text-accent">
+                Бутики
+              </Link>
+            </li>
+            <li>
+              <span className="text-foreground/60">Доставка и возврат</span>
+            </li>
           </ul>
         </div>
         <div>
           <div className="eyebrow text-foreground/60 mb-4">Бренд</div>
           <ul className="space-y-2 text-sm">
-            <li><Link to="/about" className="hover:text-accent">О бренде</Link></li>
-            <li><span className="text-foreground/60">Мастерство</span></li>
-            <li><span className="text-foreground/60">Устойчивое развитие</span></li>
+            <li>
+              <Link to="/about" preload="intent" className="hover:text-accent">
+                О бренде
+              </Link>
+            </li>
+            <li>
+              <span className="text-foreground/60">Мастерство</span>
+            </li>
+            <li>
+              <span className="text-foreground/60">Устойчивое развитие</span>
+            </li>
           </ul>
         </div>
         <div>
           <div className="eyebrow text-foreground/60 mb-4">Связь</div>
           <ul className="space-y-2 text-sm">
             <li>
-              <a className="inline-flex items-center gap-2 hover:text-accent" href="#" aria-label="Telegram">
+              <a
+                className="inline-flex items-center gap-2 hover:text-accent"
+                href="#"
+                aria-label="Telegram"
+              >
                 <img src={tgIcon} alt="" className="size-5" /> Telegram
               </a>
             </li>
             <li>
-              <a className="inline-flex items-center gap-2 hover:text-accent" href="#" aria-label="VK">
+              <a
+                className="inline-flex items-center gap-2 hover:text-accent"
+                href="#"
+                aria-label="VK"
+              >
                 <img src={vkIcon} alt="" className="size-5" /> VK
               </a>
             </li>
-            <li><a className="hover:text-accent" href="mailto:client@mvst.ru">client@mvst.ru</a></li>
+            <li>
+              <a className="hover:text-accent" href="mailto:client@mvst.ru">
+                client@mvst.ru
+              </a>
+            </li>
           </ul>
         </div>
       </div>

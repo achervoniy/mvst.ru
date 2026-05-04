@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { cn } from "@/lib/utils";
@@ -40,10 +40,13 @@ function CollectionSS26() {
   const total = looks.length;
   const current = looks[active];
 
-  const goTo = (i: number) => {
-    const next = ((i % total) + total) % total;
-    setActive(next);
-  };
+  const goTo = useCallback(
+    (i: number) => {
+      const next = ((i % total) + total) % total;
+      setActive(next);
+    },
+    [total],
+  );
 
   // Center the active thumbnail in the strip
   useEffect(() => {
@@ -62,12 +65,9 @@ function CollectionSS26() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [active]);
+  }, [active, goTo]);
 
-  const description = useMemo(
-    () => collection.description.split(/\n\n+/).filter(Boolean),
-    [],
-  );
+  const description = useMemo(() => collection.description.split(/\n\n+/).filter(Boolean), []);
 
   return (
     <SiteLayout transparentHeader>
@@ -108,19 +108,13 @@ function CollectionSS26() {
         <div className="px-4 md:px-8 pt-6 md:pt-8 pb-3 flex items-end justify-between max-w-[1360px] mx-auto">
           <div className="eyebrow text-foreground/60">Образ</div>
           <div className="font-serif text-sm tabular-nums text-foreground/70">
-            <span className="text-foreground">
-              {String(active + 1).padStart(2, "0")}
-            </span>
+            <span className="text-foreground">{String(active + 1).padStart(2, "0")}</span>
             <span className="mx-2 text-foreground/30">/</span>
             <span>{String(total).padStart(2, "0")}</span>
           </div>
         </div>
 
-        <LookStage
-          look={current}
-          onPrev={() => goTo(active - 1)}
-          onNext={() => goTo(active + 1)}
-        />
+        <LookStage look={current} onPrev={() => goTo(active - 1)} onNext={() => goTo(active + 1)} />
 
         {/* Thumbnails strip */}
         <div className="relative max-w-[1360px] mx-auto px-2 md:px-6 pb-6 md:pb-8 pt-5">
@@ -139,9 +133,7 @@ function CollectionSS26() {
                 aria-label={`Образ ${i + 1}`}
                 className={cn(
                   "shrink-0 snap-start relative w-16 h-24 md:w-20 md:h-28 overflow-hidden bg-sand transition-opacity",
-                  i === active
-                    ? "opacity-100"
-                    : "opacity-55 hover:opacity-100",
+                  i === active ? "opacity-100" : "opacity-55 hover:opacity-100",
                 )}
               >
                 <img
@@ -167,18 +159,20 @@ function CollectionSS26() {
       {/* CTA */}
       <section className="py-24 md:py-32 px-6 text-center">
         <div className="eyebrow text-foreground/60 mb-6">Каталог</div>
-        <h2 className="font-serif text-4xl md:text-5xl mb-10">
-          Перейти к вещам коллекции
-        </h2>
+        <h2 className="font-serif text-4xl md:text-5xl mb-10">Перейти к вещам коллекции</h2>
         <div className="flex justify-center gap-10">
           <Link
-            to="/women"
+            to="/catalog/$gender"
+            params={{ gender: "women" }}
+            preload="intent"
             className="eyebrow-lg border-b border-foreground pb-2 hover:text-accent hover:border-accent transition-colors"
           >
             Для неё
           </Link>
           <Link
-            to="/men"
+            to="/catalog/$gender"
+            params={{ gender: "men" }}
+            preload="intent"
             className="eyebrow-lg border-b border-foreground pb-2 hover:text-accent hover:border-accent transition-colors"
           >
             Для него
@@ -219,7 +213,6 @@ function LookStage({
 
   return (
     <div className="relative max-w-[1360px] mx-auto px-2 md:px-6">
-
       <div className="grid grid-cols-1 md:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] gap-3 md:gap-4">
         {/* Look image */}
         <div
@@ -235,7 +228,8 @@ function LookStage({
           />
           {/* Mobile counter overlay */}
           <div className="md:hidden absolute bottom-3 right-3 font-serif text-xs tabular-nums text-cream bg-foreground/40 backdrop-blur px-2 py-1 rounded-full">
-            {String(look.sort).padStart(2, "0")} / {String(collection.looks.length).padStart(2, "0")}
+            {String(look.sort).padStart(2, "0")} /{" "}
+            {String(collection.looks.length).padStart(2, "0")}
           </div>
         </div>
 
@@ -351,9 +345,7 @@ function ProductCell({ product }: { product: Product }) {
         />
       </div>
       <div className="px-3 pt-3 pb-4 flex flex-col items-center gap-1.5 text-center">
-        <div className="text-sm leading-tight text-foreground/85 line-clamp-1">
-          {product.title}
-        </div>
+        <div className="text-sm leading-tight text-foreground/85 line-clamp-1">{product.title}</div>
         <div className="text-sm font-light text-foreground tabular-nums">
           {formatPrice(product.price.discounted)}
         </div>

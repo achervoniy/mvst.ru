@@ -15,6 +15,7 @@ const searchSchema = z.object({
   priceFrom: fallback(z.number().int(), undefined as unknown as number).optional(),
   priceTo: fallback(z.number().int(), undefined as unknown as number).optional(),
   label: fallback(z.union([z.string(), z.number()]), undefined as unknown as string).optional(),
+  attribute: fallback(z.array(z.number().int()), undefined as unknown as number[]).optional(),
 });
 
 const genderTitle: Record<"women" | "men", string> = {
@@ -41,6 +42,7 @@ export const Route = createFileRoute("/catalog/$gender_/$section")({
     priceFrom: search.priceFrom,
     priceTo: search.priceTo,
     label: search.label,
+    attribute: search.attribute,
   }),
   loader: async ({ params, deps }) => {
     if (params.gender !== "women" && params.gender !== "men") throw notFound();
@@ -58,6 +60,7 @@ export const Route = createFileRoute("/catalog/$gender_/$section")({
       priceFrom: deps.priceFrom,
       priceTo: deps.priceTo,
       label: deps.label,
+      attribute: deps.attribute,
     } as const;
     const [list, filters] = await Promise.all([
       searchProducts({ data: args }),
@@ -107,6 +110,12 @@ function SectionRouteComponent() {
   const data = Route.useLoaderData();
   const search = Route.useSearch();
   const gender: "women" | "men" = data.gender === "men" ? "men" : "women";
+  const filteredTotal = (data.list as { filteredTotal?: number }).filteredTotal;
+  const total = filteredTotal ?? data.filters.total;
+  const pageCount =
+    filteredTotal != null
+      ? Math.max(1, Math.ceil(filteredTotal / data.list.perPage))
+      : data.filters.pageCount;
   return (
     <CatalogPage
       gender={gender}
@@ -115,9 +124,9 @@ function SectionRouteComponent() {
       sectionTitle={data.sectionTitle}
       items={data.list.items}
       filters={data.filters.filters}
-      total={data.filters.total}
+      total={total}
       page={data.list.page}
-      pageCount={data.filters.pageCount}
+      pageCount={pageCount}
       search={search}
     />
   );
