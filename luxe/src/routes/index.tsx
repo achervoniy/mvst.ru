@@ -82,13 +82,18 @@ export const Route = createFileRoute("/")({
 
 function HomePage() {
   const { showcase } = Route.useLoaderData();
-  const [activeWardrobeTab, setActiveWardrobeTab] = useState<(typeof wardrobeTabs)[number]["key"]>("women");
-  const activeWardrobe = wardrobeTabs.find((tab) => tab.key === activeWardrobeTab) ?? wardrobeTabs[0];
+  const [activeWardrobeTab, setActiveWardrobeTab] =
+    useState<(typeof wardrobeTabs)[number]["key"]>("women");
+  const activeWardrobe =
+    wardrobeTabs.find((tab) => tab.key === activeWardrobeTab) ?? wardrobeTabs[0];
 
   return (
     <SiteLayout transparentHeader>
       {/* HERO */}
-      <section data-hero className="relative h-[72vh] min-h-[520px] md:h-[88vh] md:min-h-[640px] overflow-hidden">
+      <section
+        data-hero
+        className="relative h-[72vh] min-h-[520px] md:h-[88vh] md:min-h-[640px] overflow-hidden"
+      >
         <img
           src={homeHero}
           alt="MVST Весна–Лето 26"
@@ -103,6 +108,7 @@ function HomePage() {
           </h1>
           <Link
             to="/collection-ss26"
+            preload="intent"
             className="mt-8 md:mt-10 inline-block eyebrow-lg border-b border-cream/70 pb-2 hover:border-cream"
           >
             Открыть коллекцию
@@ -113,19 +119,21 @@ function HomePage() {
       {/* WOMEN / MEN SPLIT */}
       <section className="grid md:grid-cols-2 gap-px bg-foreground/10">
         {[
-          { to: "/women" as const, label: "Для неё", img: homeWomen },
-          { to: "/men" as const, label: "Для него", img: homeMen },
+          { gender: "women" as const, label: "Для неё", img: homeWomen },
+          { gender: "men" as const, label: "Для него", img: homeMen },
         ].map((s) => (
           <Link
-            key={s.to}
-            to={s.to}
+            key={s.gender}
+            to="/catalog/$gender"
+            params={{ gender: s.gender }}
+            preload="intent"
             className="group relative block aspect-[5/7] md:aspect-[2/3] overflow-hidden bg-sand"
           >
             <img
               src={s.img}
               alt={s.label}
               loading="lazy"
-              className="absolute inset-0 size-full object-cover object-top transition-transform duration-[1500ms] group-hover:scale-105"
+              className="absolute inset-0 size-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.02] motion-reduce:transition-none motion-reduce:transform-none"
             />
             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors" />
             <div className="absolute inset-0 flex flex-col items-center justify-center text-cream">
@@ -151,9 +159,10 @@ function HomePage() {
                   key={tab.key}
                   type="button"
                   onClick={() => setActiveWardrobeTab(tab.key)}
-                  className={isActive
-                    ? "eyebrow border-b border-foreground pb-2 text-foreground"
-                    : "eyebrow border-b border-transparent pb-2 text-foreground/45 transition-colors hover:text-foreground/75"
+                  className={
+                    isActive
+                      ? "eyebrow border-b border-foreground pb-2 text-foreground"
+                      : "eyebrow border-b border-transparent pb-2 text-foreground/45 transition-colors hover:text-foreground/75"
                   }
                 >
                   {tab.label}
@@ -169,6 +178,7 @@ function HomePage() {
               key={c.label}
               to="/catalog/$gender/$section"
               params={{ gender: c.gender, section: c.section }}
+              preload="intent"
               className="group block shrink-0 w-[78%] md:w-auto snap-center"
             >
               <div className="aspect-[3/4] overflow-hidden bg-sand">
@@ -176,7 +186,7 @@ function HomePage() {
                   src={c.img}
                   alt={c.label}
                   loading="lazy"
-                  className="size-full object-cover transition-transform duration-[1200ms] group-hover:scale-105"
+                  className="size-full object-cover transition-transform duration-500 group-hover:scale-[1.02] motion-reduce:transition-none motion-reduce:transform-none"
                 />
               </div>
               <div className="mt-5 text-center font-serif text-2xl">{c.label}</div>
@@ -186,10 +196,7 @@ function HomePage() {
 
         {/* Product carousel — first 10 items from active gender's catalog */}
         <div className="mt-16 md:mt-24">
-          <ProductCarousel
-            items={showcase[activeWardrobeTab]}
-            viewAllGender={activeWardrobeTab}
-          />
+          <ProductCarousel items={showcase[activeWardrobeTab]} viewAllGender={activeWardrobeTab} />
         </div>
       </section>
 
@@ -202,9 +209,15 @@ function HomePage() {
             от времени и сезона
           </h2>
           <p className="text-foreground/75 leading-relaxed mb-10">
-            MVST создаёт мужской и женский гардероб для тех, кто ценит качество, точность и сдержанную выразительность. Безупречный крой, премиальные материалы и благородные оттенки лежат в основе вещей, которые остаются актуальными сегодня и спустя годы.
+            MVST создаёт мужской и женский гардероб для тех, кто ценит качество, точность и
+            сдержанную выразительность. Безупречный крой, премиальные материалы и благородные
+            оттенки лежат в основе вещей, которые остаются актуальными сегодня и спустя годы.
           </p>
-          <Link to="/about" className="eyebrow border-b border-foreground pb-1 hover:text-accent hover:border-accent">
+          <Link
+            to="/about"
+            preload="intent"
+            className="eyebrow border-b border-foreground pb-1 hover:text-accent hover:border-accent"
+          >
             Узнать о бренде
           </Link>
         </div>
@@ -217,15 +230,24 @@ function HomePage() {
             <div className="eyebrow text-foreground/60 mb-3">Бутики</div>
             <h2 className="font-serif text-3xl md:text-4xl">Найти MVST в вашем городе</h2>
           </div>
-          <Link to="/boutiques" className="hidden md:inline-block eyebrow border-b border-foreground pb-1 hover:text-accent hover:border-accent">
+          <Link
+            to="/boutiques"
+            preload="intent"
+            className="hidden md:inline-block eyebrow border-b border-foreground pb-1 hover:text-accent hover:border-accent"
+          >
             Все бутики
           </Link>
         </div>
         <div className="grid gap-x-6 gap-y-10 md:gap-y-6 grid-cols-2 md:grid-cols-3">
           {boutiques.slice(0, 6).map((b) => (
-            <Link key={b.name} to="/boutiques" className="group block">
+            <Link key={b.name} to="/boutiques" preload="intent" className="group block">
               <div className="aspect-[1005/816] overflow-hidden bg-sand">
-                <img src={b.img} alt={b.name} loading="lazy" className="size-full object-cover transition-transform duration-[1200ms] group-hover:scale-105" />
+                <img
+                  src={b.img}
+                  alt={b.name}
+                  loading="lazy"
+                  className="size-full object-cover transition-transform duration-500 group-hover:scale-[1.02] motion-reduce:transition-none motion-reduce:transform-none"
+                />
               </div>
               <div className="pt-5">
                 <div className="font-serif text-xl">{b.name}</div>

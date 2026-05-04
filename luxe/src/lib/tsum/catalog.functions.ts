@@ -12,6 +12,14 @@ import type {
 } from "./types";
 
 const TSUM_V1 = "https://api.tsum.ru/v1";
+const TSUM_CACHE_TTL_MS = 5 * 60 * 1000;
+
+type TsumCacheEntry<T> = {
+  expiresAt: number;
+  value: T;
+};
+
+const tsumCache = new Map<string, TsumCacheEntry<unknown>>();
 
 const sortEnum = z.enum(["our", "date", "price", "price_desc"]);
 const genderEnum = z.enum(["women", "men"]);
@@ -26,20 +34,71 @@ const searchInput = z.object({
   priceFrom: z.number().int().nonnegative().optional(),
   priceTo: z.number().int().positive().optional(),
   label: z.union([z.string(), z.number()]).optional(),
+  attribute: z.array(z.number().int().positive()).max(50).optional(),
 });
 
-function buildBody(input: z.infer<typeof searchInput>): Record<string, unknown> {
+function getTsumCacheKey(
+  path: string,
+  body?: Record<string, unknown> | null,
+  opts?: { method?: "GET" | "POST"; baseUrl?: string },
+): string {
+  return JSON.stringify({
+    baseUrl: opts?.baseUrl ?? "default",
+    method: opts?.method ?? (body ? "POST" : "GET"),
+    path,
+    body: body ?? null,
+  });
+}
+
+async function cachedTsumFetch<T>(
+  path: string,
+  body?: Record<string, unknown> | null,
+  opts?: { method?: "GET" | "POST"; baseUrl?: string; ttlMs?: number },
+): Promise<T> {
+  const key = getTsumCacheKey(path, body, opts);
+  const now = Date.now();
+  const cached = tsumCache.get(key) as TsumCacheEntry<T> | undefined;
+  if (cached && cached.expiresAt > now) return cached.value;
+
+  const value = await tsumFetch<T>(path, body, opts);
+  tsumCache.set(key, { value, expiresAt: now + (opts?.ttlMs ?? TSUM_CACHE_TTL_MS) });
+  return value;
+}
+
+function logTsumFailure(operation: string, data: Record<string, unknown>, err: unknown) {
+  const error =
+    err instanceof Error ? { name: err.name, message: err.message } : { message: String(err) };
+  console.error(
+    JSON.stringify({
+      level: "error",
+      source: "tsum",
+      operation,
+      data,
+      error,
+    }),
+  );
+}
+
+function buildBody(
+  input: z.infer<typeof searchInput>,
+  opts?: { includePage?: boolean; includePrice?: boolean },
+): Record<string, unknown> {
+  const includePage = opts?.includePage ?? true;
+  // ЦУМ-эндпоинт /catalog/search/brand игнорирует priceFrom/priceTo —
+  // фильтрацию по цене делаем на нашей стороне в searchProducts.
+  const includePrice = opts?.includePrice ?? false;
   const body: Record<string, unknown> = {
     category: input.sectionId ? String(input.sectionId) : GENDER_CATEGORY[input.gender],
     brand: MVST_BRAND_ID,
   };
   if (input.sort) body.sort = input.sort;
-  if (input.page) body.page = input.page;
+  if (includePage && input.page) body.page = input.page;
   if (input.color) body.color = input.color;
   if (input.size) body.size = input.size;
-  if (input.priceFrom != null) body.priceFrom = input.priceFrom;
-  if (input.priceTo != null) body.priceTo = input.priceTo;
+  if (includePrice && input.priceFrom != null) body.priceFrom = input.priceFrom;
+  if (includePrice && input.priceTo != null) body.priceTo = input.priceTo;
   if (input.label != null) body.label = input.label;
+  if (input.attribute && input.attribute.length > 0) body.attribute = input.attribute;
   return body;
 }
 
@@ -79,15 +138,53 @@ function normalize(p: TsumProduct): CatalogProduct {
   };
 }
 
+const PER_PAGE = 60;
+
 export const searchProducts = createServerFn({ method: "GET" })
   .inputValidator((input: unknown) => searchInput.parse(input))
   .handler(async ({ data }) => {
-    const items = await tsumFetch<TsumProduct[]>("/catalog/search/brand", buildBody(data));
-    return {
-      items: items.map(normalize),
-      page: data.page ?? 1,
-      perPage: 60 as const,
-    };
+    try {
+      const hasPriceFilter = data.priceFrom != null || data.priceTo != null;
+      const requestedPage = data.page ?? 1;
+
+      if (!hasPriceFilter) {
+        const items = await cachedTsumFetch<TsumProduct[]>(
+          "/catalog/search/brand",
+          buildBody(data),
+        );
+        return {
+          items: items.map(normalize),
+          page: requestedPage,
+          perPage: PER_PAGE,
+        };
+      }
+
+      const all: TsumProduct[] = [];
+      for (let p = 1; p <= 10; p++) {
+        const chunk = await cachedTsumFetch<TsumProduct[]>(
+          "/catalog/search/brand",
+          buildBody({ ...data, page: p }),
+        );
+        all.push(...chunk);
+        if (chunk.length < PER_PAGE) break;
+      }
+
+      const normalized = all.map(normalize);
+      const min = data.priceFrom ?? 0;
+      const max = data.priceTo ?? Number.POSITIVE_INFINITY;
+      const filtered = normalized.filter((p) => p.minPrice >= min && p.minPrice <= max);
+      const start = (requestedPage - 1) * PER_PAGE;
+
+      return {
+        items: filtered.slice(start, start + PER_PAGE),
+        page: requestedPage,
+        perPage: PER_PAGE,
+        filteredTotal: filtered.length,
+      };
+    } catch (err) {
+      logTsumFailure("searchProducts", data, err);
+      throw err;
+    }
   });
 
 const EMPTY_FILTERS: TsumFilters = {
@@ -105,23 +202,21 @@ export const getCatalogFilters = createServerFn({ method: "GET" })
   .inputValidator((input: unknown) => searchInput.parse(input))
   .handler(async ({ data }) => {
     try {
-      const filters = await tsumFetch<TsumFilters>("/catalog/filter", buildBody(data));
+      const filters = await cachedTsumFetch<TsumFilters>("/catalog/filter", buildBody(data));
       const safe: TsumFilters = { ...EMPTY_FILTERS, ...(filters ?? {}) };
       // Rebrand sort label
       if (safe.sort?.items?.length) {
         safe.sort = {
           ...safe.sort,
-          items: safe.sort.items.map((s) =>
-            s.id === "our" ? { ...s, title: "Выбор MVST" } : s,
-          ),
+          items: safe.sort.items.map((s) => (s.id === "our" ? { ...s, title: "Выбор MVST" } : s)),
         };
       }
       const total = safe.price?.items?.[0]?.count ?? 0;
       const pageCount = Math.max(1, Math.ceil(total / 60));
       return { filters: safe, total, pageCount };
     } catch (err) {
-      console.error("getCatalogFilters failed:", err);
-      return { filters: EMPTY_FILTERS, total: 0, pageCount: 1 };
+      logTsumFailure("getCatalogFilters", data, err);
+      throw err;
     }
   });
 
@@ -147,7 +242,7 @@ export const resolveSection = createServerFn({ method: "GET" })
       return { sectionId: Number(data.slug), title: null as string | null };
     }
     try {
-      const filters = await tsumFetch<TsumFilters>("/catalog/filter", {
+      const filters = await cachedTsumFetch<TsumFilters>("/catalog/filter", {
         category: GENDER_CATEGORY[data.gender],
         brand: MVST_BRAND_ID,
       });
@@ -156,9 +251,9 @@ export const resolveSection = createServerFn({ method: "GET" })
         if (node) return { sectionId: node.id, title: node.title };
       }
     } catch (err) {
-      console.error("resolveSection failed:", err);
+      logTsumFailure("resolveSection", data, err);
+      throw err;
     }
-    // Fallback: попытаемся выдрать число из конца slug (для совсем неизвестных URL).
     const trailing = data.slug.match(/-(\d+)$/)?.[1];
     if (trailing) return { sectionId: Number(trailing), title: null as string | null };
     return { sectionId: null as number | null, title: null as string | null };
@@ -172,28 +267,33 @@ const productInput = z.object({
 export const getProductBySlug = createServerFn({ method: "GET" })
   .inputValidator((input: unknown) => productInput.parse(input))
   .handler(async ({ data }) => {
-    // slug = `${modelExtId}-...`. Берём modelExtId, ищем по полному списку MVST.
-    const modelExtId = data.slug.match(/^(\d+)/)?.[1];
-    if (!modelExtId) return { product: null };
-    // Перебираем страницы (у MVST ~150 товаров — максимум 3 страницы по 60).
-    for (let page = 1; page <= 5; page++) {
-      const items = await tsumFetch<TsumProduct[]>("/catalog/search/brand", {
-        category: GENDER_CATEGORY[data.gender],
-        brand: MVST_BRAND_ID,
-        page,
-      });
-      const found = items.find((p) => p.modelExtId === modelExtId);
-      if (found) return { product: normalize(found) };
-      if (items.length < 60) break;
+    try {
+      // slug = `${modelExtId}-...`. Берём modelExtId, ищем по полному списку MVST.
+      const modelExtId = data.slug.match(/^(\d+)/)?.[1];
+      if (!modelExtId) return { product: null };
+      // Перебираем страницы (у MVST ~150 товаров — максимум 3 страницы по 60).
+      for (let page = 1; page <= 5; page++) {
+        const items = await cachedTsumFetch<TsumProduct[]>("/catalog/search/brand", {
+          category: GENDER_CATEGORY[data.gender],
+          brand: MVST_BRAND_ID,
+          page,
+        });
+        const found = items.find((p) => p.modelExtId === modelExtId);
+        if (found) return { product: normalize(found) };
+        if (items.length < PER_PAGE) break;
+      }
+      return { product: null };
+    } catch (err) {
+      logTsumFailure("getProductBySlug", data, err);
+      throw err;
     }
-    return { product: null };
   });
 
 const detailInput = z.object({ slug: z.string().min(1).max(200) });
 
 async function fetchDetailRaw(apiSlug: string): Promise<TsumProductDetail | null> {
   try {
-    return await tsumFetch<TsumProductDetail>(
+    return await cachedTsumFetch<TsumProductDetail>(
       `/catalog/product/${encodeURIComponent(apiSlug)}`,
       null,
       { method: "GET", baseUrl: TSUM_V1 },
@@ -208,38 +308,39 @@ async function fetchDetailRaw(apiSlug: string): Promise<TsumProductDetail | null
 export const getProductDetail = createServerFn({ method: "GET" })
   .inputValidator((input: unknown) => detailInput.parse(input))
   .handler(async ({ data }) => {
-    // Наш URL slug = `${modelExtId}-${apiSlug-без-числового-префикса}`.
-    // Реальный slug ЦУМа имеет вид `${modelExtId}-${rest}` — это и есть data.slug.
-    let detail = await fetchDetailRaw(data.slug);
-    let gender: Gender | null = null;
-    if (!detail) {
-      // Fallback: восстанавливаем оригинальный slug через поиск по каталогу.
-      for (const g of ["women", "men"] as const) {
-        const womenRes = await getProductBySlug({ data: { gender: g, slug: data.slug } });
-        if (womenRes.product) {
-          gender = g;
-          detail = await fetchDetailRaw(womenRes.product.raw.slug);
-          break;
+    try {
+      // Наш URL slug = `${modelExtId}-${apiSlug-без-числового-префикса}`.
+      // Реальный slug ЦУМа имеет вид `${modelExtId}-${rest}` — это и есть data.slug.
+      let detail = await fetchDetailRaw(data.slug);
+      let gender: Gender | null = null;
+      if (!detail) {
+        // Восстанавливаем оригинальный slug через поиск по каталогу.
+        for (const g of ["women", "men"] as const) {
+          const productResult = await getProductBySlug({ data: { gender: g, slug: data.slug } });
+          if (productResult.product) {
+            gender = g;
+            detail = await fetchDetailRaw(productResult.product.raw.slug);
+            break;
+          }
         }
-      }
-    } else {
-      // Определим gender из категории через дерево фильтров (быстрая эвристика по category.id корня).
-      // Достаточно: если категория детали присутствует в дереве women — women, иначе men.
-      try {
-        const womenFilters = await tsumFetch<TsumFilters>("/catalog/filter", {
+      } else {
+        const loadedDetail = detail;
+        // Определим gender из категории через дерево фильтров women; если категории там нет, это men.
+        const womenFilters = await cachedTsumFetch<TsumFilters>("/catalog/filter", {
           category: GENDER_CATEGORY.women,
           brand: MVST_BRAND_ID,
         });
-        const inWomen = womenFilters?.category?.items?.some((root) =>
-          containsCategory(root, detail!.category.id),
+        const inWomen = womenFilters.category.items.some((root) =>
+          containsCategory(root, loadedDetail.category.id),
         );
         gender = inWomen ? "women" : "men";
-      } catch {
-        gender = "women";
       }
+      if (!detail) return { detail: null, gender: null };
+      return { detail, gender };
+    } catch (err) {
+      logTsumFailure("getProductDetail", data, err);
+      throw err;
     }
-    if (!detail) return { detail: null, gender: null };
-    return { detail, gender };
   });
 
 function containsCategory(n: CategoryNode, id: number): boolean {
@@ -250,4 +351,3 @@ function containsCategory(n: CategoryNode, id: number): boolean {
 export type SearchResult = Awaited<ReturnType<typeof searchProducts>>;
 export type FiltersResult = Awaited<ReturnType<typeof getCatalogFilters>>;
 export type { CatalogProduct, Gender, SortId };
-

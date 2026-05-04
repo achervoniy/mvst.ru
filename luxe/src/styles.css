@@ -160,6 +160,18 @@
     letter-spacing: -0.005em;
   }
 
+  :is(
+      a[href],
+      button,
+      [role="button"],
+      input[type="button"],
+      input[type="submit"],
+      input[type="reset"],
+      summary
+    ):not(:disabled):not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
+
   ::selection {
     background-color: var(--color-accent);
     color: var(--color-accent-foreground);
@@ -210,7 +222,10 @@
 }
 
 @keyframes lookFade {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
-

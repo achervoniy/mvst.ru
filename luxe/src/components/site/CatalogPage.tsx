@@ -1,9 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { ChevronDown, ChevronLeft, ChevronRight, ChevronRight as ChevronRightIcon, SlidersHorizontal, X as XIcon } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronRight as ChevronRightIcon,
+  SlidersHorizontal,
+  X as XIcon,
+} from "lucide-react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { ProductCard } from "@/components/site/ProductCard";
-
 
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import {
@@ -22,12 +28,7 @@ import {
 import { cn } from "@/lib/utils";
 import { formatRub, pluralizeRu } from "@/lib/format";
 import type { CatalogProduct } from "@/lib/tsum/types";
-import type {
-  TsumFilters,
-  CategoryNode,
-  Gender,
-  AttrGroup,
-} from "@/lib/tsum/types";
+import type { TsumFilters, CategoryNode, Gender, AttrGroup } from "@/lib/tsum/types";
 
 export interface CatalogSearch {
   sort?: "our" | "date" | "price" | "price_desc";
@@ -37,6 +38,18 @@ export interface CatalogSearch {
   priceFrom?: number;
   priceTo?: number;
   label?: string | number;
+  attribute?: number[];
+}
+
+function sanitizeSearch(next: CatalogSearch): CatalogSearch {
+  const cleaned = { ...next };
+  Object.keys(cleaned).forEach((k) => {
+    const key = k as keyof CatalogSearch;
+    if (cleaned[key] === undefined || cleaned[key] === "" || cleaned[key] === null) {
+      delete cleaned[key];
+    }
+  });
+  return cleaned;
 }
 
 interface CatalogPageProps {
@@ -56,33 +69,57 @@ export function CatalogPage(props: CatalogPageProps) {
   const { gender, title, sectionId, sectionTitle, items, filters, total, page, pageCount, search } =
     props;
   const navigate = useNavigate();
+  const [optimisticSearch, setOptimisticSearch] = useState<CatalogSearch>(search);
+  const [isNavigationPending, setIsNavigationPending] = useState(false);
+
+  useEffect(() => {
+    setOptimisticSearch(search);
+    setIsNavigationPending(false);
+  }, [search]);
+
+  const displayedSearch = isNavigationPending ? optimisticSearch : search;
 
   const updateSearch = (patch: Partial<CatalogSearch>, resetPage = true) => {
-    navigate({
-      to: sectionId
-        ? "/catalog/$gender/$section"
-        : "/catalog/$gender",
+    const next = sanitizeSearch({
+      ...(isNavigationPending ? optimisticSearch : search),
+      ...patch,
+    });
+    if (resetPage) delete next.page;
+    setOptimisticSearch(next);
+    setIsNavigationPending(true);
+
+    void navigate({
+      to: sectionId ? "/catalog/$gender/$section" : "/catalog/$gender",
       params: sectionId
-        ? { gender, section: getSectionParamFromTree(filters.category.items, sectionId) ?? String(sectionId) }
+        ? {
+            gender,
+            section:
+              getSectionParamFromTree(filters.category.items, sectionId) ?? String(sectionId),
+          }
         : { gender },
-      search: (prev: CatalogSearch) => {
-        const next = { ...(prev as CatalogSearch), ...patch };
-        if (resetPage) delete next.page;
-        // strip undefineds
-        Object.keys(next).forEach((k) => {
-          const key = k as keyof CatalogSearch;
-          if (next[key] === undefined || next[key] === "" || next[key] === null) delete next[key];
-        });
-        return next;
-      },
+      search: () => next,
+    }).catch((err) => {
+      setOptimisticSearch(search);
+      setIsNavigationPending(false);
+      const error =
+        err instanceof Error ? { name: err.name, message: err.message } : { message: String(err) };
+      console.error(
+        JSON.stringify({
+          level: "error",
+          source: "catalog-navigation",
+          operation: "updateSearch",
+          patch,
+          error,
+        }),
+      );
     });
   };
 
   const sortItems = filters.sort?.items ?? [];
-  const currentSortId = (search.sort ?? sortItems.find((s) => s.isDefault)?.id ?? "our") as string;
+  const currentSortId = (displayedSearch.sort ??
+    sortItems.find((s) => s.isDefault)?.id ??
+    "our") as string;
   const currentSortTitle = sortItems.find((s) => s.id === currentSortId)?.title ?? "Сортировка";
-
-  const priceBucket = filters.price?.items?.[0];
 
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [showStickyBar, setShowStickyBar] = useState(false);
@@ -111,15 +148,13 @@ export function CatalogPage(props: CatalogPageProps) {
       >
         <ol className="flex items-center px-4 md:px-10 eyebrow text-foreground/60 text-[10px]">
           <li>
-            <Link to="/" className="hover:text-accent">Главная</Link>
+            <Link to="/" className="hover:text-accent">
+              Главная
+            </Link>
           </li>
           <li className="flex items-center">
             <span className="mx-2">·</span>
-            <Link
-              to="/catalog/$gender"
-              params={{ gender }}
-              className="hover:text-accent"
-            >
+            <Link to="/catalog/$gender" params={{ gender }} className="hover:text-accent">
               {title}
             </Link>
           </li>
@@ -157,7 +192,6 @@ export function CatalogPage(props: CatalogPageProps) {
         </h1>
         {/* Mobile filters trigger — иконка на одной линии с заголовком */}
         <button
-          
           type="button"
           onClick={() => setFiltersOpen(true)}
           aria-label="Фильтры"
@@ -180,7 +214,7 @@ export function CatalogPage(props: CatalogPageProps) {
         filters={filters}
         activeSectionId={sectionId}
         sectionTitle={sectionTitle}
-        search={search}
+        search={displayedSearch}
         total={total}
         currentSortTitle={currentSortTitle}
         onChange={updateSearch}
@@ -314,7 +348,6 @@ export function CatalogPage(props: CatalogPageProps) {
               onJump={(p) => updateSearch({ page: p === 1 ? undefined : p }, false)}
             />
           )}
-
         </div>
       </div>
     </SiteLayout>
@@ -340,20 +373,31 @@ function FiltersSidebar({
   onNavigate?: () => void;
   mobile?: boolean;
 }) {
-  const genderRoot = filters.category.items.find(
-    (r) => r.title.toLowerCase().startsWith(gender === "women" ? "женск" : "мужск"),
-  ) ?? filters.category.items[gender === "men" ? 1 : 0];
+  const genderRoot =
+    filters.category.items.find((r) =>
+      r.title.toLowerCase().startsWith(gender === "women" ? "женск" : "мужск"),
+    ) ?? filters.category.items[gender === "men" ? 1 : 0];
   const tree = genderRoot?.items ?? [];
-  const colors = filters.color.items ?? [];
-  const sizes = filters.size.items ?? [];
-  const attributes = filters.attribute.items ?? [];
+  const colors = useMemo(() => filters.color.items ?? [], [filters.color.items]);
+  const sizes = useMemo(() => filters.size.items ?? [], [filters.size.items]);
+  const attributes = useMemo(() => filters.attribute.items ?? [], [filters.attribute.items]);
   const priceBucket = filters.price.items?.[0];
 
+  const activeAttrs = search.attribute ?? [];
   const hasAnyFilter =
     !!search.color ||
     !!search.size ||
     !!search.priceFrom ||
-    !!search.priceTo;
+    !!search.priceTo ||
+    activeAttrs.length > 0;
+
+  const toggleAttr = (id: number) => {
+    const set = new Set(activeAttrs);
+    if (set.has(id)) set.delete(id);
+    else set.add(id);
+    const next = Array.from(set);
+    onChange({ attribute: next.length > 0 ? next : undefined });
+  };
 
   const labelCls = cn("eyebrow text-foreground/60", mobile ? "text-xs mb-4" : "mb-3");
 
@@ -364,7 +408,13 @@ function FiltersSidebar({
           type="button"
           onClick={() =>
             onChange(
-              { color: undefined, size: undefined, priceFrom: undefined, priceTo: undefined },
+              {
+                color: undefined,
+                size: undefined,
+                priceFrom: undefined,
+                priceTo: undefined,
+                attribute: undefined,
+              },
               true,
             )
           }
@@ -471,18 +521,48 @@ function FiltersSidebar({
               </AccordionTrigger>
               <AccordionContent>
                 <ul className={cn(mobile ? "space-y-2.5" : "space-y-1.5")}>
-                  {group.items.map((a: AttrGroup) => (
-                    <li
-                      key={a.id}
-                      className={cn(
-                        "flex items-center justify-between text-foreground/70",
-                        mobile ? "text-base py-1" : "text-sm",
-                      )}
-                    >
-                      <span>{a.title}</span>
-                      <span className="text-foreground/40 text-xs">{a.count}</span>
-                    </li>
-                  ))}
+                  {group.items.map((a: AttrGroup) => {
+                    const checked = activeAttrs.includes(a.id);
+                    return (
+                      <li key={a.id}>
+                        <button
+                          type="button"
+                          onClick={() => toggleAttr(a.id)}
+                          aria-pressed={checked}
+                          className={cn(
+                            "w-full flex items-center justify-between text-left transition-colors",
+                            checked
+                              ? "text-foreground"
+                              : "text-foreground/70 hover:text-foreground",
+                            mobile ? "text-base py-1.5" : "text-sm py-0.5",
+                          )}
+                        >
+                          <span className="flex items-center gap-2">
+                            <span
+                              className={cn(
+                                "inline-flex items-center justify-center size-4 border transition-colors shrink-0",
+                                checked
+                                  ? "bg-foreground border-foreground text-background"
+                                  : "border-foreground/30",
+                              )}
+                              aria-hidden="true"
+                            >
+                              {checked && (
+                                <svg
+                                  viewBox="0 0 12 12"
+                                  className="size-3 fill-none stroke-current stroke-2"
+                                >
+                                  <polyline points="2,6 5,9 10,3" />
+                                </svg>
+                              )}
+                            </span>
+                            <span>{a.title}</span>
+                          </span>
+                          <span className="text-foreground/40 text-xs">{a.count}</span>
+                        </button>
+                      </li>
+                    );
+                  })}
                 </ul>
               </AccordionContent>
             </AccordionItem>
@@ -511,7 +591,9 @@ function CategoryTree({
   onNavigate?: () => void;
 }) {
   const rootSpacing = mobile ? "space-y-3" : "space-y-1.5";
-  const childSpacing = mobile ? "mt-2.5 ml-3 space-y-2.5 border-l hairline pl-4" : "mt-1.5 ml-3 space-y-1 border-l hairline pl-3";
+  const childSpacing = mobile
+    ? "mt-2.5 ml-3 space-y-2.5 border-l hairline pl-4"
+    : "mt-1.5 ml-3 space-y-1 border-l hairline pl-3";
   const linkSize = mobile ? "text-base py-0.5" : "text-sm";
   return (
     <ul className={cn(depth === 0 ? rootSpacing : childSpacing)}>
@@ -567,15 +649,10 @@ function getSectionParamFromTree(roots: CategoryNode[], id: number): string | nu
   return null;
 }
 
-function getCategoryPath(
-  roots: CategoryNode[],
-  gender: Gender,
-  activeId: number,
-): CategoryNode[] {
+function getCategoryPath(roots: CategoryNode[], gender: Gender, activeId: number): CategoryNode[] {
   const genderRoot =
-    roots.find((r) =>
-      r.title.toLowerCase().startsWith(gender === "women" ? "женск" : "мужск"),
-    ) ?? roots[gender === "men" ? 1 : 0];
+    roots.find((r) => r.title.toLowerCase().startsWith(gender === "women" ? "женск" : "мужск")) ??
+    roots[gender === "men" ? 1 : 0];
   if (!genderRoot) return [];
   const dfs = (node: CategoryNode, trail: CategoryNode[]): CategoryNode[] | null => {
     const next = [...trail, node];
@@ -652,7 +729,9 @@ function PriceFilter({
   const currentTo = to != null ? String(to) : "";
   const dirty = fromStr !== currentFrom || toStr !== currentTo;
 
-  const labelTextCls = mobile ? "text-sm text-foreground/60 w-8 shrink-0" : "text-[11px] text-foreground/50 w-6 shrink-0";
+  const labelTextCls = mobile
+    ? "text-sm text-foreground/60 w-8 shrink-0"
+    : "text-[11px] text-foreground/50 w-6 shrink-0";
   const inputCls = cn(
     "w-full px-2 bg-transparent border border-foreground/20 focus:border-foreground focus:outline-none",
     mobile ? "h-11 text-base" : "h-9 text-sm",
@@ -660,7 +739,9 @@ function PriceFilter({
 
   return (
     <div>
-      <div className={cn("eyebrow text-foreground/60", mobile ? "text-xs mb-4" : "mb-3")}>Цена, ₽</div>
+      <div className={cn("eyebrow text-foreground/60", mobile ? "text-xs mb-4" : "mb-3")}>
+        Цена, ₽
+      </div>
       <div className={cn(mobile ? "space-y-3" : "space-y-2")}>
         <label className="flex items-center gap-2">
           <span className={labelTextCls}>от</span>
@@ -800,13 +881,7 @@ function buildPages(current: number, total: number): (number | "…")[] {
 
 // ────────────── MOBILE SECTIONED FILTERS DRAWER ──────────────
 
-type PanelKey =
-  | "sort"
-  | "category"
-  | "color"
-  | "size"
-  | "price"
-  | `attr-${number}`;
+type PanelKey = "sort" | "category" | "color" | "size" | "price" | `attr-${number}`;
 
 function MobileFiltersDrawer({
   open,
@@ -838,9 +913,9 @@ function MobileFiltersDrawer({
     if (!open) setPanel(null);
   }, [open]);
 
-  const colors = filters.color.items ?? [];
-  const sizes = filters.size.items ?? [];
-  const attributes = filters.attribute.items ?? [];
+  const colors = useMemo(() => filters.color.items ?? [], [filters.color.items]);
+  const sizes = useMemo(() => filters.size.items ?? [], [filters.size.items]);
+  const attributes = useMemo(() => filters.attribute.items ?? [], [filters.attribute.items]);
   const priceBucket = filters.price.items?.[0];
 
   const colorTitle = useMemo(() => {
@@ -860,12 +935,23 @@ function MobileFiltersDrawer({
     return "—";
   }, [search.priceFrom, search.priceTo]);
 
+  const activeAttrs = search.attribute ?? [];
+
+  const toggleAttr = (id: number) => {
+    const set = new Set(activeAttrs);
+    if (set.has(id)) set.delete(id);
+    else set.add(id);
+    const next = Array.from(set);
+    onChange({ attribute: next.length > 0 ? next : undefined });
+  };
+
   const hasAnyFilter =
     !!search.color ||
     !!search.size ||
     !!search.priceFrom ||
     !!search.priceTo ||
-    !!search.sort;
+    !!search.sort ||
+    activeAttrs.length > 0;
 
   const resetAll = () => {
     onChange(
@@ -875,6 +961,7 @@ function MobileFiltersDrawer({
         priceFrom: undefined,
         priceTo: undefined,
         sort: undefined,
+        attribute: undefined,
       },
       true,
     );
@@ -886,20 +973,25 @@ function MobileFiltersDrawer({
   const rows: { key: PanelKey; label: string; value: string }[] = [
     { key: "sort", label: "Сортировка", value: currentSortTitle },
     { key: "category", label: "Категории", value: sectionTitle ?? "Все" },
-    ...(colors.length > 0
-      ? [{ key: "color" as PanelKey, label: "Цвет", value: colorTitle }]
-      : []),
-    ...(sizes.length > 0
-      ? [{ key: "size" as PanelKey, label: "Размер", value: sizeTitle }]
-      : []),
+    ...(colors.length > 0 ? [{ key: "color" as PanelKey, label: "Цвет", value: colorTitle }] : []),
+    ...(sizes.length > 0 ? [{ key: "size" as PanelKey, label: "Размер", value: sizeTitle }] : []),
     ...(priceBucket && priceBucket.min < priceBucket.max
       ? [{ key: "price" as PanelKey, label: "Цена", value: priceTitle }]
       : []),
-    ...attributes.map((g) => ({
-      key: `attr-${g.id}` as PanelKey,
-      label: g.title,
-      value: "—",
-    })),
+    ...attributes.map((g) => {
+      const selected = g.items.filter((a: AttrGroup) => activeAttrs.includes(a.id));
+      const value =
+        selected.length === 0
+          ? "—"
+          : selected.length === 1
+            ? selected[0].title
+            : `Выбрано: ${selected.length}`;
+      return {
+        key: `attr-${g.id}` as PanelKey,
+        label: g.title,
+        value,
+      };
+    }),
   ];
 
   const panelTitle = (() => {
@@ -992,7 +1084,13 @@ function MobileFiltersDrawer({
             <div className="p-5">
               <FiltersSidebar
                 gender={gender}
-                filters={{ ...filters, color: { ...filters.color, items: [] }, size: { ...filters.size, items: [] }, price: { ...filters.price, items: [] }, attribute: { ...filters.attribute, items: [] } }}
+                filters={{
+                  ...filters,
+                  color: { ...filters.color, items: [] },
+                  size: { ...filters.size, items: [] },
+                  price: { ...filters.price, items: [] },
+                  attribute: { ...filters.attribute, items: [] },
+                }}
                 activeSectionId={activeSectionId}
                 search={search}
                 onChange={(p, r) => {
@@ -1081,24 +1179,55 @@ function MobileFiltersDrawer({
             </div>
           )}
 
-          {panel?.startsWith("attr-") && (() => {
-            const id = Number(panel.slice(5));
-            const group = attributes.find((g) => g.id === id);
-            if (!group) return null;
-            return (
-              <ul className="p-5 space-y-3">
-                {group.items.map((a: AttrGroup) => (
-                  <li
-                    key={a.id}
-                    className="flex items-center justify-between text-foreground/70 text-base py-1"
-                  >
-                    <span>{a.title}</span>
-                    <span className="text-foreground/40 text-xs">{a.count}</span>
-                  </li>
-                ))}
-              </ul>
-            );
-          })()}
+          {panel?.startsWith("attr-") &&
+            (() => {
+              const id = Number(panel.slice(5));
+              const group = attributes.find((g) => g.id === id);
+              if (!group) return null;
+              return (
+                <ul className="p-5 space-y-1">
+                  {group.items.map((a: AttrGroup) => {
+                    const checked = activeAttrs.includes(a.id);
+                    return (
+                      <li key={a.id}>
+                        <button
+                          type="button"
+                          onClick={() => toggleAttr(a.id)}
+                          aria-pressed={checked}
+                          className={cn(
+                            "w-full flex items-center justify-between text-left py-2.5 text-base transition-colors",
+                            checked ? "text-foreground" : "text-foreground/70",
+                          )}
+                        >
+                          <span className="flex items-center gap-3">
+                            <span
+                              className={cn(
+                                "inline-flex items-center justify-center size-5 border transition-colors shrink-0",
+                                checked
+                                  ? "bg-foreground border-foreground text-background"
+                                  : "border-foreground/30",
+                              )}
+                              aria-hidden="true"
+                            >
+                              {checked && (
+                                <svg
+                                  viewBox="0 0 12 12"
+                                  className="size-3.5 fill-none stroke-current stroke-2"
+                                >
+                                  <polyline points="2,6 5,9 10,3" />
+                                </svg>
+                              )}
+                            </span>
+                            <span>{a.title}</span>
+                          </span>
+                          <span className="text-foreground/40 text-xs">{a.count}</span>
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              );
+            })()}
         </div>
 
         {/* Sticky footer */}
@@ -1117,7 +1246,8 @@ function MobileFiltersDrawer({
             onClick={close}
             className="w-full h-14 bg-foreground text-background eyebrow text-sm hover:bg-foreground/90 transition-colors"
           >
-            Показать {total.toLocaleString("ru-RU")} {pluralizeRu(total, ["товар", "товара", "товаров"])}
+            Показать {total.toLocaleString("ru-RU")}{" "}
+            {pluralizeRu(total, ["товар", "товара", "товаров"])}
           </button>
         </div>
       </SheetContent>

@@ -8,8 +8,8 @@ import { HeaderCartButton } from "@/components/site/HeaderCartButton";
 
 const nav = [
   { to: "/collection-ss26", label: "Коллекция SS26" },
-  { to: "/women", label: "Для неё" },
-  { to: "/men", label: "Для него" },
+  { to: "/catalog/$gender", label: "Для неё", params: { gender: "women" as const } },
+  { to: "/catalog/$gender", label: "Для него", params: { gender: "men" as const } },
   { to: "/boutiques", label: "Бутики" },
   { to: "/about", label: "О бренде" },
 ] as const;
@@ -40,10 +40,7 @@ export function Header({ variant = "solid" }: { variant?: "transparent" | "solid
     if (!el) return;
     const apply = () => {
       const h = el.getBoundingClientRect().height;
-      document.documentElement.style.setProperty(
-        "--header-h",
-        `${Math.round(h)}px`,
-      );
+      document.documentElement.style.setProperty("--header-h", `${Math.round(h)}px`);
     };
     apply();
     const ro = new ResizeObserver(apply);
@@ -124,30 +121,51 @@ export function Header({ variant = "solid" }: { variant?: "transparent" | "solid
               />
             </Link>
             <nav className="flex items-center justify-center gap-7">
-                {nav.map((n) => (
+              {nav.map((n) => {
+                const className = cn(
+                  "eyebrow whitespace-nowrap relative transition-colors duration-[280ms] ease-out",
+                  "after:absolute after:left-0 after:right-0 after:-bottom-1.5 after:h-px after:bg-current",
+                  "after:origin-left after:scale-x-0 after:transition-transform after:duration-[280ms] after:ease-out",
+                  "hover:after:scale-x-100",
+                  showGradient
+                    ? "text-cream/85 hover:text-cream"
+                    : "text-foreground/75 hover:text-accent",
+                );
+                const activeProps = {
+                  className: cn(
+                    "eyebrow whitespace-nowrap relative",
+                    "after:absolute after:left-0 after:right-0 after:-bottom-1.5 after:h-px after:bg-current after:scale-x-100",
+                    showGradient ? "text-cream" : "text-accent",
+                  ),
+                };
+
+                if (n.to === "/catalog/$gender") {
+                  return (
+                    <Link
+                      key={`${n.to}-${n.params.gender}`}
+                      to="/catalog/$gender"
+                      params={n.params}
+                      preload="intent"
+                      className={className}
+                      activeProps={activeProps}
+                    >
+                      {n.label}
+                    </Link>
+                  );
+                }
+
+                return (
                   <Link
                     key={n.to}
                     to={n.to}
-                    className={cn(
-                      "eyebrow whitespace-nowrap relative transition-colors duration-[280ms] ease-out",
-                      "after:absolute after:left-0 after:right-0 after:-bottom-1.5 after:h-px after:bg-current",
-                      "after:origin-left after:scale-x-0 after:transition-transform after:duration-[280ms] after:ease-out",
-                      "hover:after:scale-x-100",
-                      showGradient
-                        ? "text-cream/85 hover:text-cream"
-                        : "text-foreground/75 hover:text-accent",
-                    )}
-                    activeProps={{
-                      className: cn(
-                        "eyebrow whitespace-nowrap relative",
-                        "after:absolute after:left-0 after:right-0 after:-bottom-1.5 after:h-px after:bg-current after:scale-x-100",
-                        showGradient ? "text-cream" : "text-accent",
-                      ),
-                    }}
+                    preload="intent"
+                    className={className}
+                    activeProps={activeProps}
                   >
                     {n.label}
                   </Link>
-              ))}
+                );
+              })}
             </nav>
             <div className="justify-self-end w-[85px] flex justify-end">
               <HeaderCartButton dark={showGradient} />
@@ -160,9 +178,7 @@ export function Header({ variant = "solid" }: { variant?: "transparent" | "solid
       <div
         className={cn(
           "md:hidden fixed inset-x-0 z-50 overflow-hidden bg-background transition-[max-height,visibility] duration-300",
-          open
-            ? "visible max-h-96 border-b hairline"
-            : "invisible max-h-0 border-0",
+          open ? "visible max-h-96 border-b hairline" : "invisible max-h-0 border-0",
         )}
         style={{ top: "var(--header-h, 60px)" }}
       >
@@ -174,16 +190,30 @@ export function Header({ variant = "solid" }: { variant?: "transparent" | "solid
           >
             Главная
           </Link>
-          {nav.map((n) => (
-            <Link
-              key={n.to}
-              to={n.to}
-              onClick={() => setOpen(false)}
-              className="font-serif text-xl py-3 border-b hairline last:border-0 text-foreground"
-            >
-              {n.label}
-            </Link>
-          ))}
+          {nav.map((n) =>
+            n.to === "/catalog/$gender" ? (
+              <Link
+                key={`${n.to}-${n.params.gender}`}
+                to="/catalog/$gender"
+                params={n.params}
+                preload="intent"
+                onClick={() => setOpen(false)}
+                className="font-serif text-xl py-3 border-b hairline last:border-0 text-foreground"
+              >
+                {n.label}
+              </Link>
+            ) : (
+              <Link
+                key={n.to}
+                to={n.to}
+                preload="intent"
+                onClick={() => setOpen(false)}
+                className="font-serif text-xl py-3 border-b hairline last:border-0 text-foreground"
+              >
+                {n.label}
+              </Link>
+            ),
+          )}
         </nav>
       </div>
     </>
