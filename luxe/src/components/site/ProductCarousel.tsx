@@ -80,7 +80,7 @@ export function ProductCarousel({ items, viewAllGender }: ProductCarouselProps) 
 
       <ul
         ref={scrollerRef}
-        className="-mx-6 md:mx-0 px-6 md:px-0 flex gap-4 md:gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="-mx-6 md:mx-0 px-6 md:px-0 flex gap-4 md:gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth bg-background isolate [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {items.map((p) => (
           <li
