@@ -92,13 +92,20 @@ export function CatalogPage(props: CatalogPageProps) {
     setIsNavigationPending(false);
   }, [search]);
 
-  // Если по текущим фильтрам ничего не найдено — автоматически сбрасываем фильтры,
-  // оставив только категорию и сортировку. Категория важнее остальных фильтров.
-  // Используем items.length, а не total: первый — реальный пустой выдачи,
-  // второй — иногда не учитывает наши фильтры в ответе TSUM.
+  // Если только что сменили категорию и по текущим фильтрам там ничего нет —
+  // сбрасываем фильтры, оставив раздел и сортировку. Категория важнее остальных
+  // фильтров, но менять/применять отдельные фильтры внутри категории не должно
+  // приводить к их обнулению — пользователь сам видит «ничего не найдено».
   const isEmpty = items.length === 0;
+  const prevSectionIdRef = useRef<number | undefined>(sectionId);
   useEffect(() => {
-    if (isNavigationPending) return;
+    if (isNavigationPending) {
+      prevSectionIdRef.current = sectionId;
+      return;
+    }
+    const sectionChanged = prevSectionIdRef.current !== sectionId;
+    prevSectionIdRef.current = sectionId;
+    if (!sectionChanged) return;
     if (!isEmpty) return;
     const hasFilters =
       (search.color?.length ?? 0) > 0 ||
@@ -117,7 +124,15 @@ export function CatalogPage(props: CatalogPageProps) {
       search: () => ({ sort: search.sort }),
       replace: true,
     });
-  }, [isEmpty, isNavigationPending, search, navigate, gender, sectionId, filters.category.items]);
+  }, [
+    sectionId,
+    isEmpty,
+    isNavigationPending,
+    search,
+    navigate,
+    gender,
+    filters.category.items,
+  ]);
 
   const displayedSearch = isNavigationPending ? optimisticSearch : search;
 
