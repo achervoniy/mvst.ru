@@ -3,8 +3,9 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { ProductShelf } from "@/components/site/ProductShelf";
+import { OutfitShelf } from "@/components/site/OutfitShelf";
 import {
-  getLookComplementsByItemId,
+  getLookOutfitsByItemId,
   type ShelfItem,
 } from "@/lib/look-recommendations";
 import {
@@ -36,8 +37,8 @@ export const Route = createFileRoute("/product/$slug")({
   loader: async ({ params }) => {
     const { detail, gender } = await getProductDetail({ data: { slug: params.slug } });
     if (!detail) throw notFound();
-    const complements = getLookComplementsByItemId(detail.id, 12);
-    return { detail, gender: gender ?? "women", complements };
+    const outfits = getLookOutfitsByItemId(detail.id, 6);
+    return { detail, gender: gender ?? "women", outfits };
   },
   staleTime: 5 * 60 * 1000,
   head: ({ loaderData }) => {
@@ -86,7 +87,7 @@ function pickImage(img: TsumImage): string {
 }
 
 function ProductPage() {
-  const { detail, gender, complements } = Route.useLoaderData();
+  const { detail, gender, outfits } = Route.useLoaderData();
   const [selectedOfferId, setSelectedOfferId] = useState<number | null>(null);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
@@ -198,12 +199,15 @@ function ProductPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [detail.id]);
 
-  const complementIds = useMemo(
-    () => new Set(complements.map((c: ShelfItem) => c.id)),
-    [complements],
-  );
+  const outfitProductIds = useMemo(() => {
+    const ids = new Set<number>();
+    for (const o of outfits) {
+      for (const p of o.products as ShelfItem[]) ids.add(p.id);
+    }
+    return ids;
+  }, [outfits]);
   const recent = useRecentlyViewed(detail.id).filter(
-    (r) => !complementIds.has(r.id),
+    (r) => !outfitProductIds.has(r.id),
   );
 
   return (
@@ -448,10 +452,14 @@ function ProductPage() {
       </div>
 
       {/* Рекомендательные полки */}
-      {(complements.length > 0 || recent.length > 0) && (
+      {(outfits.length > 0 || recent.length > 0) && (
         <div className="border-t hairline">
-          {complements.length > 0 && (
-            <ProductShelf title="С чем носить" items={complements} />
+          {outfits.length > 0 && (
+            <OutfitShelf
+              title="С чем носить"
+              outfits={outfits}
+              currentItemId={detail.id}
+            />
           )}
           {recent.length > 0 && (
             <ProductShelf title="Вы недавно смотрели" items={recent} />
