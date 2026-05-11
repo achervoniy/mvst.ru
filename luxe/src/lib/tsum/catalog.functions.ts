@@ -198,12 +198,122 @@ const EMPTY_FILTERS: TsumFilters = {
   attribute: { items: [], applied: [], title: "" },
 };
 
+async function fetchAllProducts(
+  data: z.infer<typeof searchInput>,
+  maxPages = 30,
+): Promise<TsumProduct[]> {
+  const all: TsumProduct[] = [];
+  for (let p = 1; p <= maxPages; p++) {
+    const chunk = await cachedTsumFetch<TsumProduct[]>(
+      "/catalog/search/brand",
+      buildBody({ ...data, page: p }),
+    );
+    all.push(...chunk);
+    if (chunk.length < PER_PAGE) break;
+  }
+  return all;
+}
+
+function productMinPrice(p: TsumProduct): number {
+  const prices = p.offers.map((o) => o.price.priceWithDiscount).filter((n) => n > 0);
+  return prices.length ? Math.min(...prices) : 0;
+}
+
 export const getCatalogFilters = createServerFn({ method: "GET" })
   .inputValidator((input: unknown) => searchInput.parse(input))
   .handler(async ({ data }) => {
     try {
-      const filters = await cachedTsumFetch<TsumFilters>("/catalog/filter", buildBody(data));
+      // TSUM /catalog/filter не учитывает priceFrom/priceTo и считает counts
+      // по каждому измерению независимо от других применённых фильтров.
+      // Запрашиваем «структуру» (полный список вариантов) без priceFrom/priceTo,
+      // а реальные counts/min/max пересчитываем клиентски по продуктам,
+      // прошедшим через ВСЕ текущие фильтры.
+      const filters = await cachedTsumFetch<TsumFilters>(
+        "/catalog/filter",
+        buildBody({ ...data, color: undefined, size: undefined, attribute: undefined }),
+      );
       const safe: TsumFilters = { ...EMPTY_FILTERS, ...(filters ?? {}) };
+
+      const allInCategory = await fetchAllProducts(data);
+      const minP = data.priceFrom ?? 0;
+      const maxP = data.priceTo ?? Number.POSITIVE_INFINITY;
+      const matching = allInCategory.filter((p) => {
+        const price = productMinPrice(p);
+        return price >= minP && price <= maxP;
+      });
+
+      // counts «если выбрать ещё это значение» по каждому измерению:
+      // для дименшна X учитываем все фильтры КРОМЕ X.
+      const matchesExcept = (p: TsumProduct, exclude: "color" | "size") => {
+        if (exclude !== "color" && data.color && data.color.length > 0) {
+          if (!data.color.includes(p.color?.id ?? -1)) return false;
+        }
+        if (exclude !== "size" && data.size && data.size.length > 0) {
+          if (!p.offers.some((o) => data.size!.includes(o.size?.id ?? -1))) return false;
+        }
+        const price = productMinPrice(p);
+        if (price < minP || price > maxP) return false;
+        return true;
+      };
+
+      // У TSUM color.id в /catalog/filter — это «бакет» (1202820=Чёрный),
+      // а у продукта — конкретный оттенок (например, 661003=Тёмно-коричневый).
+      // Эти ID не совпадают. Маппим продукты на бакеты по нижнерегистровому title.
+      const colorTitleToId = new Map<string, number>();
+      for (const c of safe.color.items ?? []) {
+        if (c.title) colorTitleToId.set(c.title.trim().toLowerCase(), c.id);
+      }
+      const colorCounts = new Map<number, number>();
+      for (const p of allInCategory) {
+        if (!matchesExcept(p, "color")) continue;
+        const bucketId = colorTitleToId.get((p.color?.title ?? "").trim().toLowerCase());
+        if (bucketId != null) colorCounts.set(bucketId, (colorCounts.get(bucketId) ?? 0) + 1);
+      }
+      const sizeCounts = new Map<number, number>();
+      for (const p of allInCategory) {
+        if (!matchesExcept(p, "size")) continue;
+        for (const sid of new Set(p.offers.map((o) => o.size?.id).filter((x): x is number => x != null))) {
+          sizeCounts.set(sid, (sizeCounts.get(sid) ?? 0) + 1);
+        }
+      }
+
+      // Цена: min/max по продуктам, прошедшим все ОСТАЛЬНЫЕ фильтры (без price).
+      const forPriceRange = allInCategory.filter((p) => {
+        if (data.color && data.color.length > 0) {
+          if (!data.color.includes(p.color?.id ?? -1)) return false;
+        }
+        if (data.size && data.size.length > 0) {
+          if (!p.offers.some((o) => data.size!.includes(o.size?.id ?? -1))) return false;
+        }
+        return true;
+      });
+      const priceValues = forPriceRange.map(productMinPrice).filter((n) => n > 0);
+      const computedMin = priceValues.length ? Math.min(...priceValues) : 0;
+      const computedMax = priceValues.length ? Math.max(...priceValues) : 0;
+
+      safe.color = {
+        ...safe.color,
+        items: (safe.color.items ?? [])
+          .map((c) => ({ ...c, count: colorCounts.get(c.id) ?? 0 }))
+          .filter((c) => c.count > 0),
+      };
+      safe.size = {
+        ...safe.size,
+        items: (safe.size.items ?? [])
+          .map((s) => ({ ...s, count: sizeCounts.get(s.id) ?? 0 }))
+          .filter((s) => s.count > 0),
+      };
+      safe.price = {
+        ...safe.price,
+        items: [
+          {
+            min: computedMin,
+            max: computedMax,
+            count: matching.length,
+          },
+        ],
+      };
+
       // Rebrand sort label
       if (safe.sort?.items?.length) {
         safe.sort = {
@@ -211,8 +321,8 @@ export const getCatalogFilters = createServerFn({ method: "GET" })
           items: safe.sort.items.map((s) => (s.id === "our" ? { ...s, title: "Выбор MVST" } : s)),
         };
       }
-      const total = safe.price?.items?.[0]?.count ?? 0;
-      const pageCount = Math.max(1, Math.ceil(total / 60));
+      const total = matching.length;
+      const pageCount = Math.max(1, Math.ceil(total / PER_PAGE));
       return { filters: safe, total, pageCount };
     } catch (err) {
       logTsumFailure("getCatalogFilters", data, err);
