@@ -29,8 +29,8 @@ const searchInput = z.object({
   sectionId: z.number().int().positive().optional(),
   sort: sortEnum.optional(),
   page: z.number().int().min(1).max(200).optional(),
-  color: z.number().int().positive().optional(),
-  size: z.number().int().positive().optional(),
+  color: z.array(z.number().int().positive()).max(50).optional(),
+  size: z.array(z.number().int().positive()).max(50).optional(),
   priceFrom: z.number().int().nonnegative().optional(),
   priceTo: z.number().int().positive().optional(),
   label: z.union([z.string(), z.number()]).optional(),
@@ -93,8 +93,8 @@ function buildBody(
   };
   if (input.sort) body.sort = input.sort;
   if (includePage && input.page) body.page = input.page;
-  if (input.color) body.color = input.color;
-  if (input.size) body.size = input.size;
+  if (input.color && input.color.length > 0) body.color = input.color;
+  if (input.size && input.size.length > 0) body.size = input.size;
   if (includePrice && input.priceFrom != null) body.priceFrom = input.priceFrom;
   if (includePrice && input.priceTo != null) body.priceTo = input.priceTo;
   if (input.label != null) body.label = input.label;
@@ -216,6 +216,24 @@ export const getCatalogFilters = createServerFn({ method: "GET" })
       return { filters: safe, total, pageCount };
     } catch (err) {
       logTsumFailure("getCatalogFilters", data, err);
+      throw err;
+    }
+  });
+
+// Полное дерево категорий бренда для данного пола — без других фильтров.
+// Используется в навигации по категориям, чтобы фильтры не «прятали» соседние ветки.
+const genderTreeInput = z.object({ gender: genderEnum });
+export const getCategoryTree = createServerFn({ method: "GET" })
+  .inputValidator((input: unknown) => genderTreeInput.parse(input))
+  .handler(async ({ data }) => {
+    try {
+      const filters = await cachedTsumFetch<TsumFilters>("/catalog/filter", {
+        category: GENDER_CATEGORY[data.gender],
+        brand: MVST_BRAND_ID,
+      });
+      return { tree: filters.category.items ?? [] };
+    } catch (err) {
+      logTsumFailure("getCategoryTree", data, err);
       throw err;
     }
   });

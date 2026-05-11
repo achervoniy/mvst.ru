@@ -2,7 +2,12 @@ import { createFileRoute, notFound } from "@tanstack/react-router";
 import { z } from "zod";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { CatalogPage } from "@/components/site/CatalogPage";
-import { getCatalogFilters, resolveSection, searchProducts } from "@/lib/tsum/catalog.functions";
+import {
+  getCatalogFilters,
+  getCategoryTree,
+  resolveSection,
+  searchProducts,
+} from "@/lib/tsum/catalog.functions";
 import type { CategoryNode } from "@/lib/tsum/types";
 
 const sortEnum = z.enum(["our", "date", "price", "price_desc"]);
@@ -10,8 +15,8 @@ const sortEnum = z.enum(["our", "date", "price", "price_desc"]);
 const searchSchema = z.object({
   sort: fallback(sortEnum, "our").optional(),
   page: fallback(z.number().int().min(1), 1).optional(),
-  color: fallback(z.number().int(), undefined as unknown as number).optional(),
-  size: fallback(z.number().int(), undefined as unknown as number).optional(),
+  color: fallback(z.array(z.number().int()), undefined as unknown as number[]).optional(),
+  size: fallback(z.array(z.number().int()), undefined as unknown as number[]).optional(),
   priceFrom: fallback(z.number().int(), undefined as unknown as number).optional(),
   priceTo: fallback(z.number().int(), undefined as unknown as number).optional(),
   label: fallback(z.union([z.string(), z.number()]), undefined as unknown as string).optional(),
@@ -62,19 +67,21 @@ export const Route = createFileRoute("/catalog/$gender_/$section")({
       label: deps.label,
       attribute: deps.attribute,
     } as const;
-    const [list, filters] = await Promise.all([
+    const [list, filters, treeRes] = await Promise.all([
       searchProducts({ data: args }),
       getCatalogFilters({ data: args }),
+      getCategoryTree({ data: { gender } }),
     ]);
-    const node = filters.filters.category.items
-      .map((root) => findInTree(root, sectionId))
-      .find((x) => x);
+    const node =
+      treeRes.tree.map((root) => findInTree(root, sectionId)).find((x) => x) ??
+      filters.filters.category.items.map((root) => findInTree(root, sectionId)).find((x) => x);
     return {
       gender,
       sectionId,
       sectionTitle: node?.title ?? resolved.title ?? "Категория",
       list,
       filters,
+      categoryTree: treeRes.tree,
     };
   },
   staleTime: 5 * 60 * 1000,
@@ -124,6 +131,7 @@ function SectionRouteComponent() {
       sectionTitle={data.sectionTitle}
       items={data.list.items}
       filters={data.filters.filters}
+      categoryTree={data.categoryTree}
       total={total}
       page={data.list.page}
       pageCount={pageCount}

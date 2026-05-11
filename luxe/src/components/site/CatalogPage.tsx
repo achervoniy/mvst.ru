@@ -33,8 +33,8 @@ import type { TsumFilters, CategoryNode, Gender, AttrGroup } from "@/lib/tsum/ty
 export interface CatalogSearch {
   sort?: "our" | "date" | "price" | "price_desc";
   page?: number;
-  color?: number;
-  size?: number;
+  color?: number[];
+  size?: number[];
   priceFrom?: number;
   priceTo?: number;
   label?: string | number;
@@ -45,7 +45,10 @@ function sanitizeSearch(next: CatalogSearch): CatalogSearch {
   const cleaned = { ...next };
   Object.keys(cleaned).forEach((k) => {
     const key = k as keyof CatalogSearch;
-    if (cleaned[key] === undefined || cleaned[key] === "" || cleaned[key] === null) {
+    const v = cleaned[key];
+    if (v === undefined || v === "" || v === null) {
+      delete cleaned[key];
+    } else if (Array.isArray(v) && v.length === 0) {
       delete cleaned[key];
     }
   });
@@ -59,6 +62,7 @@ interface CatalogPageProps {
   sectionTitle?: string;
   items: CatalogProduct[];
   filters: TsumFilters;
+  categoryTree?: CategoryNode[];
   total: number;
   page: number;
   pageCount: number;
@@ -66,8 +70,19 @@ interface CatalogPageProps {
 }
 
 export function CatalogPage(props: CatalogPageProps) {
-  const { gender, title, sectionId, sectionTitle, items, filters, total, page, pageCount, search } =
-    props;
+  const {
+    gender,
+    title,
+    sectionId,
+    sectionTitle,
+    items,
+    filters,
+    categoryTree,
+    total,
+    page,
+    pageCount,
+    search,
+  } = props;
   const navigate = useNavigate();
   const [optimisticSearch, setOptimisticSearch] = useState<CatalogSearch>(search);
   const [isNavigationPending, setIsNavigationPending] = useState(false);
@@ -77,7 +92,42 @@ export function CatalogPage(props: CatalogPageProps) {
     setIsNavigationPending(false);
   }, [search]);
 
+  // Если по текущим фильтрам ничего не найдено — автоматически сбрасываем фильтры,
+  // оставив только категорию и сортировку. Категория важнее остальных фильтров.
+  // Используем items.length, а не total: первый — реальный пустой выдачи,
+  // второй — иногда не учитывает наши фильтры в ответе TSUM.
+  const isEmpty = items.length === 0;
+  useEffect(() => {
+    if (isNavigationPending) return;
+    if (!isEmpty) return;
+    const hasFilters =
+      (search.color?.length ?? 0) > 0 ||
+      (search.size?.length ?? 0) > 0 ||
+      search.priceFrom != null ||
+      search.priceTo != null ||
+      (search.attribute?.length ?? 0) > 0;
+    if (!hasFilters) return;
+    setIsNavigationPending(true);
+    setOptimisticSearch({ sort: search.sort });
+    void navigate({
+      to: sectionId ? "/catalog/$gender/$section" : "/catalog/$gender",
+      params: sectionId
+        ? { gender, section: getSectionParamFromTree(filters.category.items, sectionId) ?? String(sectionId) }
+        : { gender },
+      search: () => ({ sort: search.sort }),
+      replace: true,
+    });
+  }, [isEmpty, isNavigationPending, search, navigate, gender, sectionId, filters.category.items]);
+
   const displayedSearch = isNavigationPending ? optimisticSearch : search;
+
+  // Сколько применено фильтров (без учёта категории и сортировки).
+  const appliedFilterCount =
+    (displayedSearch.color?.length ?? 0) +
+    (displayedSearch.size?.length ?? 0) +
+    (displayedSearch.priceFrom != null || displayedSearch.priceTo != null ? 1 : 0) +
+    (displayedSearch.attribute?.length ?? 0);
+  const hasAppliedFilters = appliedFilterCount > 0;
 
   const updateSearch = (patch: Partial<CatalogSearch>, resetPage = true) => {
     const next = sanitizeSearch({
@@ -195,9 +245,14 @@ export function CatalogPage(props: CatalogPageProps) {
           type="button"
           onClick={() => setFiltersOpen(true)}
           aria-label="Фильтры"
-          className="shrink-0 ml-2 inline-flex items-center justify-center h-10 w-10 border border-foreground/30 hover:border-foreground"
+          className="relative shrink-0 ml-2 inline-flex items-center justify-center h-10 w-10 border border-foreground/30 hover:border-foreground"
         >
           <SlidersHorizontal className="h-4 w-4" />
+          {hasAppliedFilters && (
+            <span className="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-4 h-4 px-1 rounded-full bg-accent text-background text-[10px] leading-none">
+              {appliedFilterCount}
+            </span>
+          )}
         </button>
       </div>
 
@@ -212,6 +267,7 @@ export function CatalogPage(props: CatalogPageProps) {
         onOpenChange={setFiltersOpen}
         gender={gender}
         filters={filters}
+        categoryTree={categoryTree}
         activeSectionId={sectionId}
         sectionTitle={sectionTitle}
         search={displayedSearch}
@@ -238,9 +294,14 @@ export function CatalogPage(props: CatalogPageProps) {
             type="button"
             onClick={() => setFiltersOpen(true)}
             aria-label="Фильтры"
-            className="h-12 w-12 inline-flex items-center justify-center border-l border-foreground/30 hover:border-foreground"
+            className="relative h-12 w-12 inline-flex items-center justify-center border-l border-foreground/30 hover:border-foreground"
           >
             <SlidersHorizontal className="h-4 w-4" />
+            {hasAppliedFilters && (
+              <span className="absolute top-2 right-2 inline-flex items-center justify-center min-w-4 h-4 px-1 rounded-full bg-accent text-background text-[10px] leading-none">
+                {appliedFilterCount}
+              </span>
+            )}
           </button>
         </div>
 
@@ -273,6 +334,11 @@ export function CatalogPage(props: CatalogPageProps) {
           >
             <SlidersHorizontal className="size-3.5" />
             Фильтры
+            {hasAppliedFilters && (
+              <span className="inline-flex items-center justify-center min-w-4 h-4 px-1 rounded-full bg-accent text-background text-[10px] leading-none">
+                {appliedFilterCount}
+              </span>
+            )}
           </button>
         </div>
       </div>
@@ -384,9 +450,11 @@ function FiltersSidebar({
   const priceBucket = filters.price.items?.[0];
 
   const activeAttrs = search.attribute ?? [];
+  const activeColors = search.color ?? [];
+  const activeSizes = search.size ?? [];
   const hasAnyFilter =
-    !!search.color ||
-    !!search.size ||
+    activeColors.length > 0 ||
+    activeSizes.length > 0 ||
     !!search.priceFrom ||
     !!search.priceTo ||
     activeAttrs.length > 0;
@@ -397,6 +465,20 @@ function FiltersSidebar({
     else set.add(id);
     const next = Array.from(set);
     onChange({ attribute: next.length > 0 ? next : undefined });
+  };
+  const toggleColor = (id: number) => {
+    const set = new Set(activeColors);
+    if (set.has(id)) set.delete(id);
+    else set.add(id);
+    const next = Array.from(set);
+    onChange({ color: next.length > 0 ? next : undefined });
+  };
+  const toggleSize = (id: number) => {
+    const set = new Set(activeSizes);
+    if (set.has(id)) set.delete(id);
+    else set.add(id);
+    const next = Array.from(set);
+    onChange({ size: next.length > 0 ? next : undefined });
   };
 
   const labelCls = cn("eyebrow text-foreground/60", mobile ? "text-xs mb-4" : "mb-3");
@@ -456,13 +538,13 @@ function FiltersSidebar({
           <div className={labelCls}>Цвет</div>
           <div className={cn("flex flex-wrap", mobile ? "gap-2.5" : "gap-2")}>
             {colors.map((c) => {
-              const active = search.color === c.id;
+              const active = activeColors.includes(c.id);
               return (
                 <button
                   key={c.id}
                   type="button"
                   title={`${c.title} (${c.count})`}
-                  onClick={() => onChange({ color: active ? undefined : c.id })}
+                  onClick={() => toggleColor(c.id)}
                   className={cn(
                     "rounded-full border transition-all",
                     mobile ? "size-9" : "size-7",
@@ -488,13 +570,13 @@ function FiltersSidebar({
           <div className={labelCls}>Размер (RU)</div>
           <div className={cn("grid grid-cols-4", mobile ? "gap-1.5" : "gap-1")}>
             {sizes.map((s) => {
-              const active = search.size === s.id;
+              const active = activeSizes.includes(s.id);
               const label = s.title.replace(/^RU\s*/i, "");
               return (
                 <button
                   key={s.id}
                   type="button"
-                  onClick={() => onChange({ size: active ? undefined : s.id })}
+                  onClick={() => toggleSize(s.id)}
                   title={s.title}
                   className={cn(
                     "px-1 tracking-wider border transition-colors flex items-center justify-center",
@@ -573,66 +655,186 @@ function FiltersSidebar({
   );
 }
 
-// ────────────── CATEGORY TREE ──────────────
+// ────────────── CATEGORY PANELS (slide screens) ──────────────
+
+function findPath(roots: CategoryNode[], id: number): CategoryNode[] | null {
+  for (const r of roots) {
+    if (r.id === id) return [r];
+    const found = findPath(r.items ?? [], id);
+    if (found) return [r, ...found];
+  }
+  return null;
+}
 
 function CategoryTree({
   nodes,
   gender,
   activeId,
-  depth = 0,
   mobile = false,
   onNavigate,
 }: {
   nodes: CategoryNode[];
   gender: Gender;
   activeId?: number;
-  depth?: number;
   mobile?: boolean;
   onNavigate?: () => void;
 }) {
-  const rootSpacing = mobile ? "space-y-3" : "space-y-1.5";
-  const childSpacing = mobile
-    ? "mt-2.5 ml-3 space-y-2.5 border-l hairline pl-4"
-    : "mt-1.5 ml-3 space-y-1 border-l hairline pl-3";
-  const linkSize = mobile ? "text-base py-0.5" : "text-sm";
+  // Стек открытых веток. По умолчанию — путь до активного раздела,
+  // но без промежуточных уровней с единственным выбором (чтобы не показывать
+  // экран с одним пунктом).
+  const initialStack = useMemo<CategoryNode[]>(() => {
+    if (!activeId) return [];
+    const path = findPath(nodes, activeId);
+    if (!path) return [];
+    const parents = path.slice(0, -1);
+    let end = parents.length;
+    while (end > 0 && (parents[end - 1].items?.length ?? 0) <= 1) end--;
+    return parents.slice(0, end);
+  }, [nodes, activeId]);
+
+  const [stack, setStack] = useState<CategoryNode[]>(initialStack);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    setStack(initialStack);
+  }, [initialStack]);
+
+  const current = stack[stack.length - 1];
+  const items = current ? (current.items ?? []) : nodes;
+
+  // Если в раскрываемой ветке только 1 выбор (одна цепочка) — переходим сразу,
+  // не показывая промежуточный экран.
+  const push = (n: CategoryNode) => {
+    let cur: CategoryNode = n;
+    const path: CategoryNode[] = [n];
+    while ((cur.items?.length ?? 0) === 1) {
+      cur = cur.items[0];
+      path.push(cur);
+    }
+    if ((cur.items?.length ?? 0) === 0) {
+      void navigate({
+        to: "/catalog/$gender/$section",
+        params: { gender, section: cur.slug },
+        search: (prev: CatalogSearch) => prev,
+      });
+      onNavigate?.();
+      return;
+    }
+    setStack((s) => [...s, ...path]);
+  };
+  const back = () => setStack((s) => s.slice(0, -1));
+
+  const rowCls = mobile
+    ? "w-full flex items-center justify-between gap-3 py-3.5 text-left"
+    : "w-full flex items-center justify-between gap-3 py-2 text-left";
+  const textCls = mobile ? "text-base" : "text-sm";
+
   return (
-    <ul className={cn(depth === 0 ? rootSpacing : childSpacing)}>
-      {nodes.map((n) => {
-        const active = n.id === activeId;
-        const containsActive = activeId ? hasDescendant(n, activeId) : false;
-        const open = depth < 1 || containsActive || active;
-        return (
-          <li key={n.id}>
+    <div className="-mx-0.5 px-0.5">
+      {/* Header / breadcrumb — показываем, только если зашли вглубь */}
+      {stack.length > 0 && (
+        <div
+          className={cn(
+            "flex items-center gap-2 border-b hairline",
+            mobile ? "py-3" : "py-2.5",
+          )}
+        >
+          <button
+            type="button"
+            onClick={back}
+            className="inline-flex items-center gap-1 eyebrow text-foreground/70 hover:text-foreground"
+          >
+            <ChevronLeft className={mobile ? "size-4" : "size-3.5"} />
+            <span className={mobile ? "text-xs" : "text-[11px]"}>Назад</span>
+          </button>
+          {current && (
+            <span
+              className={cn(
+                "ml-auto truncate text-foreground/70",
+                mobile ? "text-sm" : "text-xs",
+              )}
+              title={current.title}
+            >
+              {current.title}
+            </span>
+          )}
+        </div>
+      )}
+
+      <ul className="divide-y hairline">
+        {items.map((n) => {
+          const isActive = n.id === activeId;
+          const hasChildren = (n.items?.length ?? 0) > 0;
+          return (
+            <li key={n.id}>
+              {hasChildren ? (
+                <button
+                  type="button"
+                  onClick={() => push(n)}
+                  className={cn(rowCls, "hover:bg-foreground/[0.03]")}
+                >
+                  <span className={cn(textCls, isActive ? "text-accent" : "text-foreground")}>
+                    {n.title}
+                  </span>
+                  <ChevronRightIcon
+                    className={cn(
+                      mobile ? "size-4" : "size-3.5",
+                      "text-foreground/40 shrink-0",
+                    )}
+                  />
+                </button>
+              ) : (
+                <Link
+                  to="/catalog/$gender/$section"
+                  params={{ gender, section: n.slug }}
+                  search={(prev: CatalogSearch) => prev}
+                  onClick={onNavigate}
+                  className={cn(rowCls, "hover:bg-foreground/[0.03]")}
+                >
+                  <span
+                    className={cn(
+                      textCls,
+                      isActive ? "text-accent font-medium" : "text-foreground/90",
+                    )}
+                  >
+                    {n.title}
+                  </span>
+                  {n.count > 0 && (
+                    <span className="text-foreground/40 text-[11px] shrink-0">
+                      {n.count}
+                    </span>
+                  )}
+                </Link>
+              )}
+            </li>
+          );
+        })}
+
+        {/* «Все · текущая ветка» — внизу */}
+        {current && (
+          <li>
             <Link
               to="/catalog/$gender/$section"
-              params={{ gender, section: n.slug }}
+              params={{ gender, section: current.slug }}
+              search={(prev: CatalogSearch) => ({ sort: prev.sort })}
               onClick={onNavigate}
               className={cn(
-                "block hover:text-accent transition-colors",
-                linkSize,
-                active
-                  ? "text-accent font-medium"
-                  : containsActive
-                    ? "text-foreground"
-                    : "text-foreground/80",
+                rowCls,
+                "hover:bg-foreground/[0.03]",
+                activeId === current.id ? "text-accent" : "text-foreground/70",
               )}
             >
-              {n.title}
+              <span className={cn(textCls, "italic")}>Все · {current.title}</span>
+              {current.count > 0 && (
+                <span className="text-foreground/40 text-[11px] shrink-0">
+                  {current.count}
+                </span>
+              )}
             </Link>
-            {open && n.items?.length > 0 && (
-              <CategoryTree
-                nodes={n.items}
-                gender={gender}
-                activeId={activeId}
-                depth={depth + 1}
-                mobile={mobile}
-                onNavigate={onNavigate}
-              />
-            )}
           </li>
-        );
-      })}
-    </ul>
+        )}
+      </ul>
+    </div>
   );
 }
 
@@ -698,11 +900,13 @@ function PriceFilter({
 }) {
   const [fromStr, setFromStr] = useState<string>(from != null ? String(from) : "");
   const [toStr, setToStr] = useState<string>(to != null ? String(to) : "");
+  const [range, setRange] = useState<[number, number]>([from ?? min, to ?? max]);
 
   useEffect(() => {
     setFromStr(from != null ? String(from) : "");
     setToStr(to != null ? String(to) : "");
-  }, [from, to]);
+    setRange([from ?? min, to ?? max]);
+  }, [from, to, min, max]);
 
   const parse = (s: string): number | undefined => {
     const digits = s.replace(/\D/g, "");
@@ -711,29 +915,46 @@ function PriceFilter({
     return Number.isFinite(n) && n > 0 ? n : undefined;
   };
 
-  const apply = () => {
-    let f = parse(fromStr);
-    let t = parse(toStr);
-    if (f != null && t != null && f > t) [f, t] = [t, f];
-    onApply(f, t);
+  const clamp = (n: number) => Math.max(min, Math.min(max, n));
+  const applyValues = (f?: number, t?: number) => {
+    let nf = f != null ? clamp(f) : undefined;
+    let nt = t != null ? clamp(t) : undefined;
+    if (nf != null && nt != null && nf > nt) [nf, nt] = [nt, nf];
+    // Если совпадает с границами — считаем, что фильтр сброшен с этой стороны.
+    if (nf != null && nf <= min) nf = undefined;
+    if (nt != null && nt >= max) nt = undefined;
+    onApply(nf, nt);
+  };
+
+  const applyFromInputs = () => {
+    applyValues(parse(fromStr), parse(toStr));
   };
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      apply();
+      applyFromInputs();
     }
   };
 
-  const currentFrom = from != null ? String(from) : "";
-  const currentTo = to != null ? String(to) : "";
-  const dirty = fromStr !== currentFrom || toStr !== currentTo;
+  const step = Math.max(1, Math.round((max - min) / 100));
 
-  const labelTextCls = mobile
-    ? "text-sm text-foreground/60 w-8 shrink-0"
-    : "text-[11px] text-foreground/50 w-6 shrink-0";
+  const handleSliderChange = (v: number[]) => {
+    const a = v[0] ?? min;
+    const b = v[1] ?? max;
+    setRange([a, b]);
+    setFromStr(a > min ? String(a) : "");
+    setToStr(b < max ? String(b) : "");
+  };
+
+  const handleSliderCommit = (v: number[]) => {
+    const a = v[0] ?? min;
+    const b = v[1] ?? max;
+    applyValues(a > min ? a : undefined, b < max ? b : undefined);
+  };
+
   const inputCls = cn(
-    "w-full px-2 bg-transparent border border-foreground/20 focus:border-foreground focus:outline-none",
+    "w-full px-2 bg-transparent border border-foreground/20 focus:border-foreground focus:outline-none text-center",
     mobile ? "h-11 text-base" : "h-9 text-sm",
   );
 
@@ -742,9 +963,8 @@ function PriceFilter({
       <div className={cn("eyebrow text-foreground/60", mobile ? "text-xs mb-4" : "mb-3")}>
         Цена, ₽
       </div>
-      <div className={cn(mobile ? "space-y-3" : "space-y-2")}>
-        <label className="flex items-center gap-2">
-          <span className={labelTextCls}>от</span>
+      <div className={cn(mobile ? "space-y-4" : "space-y-3")}>
+        <div className="flex items-center gap-2">
           <input
             type="text"
             inputMode="numeric"
@@ -752,13 +972,11 @@ function PriceFilter({
             value={fromStr}
             onChange={(e) => setFromStr(e.target.value.replace(/\D/g, ""))}
             onKeyDown={onKeyDown}
-            onBlur={apply}
+            onBlur={applyFromInputs}
             className={inputCls}
             aria-label="Цена от"
           />
-        </label>
-        <label className="flex items-center gap-2">
-          <span className={labelTextCls}>до</span>
+          <span className="text-foreground/40">—</span>
           <input
             type="text"
             inputMode="numeric"
@@ -766,27 +984,32 @@ function PriceFilter({
             value={toStr}
             onChange={(e) => setToStr(e.target.value.replace(/\D/g, ""))}
             onKeyDown={onKeyDown}
-            onBlur={apply}
+            onBlur={applyFromInputs}
             className={inputCls}
             aria-label="Цена до"
           />
-        </label>
+        </div>
+        <div className={cn(mobile ? "px-1.5 py-2" : "px-1 py-1.5")}>
+          <Slider
+            min={min}
+            max={max}
+            step={step}
+            value={[Math.max(min, Math.min(max, range[0])), Math.max(min, Math.min(max, range[1]))]}
+            onValueChange={handleSliderChange}
+            onValueCommit={handleSliderCommit}
+            aria-label="Диапазон цен"
+          />
+          <div
+            className={cn(
+              "flex justify-between text-foreground/50 mt-2",
+              mobile ? "text-xs" : "text-[11px]",
+            )}
+          >
+            <span>{formatRub(min)}</span>
+            <span>{formatRub(max)}</span>
+          </div>
+        </div>
       </div>
-      <div className={cn("text-foreground/50 mt-2", mobile ? "text-xs" : "text-[11px]")}>
-        {formatRub(min)} — {formatRub(max)}
-      </div>
-      {dirty && (
-        <button
-          type="button"
-          onClick={apply}
-          className={cn(
-            "mt-3 w-full eyebrow border border-foreground/30 hover:border-foreground",
-            mobile ? "h-11 text-sm" : "py-2",
-          )}
-        >
-          Применить
-        </button>
-      )}
     </div>
   );
 }
@@ -888,6 +1111,7 @@ function MobileFiltersDrawer({
   onOpenChange,
   gender,
   filters,
+  categoryTree,
   activeSectionId,
   sectionTitle,
   search,
@@ -899,6 +1123,7 @@ function MobileFiltersDrawer({
   onOpenChange: (v: boolean) => void;
   gender: Gender;
   filters: TsumFilters;
+  categoryTree?: CategoryNode[];
   activeSectionId?: number;
   sectionTitle?: string;
   search: CatalogSearch;
@@ -918,14 +1143,23 @@ function MobileFiltersDrawer({
   const attributes = useMemo(() => filters.attribute.items ?? [], [filters.attribute.items]);
   const priceBucket = filters.price.items?.[0];
 
+  const activeColors = search.color ?? [];
+  const activeSizes = search.size ?? [];
+
   const colorTitle = useMemo(() => {
-    const c = colors.find((x) => x.id === search.color);
-    return c?.title ?? "—";
-  }, [colors, search.color]);
+    if (activeColors.length === 0) return "—";
+    if (activeColors.length === 1) {
+      return colors.find((x) => x.id === activeColors[0])?.title ?? "—";
+    }
+    return `Выбрано: ${activeColors.length}`;
+  }, [colors, activeColors]);
   const sizeTitle = useMemo(() => {
-    const s = sizes.find((x) => x.id === search.size);
-    return s?.title ?? "—";
-  }, [sizes, search.size]);
+    if (activeSizes.length === 0) return "—";
+    if (activeSizes.length === 1) {
+      return sizes.find((x) => x.id === activeSizes[0])?.title ?? "—";
+    }
+    return `Выбрано: ${activeSizes.length}`;
+  }, [sizes, activeSizes]);
   const priceTitle = useMemo(() => {
     if (search.priceFrom != null || search.priceTo != null) {
       const f = search.priceFrom != null ? formatRub(search.priceFrom) : "0";
@@ -944,10 +1178,24 @@ function MobileFiltersDrawer({
     const next = Array.from(set);
     onChange({ attribute: next.length > 0 ? next : undefined });
   };
+  const toggleColor = (id: number) => {
+    const set = new Set(activeColors);
+    if (set.has(id)) set.delete(id);
+    else set.add(id);
+    const next = Array.from(set);
+    onChange({ color: next.length > 0 ? next : undefined });
+  };
+  const toggleSize = (id: number) => {
+    const set = new Set(activeSizes);
+    if (set.has(id)) set.delete(id);
+    else set.add(id);
+    const next = Array.from(set);
+    onChange({ size: next.length > 0 ? next : undefined });
+  };
 
   const hasAnyFilter =
-    !!search.color ||
-    !!search.size ||
+    activeColors.length > 0 ||
+    activeSizes.length > 0 ||
     !!search.priceFrom ||
     !!search.priceTo ||
     !!search.sort ||
@@ -1080,58 +1328,79 @@ function MobileFiltersDrawer({
             </ul>
           )}
 
-          {panel === "category" && (
-            <div className="p-5">
-              <FiltersSidebar
-                gender={gender}
-                filters={{
-                  ...filters,
-                  color: { ...filters.color, items: [] },
-                  size: { ...filters.size, items: [] },
-                  price: { ...filters.price, items: [] },
-                  attribute: { ...filters.attribute, items: [] },
-                }}
-                activeSectionId={activeSectionId}
-                search={search}
-                onChange={(p, r) => {
-                  onChange(p, r);
-                }}
-                onNavigate={close}
-                mobile
-              />
-            </div>
-          )}
+          {panel === "category" &&
+            (() => {
+              const source = categoryTree?.length ? categoryTree : filters.category.items;
+              const genderRoot =
+                source.find((r) =>
+                  r.title.toLowerCase().startsWith(gender === "women" ? "женск" : "мужск"),
+                ) ?? source[gender === "men" ? 1 : 0];
+              const tree = genderRoot?.items ?? source;
+              return (
+                <div className="px-2">
+                  <CategoryTree
+                    nodes={tree}
+                    gender={gender}
+                    activeId={activeSectionId}
+                    mobile
+                    onNavigate={close}
+                  />
+                </div>
+              );
+            })()}
 
           {panel === "color" && (
             <div className="p-5">
-              <div className="flex flex-wrap gap-3">
+              <ul className="space-y-1">
                 {colors.map((c) => {
-                  const active = search.color === c.id;
+                  const active = activeColors.includes(c.id);
                   return (
-                    <button
-                      key={c.id}
-                      type="button"
-                      title={`${c.title} (${c.count})`}
-                      onClick={() => {
-                        onChange({ color: active ? undefined : c.id });
-                        back();
-                      }}
-                      className={cn(
-                        "rounded-full border transition-all size-10",
-                        active
-                          ? "ring-2 ring-offset-2 ring-foreground ring-offset-background border-transparent"
-                          : "border-foreground/20 hover:border-foreground/50",
-                      )}
-                      style={{
-                        backgroundColor: c.hex ? `#${c.hex}` : undefined,
-                        backgroundImage: c.imageUrl ? `url(${c.imageUrl})` : undefined,
-                        backgroundSize: "cover",
-                      }}
-                      aria-label={c.title}
-                    />
+                    <li key={c.id}>
+                      <button
+                        type="button"
+                        onClick={() => toggleColor(c.id)}
+                        aria-pressed={active}
+                        className={cn(
+                          "w-full flex items-center justify-between gap-3 text-left py-2.5 transition-colors",
+                          active ? "text-foreground" : "text-foreground/70",
+                        )}
+                      >
+                        <span className="flex items-center gap-3">
+                          <span
+                            className={cn(
+                              "inline-flex items-center justify-center size-5 border transition-colors shrink-0",
+                              active
+                                ? "bg-foreground border-foreground text-background"
+                                : "border-foreground/30",
+                            )}
+                            aria-hidden="true"
+                          >
+                            {active && (
+                              <svg
+                                viewBox="0 0 12 12"
+                                className="size-3.5 fill-none stroke-current stroke-2"
+                              >
+                                <polyline points="2,6 5,9 10,3" />
+                              </svg>
+                            )}
+                          </span>
+                          <span
+                            className="size-6 rounded-full border border-foreground/20 shrink-0"
+                            style={{
+                              backgroundColor: c.hex ? `#${c.hex}` : undefined,
+                              backgroundImage: c.imageUrl ? `url(${c.imageUrl})` : undefined,
+                              backgroundSize: "cover",
+                            }}
+                            aria-hidden="true"
+                          />
+                          <span className="text-base">{c.title}</span>
+                        </span>
+                        <span className="text-foreground/40 text-xs">{c.count}</span>
+                      </button>
+                    </li>
                   );
                 })}
-              </div>
+              </ul>
             </div>
           )}
 
@@ -1139,16 +1408,13 @@ function MobileFiltersDrawer({
             <div className="p-5">
               <div className="grid grid-cols-4 gap-2">
                 {sizes.map((s) => {
-                  const active = search.size === s.id;
+                  const active = activeSizes.includes(s.id);
                   const label = s.title.replace(/^RU\s*/i, "");
                   return (
                     <button
                       key={s.id}
                       type="button"
-                      onClick={() => {
-                        onChange({ size: active ? undefined : s.id });
-                        back();
-                      }}
+                      onClick={() => toggleSize(s.id)}
                       className={cn(
                         "h-12 px-2 tracking-wider border transition-colors flex items-center justify-center text-sm",
                         active

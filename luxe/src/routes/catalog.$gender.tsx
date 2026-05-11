@@ -2,15 +2,15 @@ import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { CatalogPage } from "@/components/site/CatalogPage";
-import { getCatalogFilters, searchProducts } from "@/lib/tsum/catalog.functions";
+import { getCatalogFilters, getCategoryTree, searchProducts } from "@/lib/tsum/catalog.functions";
 
 const sortEnum = z.enum(["our", "date", "price", "price_desc"]);
 
 const searchSchema = z.object({
   sort: fallback(sortEnum, "our").optional(),
   page: fallback(z.number().int().min(1), 1).optional(),
-  color: fallback(z.number().int(), undefined as unknown as number).optional(),
-  size: fallback(z.number().int(), undefined as unknown as number).optional(),
+  color: fallback(z.array(z.number().int()), undefined as unknown as number[]).optional(),
+  size: fallback(z.array(z.number().int()), undefined as unknown as number[]).optional(),
   priceFrom: fallback(z.number().int(), undefined as unknown as number).optional(),
   priceTo: fallback(z.number().int(), undefined as unknown as number).optional(),
   label: fallback(z.union([z.string(), z.number()]), undefined as unknown as string).optional(),
@@ -50,11 +50,12 @@ export const Route = createFileRoute("/catalog/$gender")({
       label: deps.label,
       attribute: deps.attribute,
     } as const;
-    const [list, filters] = await Promise.all([
+    const [list, filters, treeRes] = await Promise.all([
       searchProducts({ data: args }),
       getCatalogFilters({ data: args }),
+      getCategoryTree({ data: { gender } }),
     ]);
-    return { gender, list, filters };
+    return { gender, list, filters, categoryTree: treeRes.tree };
   },
   staleTime: 5 * 60 * 1000,
   head: ({ params }) => {
@@ -90,6 +91,7 @@ function CatalogRouteComponent() {
       title={genderTitle[gender]}
       items={data.list.items}
       filters={data.filters.filters}
+      categoryTree={data.categoryTree}
       total={total}
       page={data.list.page}
       pageCount={pageCount}
