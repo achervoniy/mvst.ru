@@ -1,13 +1,10 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { ProductShelf } from "@/components/site/ProductShelf";
 import { OutfitShelf } from "@/components/site/OutfitShelf";
-import {
-  getLookOutfitsByItemId,
-  type ShelfItem,
-} from "@/lib/look-recommendations";
+import { getLookOutfitsByItemId } from "@/lib/look-recommendations";
 import {
   pushRecentlyViewed,
   useRecentlyViewed,
@@ -199,16 +196,7 @@ function ProductPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [detail.id]);
 
-  const outfitProductIds = useMemo(() => {
-    const ids = new Set<number>();
-    for (const o of outfits) {
-      for (const p of o.products as ShelfItem[]) ids.add(p.id);
-    }
-    return ids;
-  }, [outfits]);
-  const recent = useRecentlyViewed(detail.id).filter(
-    (r) => !outfitProductIds.has(r.id),
-  );
+  const recent = useRecentlyViewed(detail.id);
 
   return (
     <SiteLayout>
