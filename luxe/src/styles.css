@@ -202,6 +202,13 @@
   .hairline {
     border-color: oklch(0.27 0.025 55 / 12%);
   }
+  .scrollbar-none {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
   .fade-in-up {
     animation: fadeInUp 0.9s ease-out both;
   }

@@ -29,6 +29,7 @@ export type FittingOrderPayload = {
 };
 
 const CART_KEY = "mvst.fitting.cart.v1";
+const SHEET_SHOWN_KEY = "mvst.fitting.cart.sheetShown.v1";
 const MAX_ITEMS = 20;
 
 type Ctx = {
@@ -76,15 +77,28 @@ export function FittingCartProvider({ children }: { children: ReactNode }) {
   }, [items, hydrated]);
 
   const add = useCallback((item: FittingItem) => {
+    let didAdd = false;
     setItems((prev) => {
       if (prev.some((i) => i.skuId === item.skuId)) return prev;
       if (prev.length >= MAX_ITEMS) {
         toast.error(`В корзину можно добавить не более ${MAX_ITEMS} вещей`);
         return prev;
       }
+      didAdd = true;
       return [...prev, item];
     });
-    setAddNonce((n) => n + 1);
+    if (didAdd) {
+      setAddNonce((n) => n + 1);
+      // Открываем модалку только при первом успешном добавлении за сессию.
+      try {
+        if (!sessionStorage.getItem(SHEET_SHOWN_KEY)) {
+          sessionStorage.setItem(SHEET_SHOWN_KEY, "1");
+          setOpen(true);
+        }
+      } catch {
+        /* ignore */
+      }
+    }
   }, []);
 
   const remove = useCallback((skuId: number) => {
