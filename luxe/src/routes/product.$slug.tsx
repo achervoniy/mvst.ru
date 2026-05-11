@@ -83,6 +83,41 @@ function pickImage(img: TsumImage): string {
   return img.w2000 ?? img.w1320 ?? img.w400 ?? img.large ?? img.middle ?? "";
 }
 
+// Кнопка-размер: сверху брендовый размер, снизу российский. Брендовая строка
+// рисуется только когда у API есть label (IT/FR/INT/...) и vendorSize !== russianSize.
+// Расшифровка лейблов выносится в заголовок селектора (см. sizeTitleSuffix).
+function SizeLabels({ size }: { size: TsumOffer["size"] }) {
+  const vendorLabel = size.vendorLabel?.trim();
+  const vendorSize = size.vendorSize?.trim();
+  const russianSize = size.russianSize?.trim();
+  const showVendor =
+    !!vendorLabel && !!vendorSize && vendorSize !== russianSize;
+  const primary = russianSize || vendorSize || "—";
+  return (
+    <span className="flex flex-col items-center justify-center leading-none gap-0.5">
+      {showVendor && (
+        <span className="text-[10px] tracking-wider opacity-70">{vendorSize}</span>
+      )}
+      <span className="text-sm">{primary}</span>
+    </span>
+  );
+}
+
+// «(IT/RU)» к заголовку селектора, если все офферы используют одну и ту же
+// брендовую систему и она отличается от российской. Иначе — пусто.
+function sizeTitleSuffix(offers: TsumOffer[]): string {
+  const labels = new Set<string>();
+  for (const o of offers) {
+    const vl = o.size.vendorLabel?.trim();
+    const vs = o.size.vendorSize?.trim();
+    const rs = o.size.russianSize?.trim();
+    if (vl && vs && vs !== rs) labels.add(vl);
+  }
+  if (labels.size !== 1) return "";
+  const [label] = labels;
+  return ` (${label}/RU)`;
+}
+
 function ProductPage() {
   const { detail, gender, outfits } = Route.useLoaderData();
   const [selectedOfferId, setSelectedOfferId] = useState<number | null>(null);
@@ -330,7 +365,9 @@ function ProductPage() {
 
           {showSizes && (
             <div>
-              <div className="eyebrow text-foreground/60 mb-3">Размер</div>
+              <div className="eyebrow text-foreground/60 mb-3">
+                Размер{sizeTitleSuffix(offers)}
+              </div>
               <div className="flex flex-wrap gap-2">
                 {offers.map((o: TsumOffer) => {
                   const disabled = o.quantity === 0 || o.isBuyable === false;
@@ -341,7 +378,7 @@ function ProductPage() {
                       onClick={() => !disabled && setSelectedOfferId(o.id)}
                       disabled={disabled}
                       className={cn(
-                        "min-w-12 h-10 px-3 border text-sm transition-colors",
+                        "min-w-14 h-12 px-3 border transition-colors",
                         active
                           ? "border-foreground bg-foreground text-primary-foreground"
                           : "border-foreground/30 hover:border-foreground",
@@ -349,7 +386,7 @@ function ProductPage() {
                           "opacity-30 line-through cursor-not-allowed hover:border-foreground/30",
                       )}
                     >
-                      {o.size.russianSize}
+                      <SizeLabels size={o.size} />
                     </button>
                   );
                 })}
@@ -680,7 +717,7 @@ function SizePickerDialog({
         onClick={() => !disabled && setLocalId(o.id)}
         disabled={disabled}
         className={cn(
-          "shrink-0 min-w-12 h-10 px-3 border text-sm transition-colors",
+          "shrink-0 min-w-14 h-12 px-3 border transition-colors",
           active
             ? "border-foreground bg-foreground text-primary-foreground"
             : "border-foreground/30 hover:border-foreground",
@@ -688,7 +725,7 @@ function SizePickerDialog({
             "opacity-30 line-through cursor-not-allowed hover:border-foreground/30",
         )}
       >
-        {o.size.russianSize}
+        <SizeLabels size={o.size} />
       </button>
     );
   };
@@ -718,7 +755,9 @@ function SizePickerDialog({
           <DialogPrimitive.Title className="sr-only">Выберите размер</DialogPrimitive.Title>
 
           <div className="px-6 pt-5 pb-4 border-b hairline flex items-center justify-between">
-            <div className="eyebrow text-foreground">Выберите размер</div>
+            <div className="eyebrow text-foreground">
+              Выберите размер{sizeTitleSuffix(offers)}
+            </div>
             <DialogPrimitive.Close
               className="-mr-2 p-2 text-foreground/55 hover:text-foreground focus:outline-none focus-visible:outline-none"
               aria-label="Закрыть"
