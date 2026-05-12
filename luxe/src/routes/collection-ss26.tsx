@@ -107,7 +107,7 @@ function CollectionSS26() {
       <section className="bg-cream/60 border-y hairline">
         <div className="px-4 md:px-8 pt-6 md:pt-8 pb-3 flex items-end justify-between max-w-[1360px] mx-auto">
           <div className="eyebrow text-foreground/60">Образ</div>
-          <div className="font-serif text-sm tabular-nums text-foreground/70">
+          <div className="hidden md:block font-serif text-sm tabular-nums text-foreground/70">
             <span className="text-foreground">{String(active + 1).padStart(2, "0")}</span>
             <span className="mx-2 text-foreground/30">/</span>
             <span>{String(total).padStart(2, "0")}</span>
@@ -116,8 +116,8 @@ function CollectionSS26() {
 
         <LookStage look={current} onPrev={() => goTo(active - 1)} onNext={() => goTo(active + 1)} />
 
-        {/* Thumbnails strip */}
-        <div className="relative max-w-[1360px] mx-auto px-2 md:px-6 pb-6 md:pb-8 pt-5">
+        {/* Thumbnails strip — только на десктопе. На мобилке навигация по образам через свайп. */}
+        <div className="hidden md:block relative max-w-[1360px] mx-auto px-2 md:px-6 pb-6 md:pb-8 pt-5">
           <div
             ref={stripRef}
             className="flex gap-2.5 md:gap-3 overflow-x-auto scrollbar-none scroll-smooth snap-x"
@@ -216,7 +216,7 @@ function LookStage({
       <div className="grid grid-cols-1 md:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] gap-3 md:gap-4">
         {/* Look image */}
         <div
-          className="relative bg-cream aspect-[3/4] md:aspect-[3/4] md:max-h-[64vh] overflow-hidden touch-pan-y"
+          className="relative bg-cream aspect-[3/4] md:aspect-[3/4] md:max-h-[64vh] md:overflow-hidden touch-pan-y"
           onTouchStart={onTouchStart}
           onTouchEnd={onTouchEnd}
         >
@@ -226,6 +226,23 @@ function LookStage({
             alt={`Образ ${look.sort}`}
             className="absolute inset-0 size-full object-contain look-fade"
           />
+          {/* Mobile-only swipe affordance: bare chevrons, drop-shadow для читаемости на разном фоне */}
+          <button
+            type="button"
+            onClick={onPrev}
+            aria-label="Предыдущий образ"
+            className="md:hidden absolute -left-2 top-1/2 -translate-y-1/2 z-10 p-2 text-foreground/70 [filter:drop-shadow(0_1px_2px_rgb(0_0_0/0.15))]"
+          >
+            <ChevronLeft className="size-7" strokeWidth={1.25} />
+          </button>
+          <button
+            type="button"
+            onClick={onNext}
+            aria-label="Следующий образ"
+            className="md:hidden absolute -right-2 top-1/2 -translate-y-1/2 z-10 p-2 text-foreground/70 [filter:drop-shadow(0_1px_2px_rgb(0_0_0/0.15))]"
+          >
+            <ChevronRight className="size-7" strokeWidth={1.25} />
+          </button>
           {/* Mobile counter overlay */}
           <div className="md:hidden absolute bottom-3 right-3 font-serif text-xs tabular-nums text-cream bg-foreground/40 backdrop-blur px-2 py-1 rounded-full">
             {String(look.sort).padStart(2, "0")} /{" "}
@@ -291,49 +308,69 @@ function ProductsSlider({ products }: { products: Product[] }) {
 
   return (
     <div className="relative w-full min-w-0">
-      <div
-        ref={scrollerRef}
-        className="flex gap-3 md:gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-      >
+      {/* Мобилка: плитка 2-в-ряд */}
+      <div className="md:hidden grid grid-cols-2 gap-x-3 gap-y-6 w-full pt-2">
         {products.map((p) => (
-          <ProductCell key={p.itemId} product={p} />
+          <ProductCell key={p.itemId} product={p} variant="grid" />
         ))}
       </div>
 
-      {/* Desktop slider arrows */}
-      <button
-        type="button"
-        onClick={() => scrollByCard(-1)}
-        aria-label="Предыдущие товары"
-        className={cn(
-          "hidden md:flex absolute -left-3 top-1/2 -translate-y-1/2 z-20 size-10 items-center justify-center rounded-full bg-cream/95 backdrop-blur hairline border hover:bg-cream transition-opacity",
-          canLeft ? "opacity-100" : "opacity-0 pointer-events-none",
-        )}
-      >
-        <ChevronLeft className="size-5" />
-      </button>
-      <button
-        type="button"
-        onClick={() => scrollByCard(1)}
-        aria-label="Следующие товары"
-        className={cn(
-          "hidden md:flex absolute -right-3 top-1/2 -translate-y-1/2 z-20 size-10 items-center justify-center rounded-full bg-cream/95 backdrop-blur hairline border hover:bg-cream transition-opacity",
-          canRight ? "opacity-100" : "opacity-0 pointer-events-none",
-        )}
-      >
-        <ChevronRight className="size-5" />
-      </button>
+      {/* Десктоп: горизонтальный слайдер */}
+      <div className="hidden md:block">
+        <div
+          ref={scrollerRef}
+          className="flex gap-3 md:gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {products.map((p) => (
+            <ProductCell key={p.itemId} product={p} variant="scroll" />
+          ))}
+        </div>
+
+        <button
+          type="button"
+          onClick={() => scrollByCard(-1)}
+          aria-label="Предыдущие товары"
+          className={cn(
+            "absolute -left-3 top-1/2 -translate-y-1/2 z-20 size-10 flex items-center justify-center rounded-full bg-cream/95 backdrop-blur hairline border hover:bg-cream transition-opacity",
+            canLeft ? "opacity-100" : "opacity-0 pointer-events-none",
+          )}
+        >
+          <ChevronLeft className="size-5" />
+        </button>
+        <button
+          type="button"
+          onClick={() => scrollByCard(1)}
+          aria-label="Следующие товары"
+          className={cn(
+            "absolute -right-3 top-1/2 -translate-y-1/2 z-20 size-10 flex items-center justify-center rounded-full bg-cream/95 backdrop-blur hairline border hover:bg-cream transition-opacity",
+            canRight ? "opacity-100" : "opacity-0 pointer-events-none",
+          )}
+        >
+          <ChevronRight className="size-5" />
+        </button>
+      </div>
     </div>
   );
 }
 
-function ProductCell({ product }: { product: Product }) {
+function ProductCell({
+  product,
+  variant,
+}: {
+  product: Product;
+  variant: "scroll" | "grid";
+}) {
   return (
     <Link
       data-product-card
       to="/product/$slug"
       params={{ slug: product.slug }}
-      className="group shrink-0 snap-start w-[60vw] sm:w-[40vw] md:w-[200px] lg:w-[215px] flex flex-col bg-cream transition-all"
+      className={cn(
+        "group flex flex-col bg-cream transition-all",
+        variant === "scroll"
+          ? "shrink-0 snap-start w-[60vw] sm:w-[40vw] md:w-[200px] lg:w-[215px]"
+          : "w-full",
+      )}
     >
       <div className="relative aspect-[3/4] overflow-hidden">
         <img
