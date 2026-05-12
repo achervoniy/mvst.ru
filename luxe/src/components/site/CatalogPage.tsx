@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import {
+  ArrowLeft,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
@@ -257,9 +258,12 @@ export function CatalogPage(props: CatalogPageProps) {
         </ol>
       </nav>
 
-      {/* Title row — только на мобиле; на десктопе H1 переезжает в тулбар */}
-      <div className="md:hidden px-4 pt-3 text-center pb-1 flex items-start justify-between gap-4">
-        <h1 className="font-serif text-3xl flex-1 min-w-0 line-clamp-2 break-words">
+      {/* Title row — только на мобиле; на десктопе H1 переезжает в тулбар.
+          Grid с симметричными колонками по краям, чтобы H1 центрировался
+          относительно всего экрана, а не пространства до кнопки. */}
+      <div className="md:hidden px-4 pt-3 pb-1 grid grid-cols-[2.5rem_minmax(0,1fr)_2.5rem] items-start gap-2">
+        <div aria-hidden="true" />
+        <h1 className="font-serif text-3xl text-center line-clamp-2 break-words min-w-0">
           {sectionTitle ?? title}
         </h1>
         {/* Mobile filters trigger — иконка на одной линии с заголовком */}
@@ -267,11 +271,11 @@ export function CatalogPage(props: CatalogPageProps) {
           type="button"
           onClick={() => setFiltersOpen(true)}
           aria-label="Фильтры"
-          className="relative shrink-0 ml-2 inline-flex items-center justify-center h-10 w-10 border border-foreground/30 hover:border-foreground"
+          className="relative justify-self-end inline-flex items-center justify-center h-10 w-10 border border-foreground/30 hover:border-foreground"
         >
           <SlidersHorizontal className="h-4 w-4" />
           {hasAppliedFilters && (
-            <span className="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-4 h-4 px-1 rounded-full bg-accent text-background text-[10px] tracking-normal leading-none">
+            <span className="absolute -top-2 -right-2 inline-flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full bg-accent text-background text-[11px] font-medium tracking-normal leading-none tabular-nums">
               {appliedFilterCount}
             </span>
           )}
@@ -322,7 +326,7 @@ export function CatalogPage(props: CatalogPageProps) {
           >
             <SlidersHorizontal className="h-4 w-4" />
             {hasAppliedFilters && (
-              <span className="absolute top-2 right-2 inline-flex items-center justify-center min-w-4 h-4 px-1 rounded-full bg-accent text-background text-[10px] tracking-normal leading-none">
+              <span className="absolute top-1.5 right-1.5 inline-flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full bg-accent text-background text-[11px] font-medium tracking-normal leading-none tabular-nums">
                 {appliedFilterCount}
               </span>
             )}
@@ -931,12 +935,6 @@ function PriceFilter({
   const [toStr, setToStr] = useState<string>(to != null ? String(to) : "");
   const [range, setRange] = useState<[number, number]>([from ?? min, to ?? max]);
 
-  useEffect(() => {
-    setFromStr(from != null ? String(from) : "");
-    setToStr(to != null ? String(to) : "");
-    setRange([from ?? min, to ?? max]);
-  }, [from, to, min, max]);
-
   const parse = (s: string): number | undefined => {
     const digits = s.replace(/\D/g, "");
     if (!digits) return undefined;
@@ -944,29 +942,69 @@ function PriceFilter({
     return Number.isFinite(n) && n > 0 ? n : undefined;
   };
 
+  // Синхронизируем строки ввода с пропами только если изменение пришло
+  // снаружи (slider, сброс, открытие drawer-а). Если parse(local) уже
+  // совпадает с пропом — значит, prop приехал из нашего собственного onChange,
+  // и трогать строку нельзя: иначе clamp подменит цифры под пальцами при наборе.
+  useEffect(() => {
+    setFromStr((prev) => (parse(prev) === from ? prev : from != null ? String(from) : ""));
+    setToStr((prev) => (parse(prev) === to ? prev : to != null ? String(to) : ""));
+    setRange([from ?? min, to ?? max]);
+  }, [from, to, min, max]);
+
   const clamp = (n: number) => Math.max(min, Math.min(max, n));
-  const applyValues = (f?: number, t?: number) => {
+  const normalize = (f?: number, t?: number) => {
     let nf = f != null ? clamp(f) : undefined;
     let nt = t != null ? clamp(t) : undefined;
     if (nf != null && nt != null && nf > nt) [nf, nt] = [nt, nf];
     // Если совпадает с границами — считаем, что фильтр сброшен с этой стороны.
     if (nf != null && nf <= min) nf = undefined;
     if (nt != null && nt >= max) nt = undefined;
-    onApply(nf, nt);
+    return [nf, nt] as const;
   };
 
   const step = Math.max(1, Math.round((max - min) / 100));
 
-  // Каждое изменение сразу пушим в onApply — родитель сам дебаунсит для counter.
+  // Дебаунс пуша в счётчик при наборе цены в инпуте — чтобы не дёргать
+  // запросы на каждой цифре. Slider и blur флашат немедленно.
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+  }, []);
+  const scheduleApply = (f?: number, t?: number) => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      debounceRef.current = null;
+      onApply(f, t);
+    }, 450);
+  };
+  const flushApply = (f?: number, t?: number) => {
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+      debounceRef.current = null;
+    }
+    onApply(f, t);
+  };
+
+  // Во время ввода НЕ нормализуем: clamp бы превратил «1» в min и
+  // обратной синхронизацией затёр бы строку ввода. Просто пушим
+  // распарсенное число в счётчик; нормализация — на blur.
   const handleFromInput = (v: string) => {
     const cleaned = v.replace(/\D/g, "");
     setFromStr(cleaned);
-    applyValues(parse(cleaned), parse(toStr));
+    scheduleApply(parse(cleaned), parse(toStr));
   };
   const handleToInput = (v: string) => {
     const cleaned = v.replace(/\D/g, "");
     setToStr(cleaned);
-    applyValues(parse(fromStr), parse(cleaned));
+    scheduleApply(parse(fromStr), parse(cleaned));
+  };
+
+  const handleBlur = () => {
+    const [nf, nt] = normalize(parse(fromStr), parse(toStr));
+    setFromStr(nf != null ? String(nf) : "");
+    setToStr(nt != null ? String(nt) : "");
+    flushApply(nf, nt);
   };
 
   const handleSliderChange = (v: number[]) => {
@@ -975,7 +1013,8 @@ function PriceFilter({
     setRange([a, b]);
     setFromStr(a > min ? String(a) : "");
     setToStr(b < max ? String(b) : "");
-    applyValues(a > min ? a : undefined, b < max ? b : undefined);
+    const [nf, nt] = normalize(a > min ? a : undefined, b < max ? b : undefined);
+    flushApply(nf, nt);
   };
 
   const inputCls = cn(
@@ -996,6 +1035,7 @@ function PriceFilter({
             placeholder={String(min)}
             value={fromStr}
             onChange={(e) => handleFromInput(e.target.value)}
+            onBlur={handleBlur}
             className={inputCls}
             aria-label="Цена от"
           />
@@ -1006,6 +1046,7 @@ function PriceFilter({
             placeholder={String(max)}
             value={toStr}
             onChange={(e) => handleToInput(e.target.value)}
+            onBlur={handleBlur}
             className={inputCls}
             aria-label="Цена до"
           />
@@ -1360,25 +1401,28 @@ function MobileFiltersDrawer({
         side="right"
         className="w-screen sm:max-w-[440px] md:max-w-[520px] p-0 flex flex-col gap-0 [&>button.absolute]:hidden"
       >
-        {/* Header */}
-        <div className="relative h-14 shrink-0 flex items-center justify-center border-b hairline px-4">
+        {/* Header — единый паттерн с FittingCartDialog: flex justify-between,
+            одинаковые отступы и одинаковые иконки (ArrowLeft / X size-5). */}
+        <div className="flex items-center justify-between px-6 py-5 border-b hairline shrink-0">
           {panel ? (
             <button
               type="button"
               onClick={back}
-              className="absolute left-3 top-1/2 -translate-y-1/2 p-2 -m-2 text-foreground/70 hover:text-foreground"
+              className="-ml-2 p-2 text-foreground/70 hover:text-foreground focus:outline-none focus-visible:outline-none"
               aria-label="Назад"
             >
-              <ChevronLeft className="size-5" />
+              <ArrowLeft className="size-5" />
             </button>
-          ) : null}
-          <SheetTitle className="eyebrow text-sm tracking-[0.2em]">
+          ) : (
+            <div className="w-9" />
+          )}
+          <SheetTitle className="eyebrow text-foreground">
             {panelTitle.toUpperCase()}
           </SheetTitle>
           <button
             type="button"
             onClick={close}
-            className="absolute right-3 top-1/2 -translate-y-1/2 p-2 -m-2 text-foreground/70 hover:text-foreground"
+            className="-mr-2 p-2 text-foreground/70 hover:text-foreground focus:outline-none focus-visible:outline-none"
             aria-label="Закрыть"
           >
             <XIcon className="size-5" />
@@ -1600,28 +1644,44 @@ function MobileFiltersDrawer({
             })()}
         </div>
 
-        {/* Sticky footer */}
-        <div className="shrink-0 border-t hairline bg-background p-4 space-y-3">
+        {/* Sticky footer — «Сбросить» центрируется по вертикали между
+            верхним дивайдером и кнопкой «Показать», поэтому равные отступы
+            сверху/снизу (py-5), а у кнопки применения свой нижний pb-4. */}
+        <div className="shrink-0 border-t hairline bg-background px-4 pb-4">
           {hasAnyFilter && (
-            <button
-              type="button"
-              onClick={resetAll}
-              className="w-full text-center eyebrow text-foreground/60 hover:text-accent text-xs underline underline-offset-4"
-            >
-              Сбросить фильтры
-            </button>
+            <div className="py-5 flex justify-center">
+              <button
+                type="button"
+                onClick={resetAll}
+                className="eyebrow text-foreground/60 hover:text-accent text-xs underline underline-offset-4"
+              >
+                Сбросить фильтры
+              </button>
+            </div>
           )}
-          <button
-            type="button"
-            onClick={applyStaged}
-            className={cn(
-              "w-full h-14 bg-foreground text-background eyebrow text-sm hover:bg-foreground/90 transition-[opacity,background-color] duration-150",
-              counterPending && "opacity-70",
-            )}
-          >
-            Показать {stagedCount.toLocaleString("ru-RU")}{" "}
-            {pluralizeRu(stagedCount, ["товар", "товара", "товаров"])}
-          </button>
+          {(() => {
+            const isZero = !counterPending && stagedCount === 0;
+            return (
+              <button
+                type="button"
+                onClick={applyStaged}
+                disabled={isZero}
+                aria-disabled={isZero}
+                className={cn(
+                  "w-full h-14 bg-foreground text-background eyebrow text-sm transition-[opacity,background-color] duration-150",
+                  !hasAnyFilter && "mt-4",
+                  counterPending && "opacity-70",
+                  isZero
+                    ? "opacity-40 cursor-not-allowed"
+                    : "hover:bg-foreground/90",
+                )}
+              >
+                {isZero
+                  ? "Ничего не найдено"
+                  : `Показать ${stagedCount.toLocaleString("ru-RU")} ${pluralizeRu(stagedCount, ["товар", "товара", "товаров"])}`}
+              </button>
+            );
+          })()}
         </div>
       </SheetContent>
     </Sheet>
