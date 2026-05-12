@@ -198,6 +198,8 @@ function BoutiquesPage() {
         {boutiques.map((b, i) => (
           <article
             key={b.name}
+            id={b.slug}
+            style={{ scrollMarginTop: "var(--header-h, 96px)" }}
             className={`grid md:grid-cols-2 bg-background ${
               i % 2 === 1 ? "md:[&>div:first-child]:order-2" : ""
             }`}

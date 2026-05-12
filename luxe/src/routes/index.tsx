@@ -238,7 +238,7 @@ function HomePage() {
         </div>
         <div className="grid gap-x-6 gap-y-10 md:gap-y-6 grid-cols-2 md:grid-cols-3">
           {boutiques.slice(0, 6).map((b) => (
-            <Link key={b.name} to="/boutiques" preload="intent" className="group block">
+            <Link key={b.name} to="/boutiques" hash={b.slug} preload="intent" className="group block">
               <div className="aspect-[1005/816] overflow-hidden bg-sand">
                 <img
                   src={b.img}
