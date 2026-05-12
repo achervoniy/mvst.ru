@@ -58,32 +58,34 @@ export function ProductShelf({
         <h2 className="font-serif text-2xl md:text-3xl leading-tight">
           {title}
         </h2>
-        <div className="hidden md:flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => scrollByCard(-1)}
-            aria-label="Прокрутить назад"
-            disabled={!canLeft}
-            className={cn(
-              "size-10 flex items-center justify-center border border-foreground/30 hover:border-foreground transition-colors",
-              !canLeft && "opacity-30 cursor-not-allowed hover:border-foreground/30",
-            )}
-          >
-            <ChevronLeft className="size-5" />
-          </button>
-          <button
-            type="button"
-            onClick={() => scrollByCard(1)}
-            aria-label="Прокрутить вперёд"
-            disabled={!canRight}
-            className={cn(
-              "size-10 flex items-center justify-center border border-foreground/30 hover:border-foreground transition-colors",
-              !canRight && "opacity-30 cursor-not-allowed hover:border-foreground/30",
-            )}
-          >
-            <ChevronRight className="size-5" />
-          </button>
-        </div>
+        {(canLeft || canRight) && (
+          <div className="hidden md:flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => scrollByCard(-1)}
+              aria-label="Прокрутить назад"
+              disabled={!canLeft}
+              className={cn(
+                "size-10 flex items-center justify-center border border-foreground/30 hover:border-foreground transition-colors",
+                !canLeft && "opacity-30 cursor-not-allowed hover:border-foreground/30",
+              )}
+            >
+              <ChevronLeft className="size-5" />
+            </button>
+            <button
+              type="button"
+              onClick={() => scrollByCard(1)}
+              aria-label="Прокрутить вперёд"
+              disabled={!canRight}
+              className={cn(
+                "size-10 flex items-center justify-center border border-foreground/30 hover:border-foreground transition-colors",
+                !canRight && "opacity-30 cursor-not-allowed hover:border-foreground/30",
+              )}
+            >
+              <ChevronRight className="size-5" />
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Mobile: 2-col grid */}
@@ -93,15 +95,17 @@ export function ProductShelf({
         ))}
       </div>
 
-      {/* Desktop: horizontal scroller */}
+      {/* Desktop: horizontal scroller — центрируется, если умещается; иначе скроллится */}
       <div className="hidden md:block">
         <div
           ref={scrollerRef}
-          className="flex gap-4 overflow-x-auto snap-x scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="overflow-x-auto snap-x scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
-          {items.map((item) => (
-            <ShelfCard key={item.id} item={item} variant="scroll" />
-          ))}
+          <div className="flex gap-4 w-max mx-auto">
+            {items.map((item) => (
+              <ShelfCard key={item.id} item={item} variant="scroll" />
+            ))}
+          </div>
         </div>
       </div>
     </section>

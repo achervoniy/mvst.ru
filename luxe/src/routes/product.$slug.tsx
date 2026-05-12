@@ -1,12 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { ProductShelf } from "@/components/site/ProductShelf";
-import {
-  getLookComplementsByItemId,
-  type ShelfItem,
-} from "@/lib/look-recommendations";
+import { OutfitShelf } from "@/components/site/OutfitShelf";
+import { getLookOutfitsByItemId } from "@/lib/look-recommendations";
 import {
   pushRecentlyViewed,
   useRecentlyViewed,
@@ -36,8 +34,8 @@ export const Route = createFileRoute("/product/$slug")({
   loader: async ({ params }) => {
     const { detail, gender } = await getProductDetail({ data: { slug: params.slug } });
     if (!detail) throw notFound();
-    const complements = getLookComplementsByItemId(detail.id, 12);
-    return { detail, gender: gender ?? "women", complements };
+    const outfits = getLookOutfitsByItemId(detail.id, 6);
+    return { detail, gender: gender ?? "women", outfits };
   },
   staleTime: 5 * 60 * 1000,
   head: ({ loaderData }) => {
@@ -85,12 +83,48 @@ function pickImage(img: TsumImage): string {
   return img.w2000 ?? img.w1320 ?? img.w400 ?? img.large ?? img.middle ?? "";
 }
 
+// Кнопка-размер: сверху брендовый размер, снизу российский. Брендовая строка
+// рисуется только когда у API есть label (IT/FR/INT/...) и vendorSize !== russianSize.
+// Расшифровка лейблов выносится в заголовок селектора (см. sizeTitleSuffix).
+function SizeLabels({ size }: { size: TsumOffer["size"] }) {
+  const vendorLabel = size.vendorLabel?.trim();
+  const vendorSize = size.vendorSize?.trim();
+  const russianSize = size.russianSize?.trim();
+  const showVendor =
+    !!vendorLabel && !!vendorSize && vendorSize !== russianSize;
+  const primary = russianSize || vendorSize || "—";
+  return (
+    <span className="flex flex-col items-center justify-center leading-none gap-0.5">
+      {showVendor && (
+        <span className="text-[10px] tracking-wider opacity-70">{vendorSize}</span>
+      )}
+      <span className="text-sm">{primary}</span>
+    </span>
+  );
+}
+
+// «(IT/RU)» к заголовку селектора, если все офферы используют одну и ту же
+// брендовую систему и она отличается от российской. Иначе — пусто.
+function sizeTitleSuffix(offers: TsumOffer[]): string {
+  const labels = new Set<string>();
+  for (const o of offers) {
+    const vl = o.size.vendorLabel?.trim();
+    const vs = o.size.vendorSize?.trim();
+    const rs = o.size.russianSize?.trim();
+    if (vl && vs && vs !== rs) labels.add(vl);
+  }
+  if (labels.size !== 1) return "";
+  const [label] = labels;
+  return ` (${label}/RU)`;
+}
+
 function ProductPage() {
-  const { detail, gender, complements } = Route.useLoaderData();
+  const { detail, gender, outfits } = Route.useLoaderData();
   const [selectedOfferId, setSelectedOfferId] = useState<number | null>(null);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
   const [carouselIndex, setCarouselIndex] = useState(0);
+  const [sizePickerOpen, setSizePickerOpen] = useState(false);
   const offers: TsumOffer[] = detail.offers ?? [];
   // Берём только товарные фото (макс. 5). Иногда ЦУМ-API подмешивает
   // лукбук-кадры с другими вещами в самом конце массива — отсекаем.
@@ -117,24 +151,35 @@ function ProductPage() {
   const effectiveOffer = offers.find((o) => o.id === effectiveOfferId) ?? null;
   const inCart = effectiveOffer ? cart.hasItem(effectiveOffer.id) : false;
 
-  const handleAddToFitting = () => {
-    if (!effectiveOffer) {
-      toast.error("Выберите размер");
-      return;
-    }
-    if (cart.hasItem(effectiveOffer.id)) return;
+  const addOfferToFitting = (offer: TsumOffer) => {
+    if (cart.hasItem(offer.id)) return;
     const thumb =
       images[0]?.w400 ?? images[0]?.w400x2 ?? images[0]?.w200x2 ?? images[0]?.w200 ?? "";
     cart.add({
-      skuId: effectiveOffer.id,
+      skuId: offer.id,
       productSlug: detail.slug,
       title: detail.title,
       color: detail.color.title,
-      size: effectiveOffer.size.russianSize,
-      price: effectiveOffer.price.priceWithDiscount,
+      size: offer.size.russianSize,
+      price: offer.price.priceWithDiscount,
       image: thumb,
     });
-    toast.success("Добавлено в корзину для примерки");
+  };
+
+  const handleAddToFitting = () => {
+    if (effectiveOffer) {
+      if (cart.hasItem(effectiveOffer.id)) {
+        cart.setOpen(true);
+        return;
+      }
+      addOfferToFitting(effectiveOffer);
+      return;
+    }
+    if (showSizes && buyableOffers.length > 0) {
+      setSizePickerOpen(true);
+      return;
+    }
+    toast.error("Выберите размер");
   };
 
   // Информационные секции из API (без "О бренде" — у нас один бренд)
@@ -186,13 +231,7 @@ function ProductPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [detail.id]);
 
-  const complementIds = useMemo(
-    () => new Set(complements.map((c: ShelfItem) => c.id)),
-    [complements],
-  );
-  const recent = useRecentlyViewed(detail.id).filter(
-    (r) => !complementIds.has(r.id),
-  );
+  const recent = useRecentlyViewed(detail.id);
 
   return (
     <SiteLayout>
@@ -326,7 +365,9 @@ function ProductPage() {
 
           {showSizes && (
             <div>
-              <div className="eyebrow text-foreground/60 mb-3">Размер</div>
+              <div className="eyebrow text-foreground/60 mb-3">
+                Размер{sizeTitleSuffix(offers)}
+              </div>
               <div className="flex flex-wrap gap-2">
                 {offers.map((o: TsumOffer) => {
                   const disabled = o.quantity === 0 || o.isBuyable === false;
@@ -337,7 +378,7 @@ function ProductPage() {
                       onClick={() => !disabled && setSelectedOfferId(o.id)}
                       disabled={disabled}
                       className={cn(
-                        "min-w-12 h-10 px-3 border text-sm transition-colors",
+                        "min-w-14 h-12 px-3 border transition-colors",
                         active
                           ? "border-foreground bg-foreground text-primary-foreground"
                           : "border-foreground/30 hover:border-foreground",
@@ -345,7 +386,7 @@ function ProductPage() {
                           "opacity-30 line-through cursor-not-allowed hover:border-foreground/30",
                       )}
                     >
-                      {o.size.russianSize}
+                      <SizeLabels size={o.size} />
                     </button>
                   );
                 })}
@@ -360,7 +401,7 @@ function ProductPage() {
             <button
               type="button"
               onClick={handleAddToFitting}
-              disabled={inCart || buyableOffers.length === 0}
+              disabled={buyableOffers.length === 0}
               className="w-full h-12 bg-foreground text-primary-foreground eyebrow-lg hover:bg-accent transition-colors disabled:opacity-50 disabled:hover:bg-foreground"
             >
               {inCart ? "В корзине ✓" : "Примерить в бутике"}
@@ -436,10 +477,14 @@ function ProductPage() {
       </div>
 
       {/* Рекомендательные полки */}
-      {(complements.length > 0 || recent.length > 0) && (
+      {(outfits.length > 0 || recent.length > 0) && (
         <div className="border-t hairline">
-          {complements.length > 0 && (
-            <ProductShelf title="С чем носить" items={complements} />
+          {outfits.length > 0 && (
+            <OutfitShelf
+              title="С чем носить"
+              outfits={outfits}
+              currentItemId={detail.id}
+            />
           )}
           {recent.length > 0 && (
             <ProductShelf title="Вы недавно смотрели" items={recent} />
@@ -460,7 +505,7 @@ function ProductPage() {
         <button
           type="button"
           onClick={handleAddToFitting}
-          disabled={inCart || buyableOffers.length === 0}
+          disabled={buyableOffers.length === 0}
           className="w-full h-12 bg-foreground text-primary-foreground text-[10px] tracking-[0.14em] uppercase font-medium hover:bg-accent transition-colors disabled:opacity-50"
         >
           {inCart ? "В корзине ✓" : "Примерить в бутике"}
@@ -529,6 +574,247 @@ function ProductPage() {
           </DialogPrimitive.Content>
         </DialogPortal>
       </Dialog>
+
+      <SizePickerDialog
+        open={sizePickerOpen}
+        onOpenChange={setSizePickerOpen}
+        offers={offers}
+        buyableOffers={buyableOffers}
+        tsumUrl={tsumUrl}
+        hasItem={cart.hasItem}
+        onConfirm={(offer) => {
+          setSelectedOfferId(offer.id);
+          addOfferToFitting(offer);
+        }}
+        onOpenCart={() => cart.setOpen(true)}
+      />
     </SiteLayout>
+  );
+}
+
+function SizePickerDialog({
+  open,
+  onOpenChange,
+  offers,
+  buyableOffers,
+  tsumUrl,
+  hasItem,
+  onConfirm,
+  onOpenCart,
+}: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  offers: TsumOffer[];
+  buyableOffers: TsumOffer[];
+  tsumUrl: string;
+  hasItem: (id: number) => boolean;
+  onConfirm: (offer: TsumOffer) => void;
+  onOpenCart: () => void;
+}) {
+  const [localId, setLocalId] = useState<number | null>(null);
+  const mobileScrollRef = useRef<HTMLDivElement>(null);
+
+  // Сбрасываем локальный выбор после закрытия
+  useEffect(() => {
+    if (!open) {
+      const t = setTimeout(() => setLocalId(null), 250);
+      return () => clearTimeout(t);
+    }
+  }, [open]);
+
+  // Когда модалка открыта и кнопки размеров переполняют контейнер,
+  // подгоняем margin-right у скролл-контейнера так, чтобы крайняя видимая
+  // кнопка обрезалась примерно наполовину. Левая кромка ряда (первая кнопка)
+  // при этом остаётся на одной линии с тайтлом и CTA.
+  useLayoutEffect(() => {
+    if (!open) return;
+
+    const adjust = () => {
+      const container = mobileScrollRef.current;
+      if (!container) return;
+
+      // Сброс перед замером
+      container.style.marginRight = "";
+
+      const cw = container.clientWidth;
+      if (container.scrollWidth <= cw) return;
+
+      const inner = container.firstElementChild as HTMLElement | null;
+      if (!inner) return;
+      const buttons = Array.from(
+        inner.querySelectorAll<HTMLButtonElement>(":scope > button"),
+      );
+      if (buttons.length === 0) return;
+
+      const cLeft = container.getBoundingClientRect().left;
+
+      // Первая кнопка, чей правый край выходит за контейнер
+      let cutIdx = -1;
+      for (let i = 0; i < buttons.length; i++) {
+        const r = buttons[i].getBoundingClientRect();
+        if (r.right - cLeft > cw) {
+          cutIdx = i;
+          break;
+        }
+      }
+      if (cutIdx === -1) return;
+
+      const cr = buttons[cutIdx].getBoundingClientRect();
+      const relLeft = cr.left - cLeft;
+      const w = cr.width;
+      const visible = (cw - relLeft) / w;
+
+      // В норме — ничего не делаем
+      if (visible >= 0.25 && visible <= 0.75) return;
+
+      // Если кнопка слишком хорошо видна — режем её саму до ~55%.
+      // Если слишком плохо — двигаем срез к предыдущей.
+      let targetIdx: number;
+      if (visible > 0.75) {
+        targetIdx = cutIdx;
+      } else {
+        if (cutIdx === 0) return;
+        targetIdx = cutIdx - 1;
+      }
+
+      const tr = buttons[targetIdx].getBoundingClientRect();
+      const tRelLeft = tr.left - cLeft;
+      const tW = tr.width;
+      const newCut = tRelLeft + tW * 0.55;
+      if (newCut <= 0 || newCut >= cw) return;
+
+      const margin = Math.max(0, Math.min(96, cw - newCut));
+      container.style.marginRight = `${margin}px`;
+    };
+
+    const raf = requestAnimationFrame(adjust);
+
+    // Наблюдаем за родителем, а не за самим контейнером — иначе наша же
+    // правка margin-right триггерила бы ResizeObserver и вызвала бы цикл.
+    let ro: ResizeObserver | null = null;
+    const parent = mobileScrollRef.current?.parentElement;
+    if (parent && typeof ResizeObserver !== "undefined") {
+      ro = new ResizeObserver(() => adjust());
+      ro.observe(parent);
+    }
+
+    return () => {
+      cancelAnimationFrame(raf);
+      ro?.disconnect();
+    };
+  }, [open, offers.length]);
+
+  const selected = offers.find((o) => o.id === localId) ?? null;
+  const inCart = selected ? hasItem(selected.id) : false;
+
+  const renderSize = (o: TsumOffer) => {
+    const disabled = o.quantity === 0 || o.isBuyable === false;
+    const active = localId === o.id;
+    return (
+      <button
+        key={o.id}
+        type="button"
+        onClick={() => !disabled && setLocalId(o.id)}
+        disabled={disabled}
+        className={cn(
+          "shrink-0 min-w-14 h-12 px-3 border transition-colors",
+          active
+            ? "border-foreground bg-foreground text-primary-foreground"
+            : "border-foreground/30 hover:border-foreground",
+          disabled &&
+            "opacity-30 line-through cursor-not-allowed hover:border-foreground/30",
+        )}
+      >
+        <SizeLabels size={o.size} />
+      </button>
+    );
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogPortal>
+        <DialogOverlay className="bg-black/40" />
+        <DialogPrimitive.Content
+          aria-describedby={undefined}
+          className={cn(
+            "fixed z-50 bg-background outline-none flex flex-col shadow-lg",
+            // Mobile: bottom-anchored, full width
+            "inset-x-0 bottom-0 max-h-[85vh] border-t hairline",
+            // Desktop: centered modal
+            "md:inset-auto md:bottom-auto md:left-[50%] md:top-[50%] md:translate-x-[-50%] md:translate-y-[-50%] md:w-full md:max-w-md md:max-h-[80vh] md:border md:rounded-lg",
+            // Animation
+            "data-[state=open]:animate-in data-[state=closed]:animate-out duration-300",
+            "data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0",
+            // Mobile: slide from bottom
+            "data-[state=open]:slide-in-from-bottom data-[state=closed]:slide-out-to-bottom",
+            // Desktop: cancel slide, use zoom
+            "md:data-[state=open]:slide-in-from-bottom-0 md:data-[state=closed]:slide-out-to-bottom-0",
+            "md:data-[state=open]:zoom-in-95 md:data-[state=closed]:zoom-out-95",
+          )}
+        >
+          <DialogPrimitive.Title className="sr-only">Выберите размер</DialogPrimitive.Title>
+
+          <div className="px-6 pt-5 pb-4 border-b hairline flex items-center justify-between">
+            <div className="eyebrow text-foreground">
+              Выберите размер{sizeTitleSuffix(offers)}
+            </div>
+            <DialogPrimitive.Close
+              className="-mr-2 p-2 text-foreground/55 hover:text-foreground focus:outline-none focus-visible:outline-none"
+              aria-label="Закрыть"
+            >
+              <X className="size-4" />
+            </DialogPrimitive.Close>
+          </div>
+
+          <div className="flex-1 overflow-y-auto py-5">
+            {/* Mobile: горизонтальный скролл с fade-маской справа */}
+            <div
+              ref={mobileScrollRef}
+              className="md:hidden overflow-x-auto scrollbar-none [mask-image:linear-gradient(to_right,black_calc(100%-32px),transparent)] [-webkit-mask-image:linear-gradient(to_right,black_calc(100%-32px),transparent)]"
+            >
+              <div className="flex gap-2 w-max pl-6 pr-6">
+                {offers.map(renderSize)}
+              </div>
+            </div>
+            {/* Desktop: перенос строк */}
+            <div className="hidden md:flex md:flex-wrap gap-2 px-6">
+              {offers.map(renderSize)}
+            </div>
+            {buyableOffers.length === 0 && (
+              <div className="mt-3 px-6 text-xs text-foreground/60">Все размеры распроданы</div>
+            )}
+          </div>
+
+          <div className="border-t hairline px-6 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] grid grid-cols-2 gap-2 bg-background md:pb-5">
+            <a
+              href={tsumUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => onOpenChange(false)}
+              className="block w-full h-12 border border-foreground text-foreground text-[10px] tracking-[0.14em] uppercase font-medium text-center leading-[3rem] md:eyebrow-lg md:hover:bg-foreground md:hover:text-primary-foreground md:transition-colors"
+            >
+              Купить в ЦУМе
+            </a>
+            <button
+              type="button"
+              onClick={() => {
+                if (!selected) return;
+                if (inCart) {
+                  onOpenChange(false);
+                  onOpenCart();
+                  return;
+                }
+                onConfirm(selected);
+                onOpenChange(false);
+              }}
+              disabled={!selected || buyableOffers.length === 0}
+              className="w-full h-12 bg-foreground text-primary-foreground text-[10px] tracking-[0.14em] uppercase font-medium hover:bg-accent transition-colors disabled:opacity-50 disabled:hover:bg-foreground md:eyebrow-lg"
+            >
+              {inCart ? "В корзине ✓" : "Примерить в бутике"}
+            </button>
+          </div>
+        </DialogPrimitive.Content>
+      </DialogPortal>
+    </Dialog>
   );
 }

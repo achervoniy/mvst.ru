@@ -10,7 +10,7 @@ export function ProductCard({ product }: { product: CatalogProduct }) {
       preload="intent"
       className="group block"
     >
-      <div className="relative aspect-[3/4]">
+      <div className="relative aspect-[3/4] bg-background isolate">
         {product.primaryImage && (
           <img
             src={product.primaryImage}
