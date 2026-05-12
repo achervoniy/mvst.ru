@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { cn } from "@/lib/utils";
@@ -105,16 +105,21 @@ function CollectionSS26() {
 
       {/* Lookbook stage — compact, fits a laptop screen */}
       <section className="bg-cream/60 border-y hairline">
-        <div className="px-4 md:px-8 pt-6 md:pt-8 pb-3 flex items-end justify-between max-w-[1360px] mx-auto">
+        <div className="hidden md:flex items-baseline gap-3 px-4 md:px-8 pt-6 md:pt-8 pb-3 max-w-[1360px] mx-auto">
           <div className="eyebrow text-foreground/60">Образ</div>
-          <div className="hidden md:block font-serif text-sm tabular-nums text-foreground/70">
+          <div className="font-serif text-sm tabular-nums text-foreground/70">
             <span className="text-foreground">{String(active + 1).padStart(2, "0")}</span>
             <span className="mx-2 text-foreground/30">/</span>
             <span>{String(total).padStart(2, "0")}</span>
           </div>
         </div>
 
-        <LookStage look={current} onPrev={() => goTo(active - 1)} onNext={() => goTo(active + 1)} />
+        <LookStage
+          looks={looks}
+          active={active}
+          onPrev={() => goTo(active - 1)}
+          onNext={() => goTo(active + 1)}
+        />
 
         {/* Thumbnails strip — только на десктопе. На мобилке навигация по образам через свайп. */}
         <div className="hidden md:block relative max-w-[1360px] mx-auto px-2 md:px-6 pb-6 md:pb-8 pt-5">
@@ -184,70 +189,34 @@ function CollectionSS26() {
 }
 
 function LookStage({
-  look,
+  looks,
+  active,
   onPrev,
   onNext,
 }: {
-  look: Look;
+  looks: Look[];
+  active: number;
   onPrev: () => void;
   onNext: () => void;
 }) {
-  // Touch swipe for mobile
-  const touchStartX = useRef<number | null>(null);
-  const touchStartY = useRef<number | null>(null);
-
-  const onTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-    touchStartY.current = e.touches[0].clientY;
-  };
-  const onTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartX.current === null || touchStartY.current === null) return;
-    const dx = e.changedTouches[0].clientX - touchStartX.current;
-    const dy = e.changedTouches[0].clientY - touchStartY.current;
-    touchStartX.current = null;
-    touchStartY.current = null;
-    if (Math.abs(dx) < 50 || Math.abs(dy) > Math.abs(dx)) return;
-    if (dx < 0) onNext();
-    else onPrev();
-  };
+  const look = looks[active];
 
   return (
-    <div className="relative max-w-[1360px] mx-auto px-2 md:px-6">
+    <div className="relative max-w-[1360px] mx-auto px-2 md:px-6 pt-6 md:pt-0">
       <div className="grid grid-cols-1 gap-3 md:gap-4 md:flex md:items-stretch md:h-[64vh] md:max-h-[640px]">
-        {/* Look image */}
-        <div
-          className="relative bg-cream aspect-[3/4] md:aspect-[3/4] md:h-full md:w-auto md:shrink-0 md:overflow-hidden touch-pan-y"
-          onTouchStart={onTouchStart}
-          onTouchEnd={onTouchEnd}
-        >
+        {/* Mobile: свайпер с физическим следованием за пальцем */}
+        <div className="md:hidden">
+          <MobileLookSwiper looks={looks} active={active} onPrev={onPrev} onNext={onNext} />
+        </div>
+
+        {/* Desktop: одна модельная картинка */}
+        <div className="hidden md:block relative bg-cream md:aspect-[3/4] md:h-full md:w-auto md:shrink-0 md:overflow-hidden">
           <img
             key={look.image}
             src={look.image}
             alt={`Образ ${look.sort}`}
             className="absolute inset-0 size-full object-contain look-fade"
           />
-          {/* Mobile-only swipe affordance: bare chevrons, drop-shadow для читаемости на разном фоне */}
-          <button
-            type="button"
-            onClick={onPrev}
-            aria-label="Предыдущий образ"
-            className="md:hidden absolute -left-2 top-1/2 -translate-y-1/2 z-10 p-2 text-foreground/70 [filter:drop-shadow(0_1px_2px_rgb(0_0_0/0.15))]"
-          >
-            <ChevronLeft className="size-7" strokeWidth={1.25} />
-          </button>
-          <button
-            type="button"
-            onClick={onNext}
-            aria-label="Следующий образ"
-            className="md:hidden absolute -right-2 top-1/2 -translate-y-1/2 z-10 p-2 text-foreground/70 [filter:drop-shadow(0_1px_2px_rgb(0_0_0/0.15))]"
-          >
-            <ChevronRight className="size-7" strokeWidth={1.25} />
-          </button>
-          {/* Mobile counter overlay */}
-          <div className="md:hidden absolute bottom-3 right-3 font-serif text-xs tabular-nums text-cream bg-foreground/40 backdrop-blur px-2 py-1 rounded-full">
-            {String(look.sort).padStart(2, "0")} /{" "}
-            {String(collection.looks.length).padStart(2, "0")}
-          </div>
         </div>
 
         {/* Products slider — single horizontal row, MVST-only */}
@@ -258,6 +227,209 @@ function LookStage({
           <ProductsSlider products={look.products.filter((p) => p.brand === "MVST")} />
         </div>
       </div>
+    </div>
+  );
+}
+
+const SWIPE_EASE = "cubic-bezier(0.22, 0.61, 0.36, 1)";
+const SWIPE_DURATION = 420;
+const SWIPE_THRESHOLD_FRACTION = 0.22;
+const SWIPE_FLICK_VELOCITY = 0.45;
+
+function MobileLookSwiper({
+  looks,
+  active,
+  onPrev,
+  onNext,
+}: {
+  looks: Look[];
+  active: number;
+  onPrev: () => void;
+  onNext: () => void;
+}) {
+  const total = looks.length;
+  const curr = looks[active];
+  const prev = looks[(active - 1 + total) % total];
+  const next = looks[(active + 1) % total];
+
+  const containerRef = useRef<HTMLDivElement>(null);
+  const startX = useRef<number | null>(null);
+  const startY = useRef<number | null>(null);
+  const startT = useRef(0);
+  const horizontalRef = useRef(false);
+  const dragRef = useRef(0);
+  const widthRef = useRef(0);
+  const animatingRef = useRef(false);
+  const [width, setWidth] = useState(0);
+  const [dragX, setDragX] = useState(0);
+  const [animating, setAnimating] = useState(false);
+
+  useEffect(() => {
+    widthRef.current = width;
+  }, [width]);
+  useEffect(() => {
+    animatingRef.current = animating;
+  }, [animating]);
+
+  useLayoutEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const update = () => setWidth(el.clientWidth);
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  // Нативные touch-listeners с passive:false — нужны, чтобы preventDefault на
+  // touchmove блокировал вертикальный скролл страницы, как только направление
+  // жеста зафиксировано как горизонтальное (direction lock).
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const onTouchStart = (e: TouchEvent) => {
+      if (animatingRef.current) return;
+      startX.current = e.touches[0].clientX;
+      startY.current = e.touches[0].clientY;
+      startT.current = performance.now();
+      horizontalRef.current = false;
+      dragRef.current = 0;
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (startX.current === null || animatingRef.current) return;
+      const dx = e.touches[0].clientX - startX.current;
+      const dy = e.touches[0].clientY - (startY.current ?? 0);
+      if (!horizontalRef.current) {
+        // Ждём 6px движения, потом решаем по углу. Если жест очевидно
+        // вертикальный — отдаём управление браузеру (нативный скролл).
+        if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+        if (Math.abs(dy) > Math.abs(dx)) {
+          startX.current = null;
+          return;
+        }
+        horizontalRef.current = true;
+      }
+      // Direction lock: на каждом следующем touchmove блокируем нативный скролл,
+      // чтобы страница не дёргалась по вертикали во время горизонтального жеста.
+      if (e.cancelable) e.preventDefault();
+      dragRef.current = dx;
+      setDragX(dx);
+    };
+
+    const onTouchEnd = () => {
+      if (startX.current === null) {
+        horizontalRef.current = false;
+        return;
+      }
+      const wasHorizontal = horizontalRef.current;
+      const dx = dragRef.current;
+      const dt = performance.now() - startT.current;
+      const v = Math.abs(dx) / Math.max(dt, 1);
+      startX.current = null;
+      startY.current = null;
+      horizontalRef.current = false;
+      if (!wasHorizontal) return;
+      const w = widthRef.current || 1;
+      const commit = Math.abs(dx) > w * SWIPE_THRESHOLD_FRACTION || v > SWIPE_FLICK_VELOCITY;
+      if (!commit) {
+        setAnimating(true);
+        setDragX(0);
+        return;
+      }
+      const dir: 1 | -1 = dx < 0 ? 1 : -1;
+      setAnimating(true);
+      setDragX(dir === 1 ? -w : w);
+    };
+
+    el.addEventListener("touchstart", onTouchStart, { passive: true });
+    el.addEventListener("touchmove", onTouchMove, { passive: false });
+    el.addEventListener("touchend", onTouchEnd, { passive: true });
+    el.addEventListener("touchcancel", onTouchEnd, { passive: true });
+    return () => {
+      el.removeEventListener("touchstart", onTouchStart);
+      el.removeEventListener("touchmove", onTouchMove);
+      el.removeEventListener("touchend", onTouchEnd);
+      el.removeEventListener("touchcancel", onTouchEnd);
+    };
+  }, []);
+
+  const triggerNav = (dir: 1 | -1) => {
+    if (animating || width === 0) return;
+    setAnimating(true);
+    setDragX(dir === 1 ? -width : width);
+  };
+
+  const onTransitionEnd = (e: React.TransitionEvent) => {
+    if (e.propertyName !== "transform" || !animating) return;
+    const w = width || 1;
+    if (Math.abs(dragX) >= w - 0.5) {
+      const dir = dragX < 0 ? 1 : -1;
+      // Порядок важен: setDragX(0) + смена active батчатся, и трек одновременно
+      // снэпится с -2W обратно на -W, а слайды смещаются — старая «следующая»
+      // картинка остаётся ровно в том же месте кадра. Без вспышек.
+      setAnimating(false);
+      setDragX(0);
+      if (dir === 1) onNext();
+      else onPrev();
+    } else {
+      setAnimating(false);
+    }
+  };
+
+  return (
+    <div
+      ref={containerRef}
+      className="relative bg-cream aspect-[3/4] overflow-hidden"
+      style={{ touchAction: "pan-y" }}
+    >
+      <div
+        onTransitionEnd={onTransitionEnd}
+        className="absolute inset-0 flex will-change-transform"
+        style={{
+          transform: `translate3d(${-width + dragX}px, 0, 0)`,
+          transition: animating ? `transform ${SWIPE_DURATION}ms ${SWIPE_EASE}` : "none",
+        }}
+      >
+        <MobileSlide look={prev} />
+        <MobileSlide look={curr} />
+        <MobileSlide look={next} />
+      </div>
+
+      <button
+        type="button"
+        onClick={() => triggerNav(-1)}
+        aria-label="Предыдущий образ"
+        className="absolute -left-2 top-1/2 -translate-y-1/2 z-10 p-2 text-foreground/70 [filter:drop-shadow(0_1px_2px_rgb(0_0_0/0.15))]"
+      >
+        <ChevronLeft className="size-7" strokeWidth={1.25} />
+      </button>
+      <button
+        type="button"
+        onClick={() => triggerNav(1)}
+        aria-label="Следующий образ"
+        className="absolute -right-2 top-1/2 -translate-y-1/2 z-10 p-2 text-foreground/70 [filter:drop-shadow(0_1px_2px_rgb(0_0_0/0.15))]"
+      >
+        <ChevronRight className="size-7" strokeWidth={1.25} />
+      </button>
+
+      <div className="absolute bottom-3 right-3 z-10 font-serif text-xs tabular-nums text-cream bg-foreground/40 backdrop-blur px-2 py-1 rounded-full">
+        {String(curr.sort).padStart(2, "0")} / {String(total).padStart(2, "0")}
+      </div>
+    </div>
+  );
+}
+
+function MobileSlide({ look }: { look: Look }) {
+  return (
+    <div className="relative w-full h-full shrink-0">
+      <img
+        src={look.image}
+        alt={`Образ ${look.sort}`}
+        draggable={false}
+        className="absolute inset-0 size-full object-contain pointer-events-none select-none"
+      />
     </div>
   );
 }
