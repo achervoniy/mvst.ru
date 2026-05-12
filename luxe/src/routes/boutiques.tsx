@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { createServerFn } from "@tanstack/react-start";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import imgTsum from "@/assets/boutiques/tsum.webp";
 import imgBarviha from "@/assets/boutiques/barviha.webp";
@@ -7,19 +8,8 @@ import imgRadisson from "@/assets/boutiques/radisson.webp";
 import imgKutuzovsky from "@/assets/boutiques/kutuzovsky.webp";
 import imgDlt from "@/assets/boutiques/dlt.webp";
 
-export const Route = createFileRoute("/boutiques")({
-  head: () => ({
-    meta: [
-      { title: "Бутики MVST" },
-      { name: "description", content: "Адреса бутиков MVST в Москве и Санкт-Петербурге." },
-      { property: "og:title", content: "Бутики MVST" },
-      { property: "og:description", content: "Адреса и часы работы бутиков MVST." },
-    ],
-  }),
-  component: BoutiquesPage,
-});
-
-export const boutiques = [
+// Резервные данные — используются, если CRM недоступен.
+const fallbackBoutiques: BoutiqueView[] = [
   {
     slug: "tsum",
     name: "ЦУМ",
@@ -70,7 +60,91 @@ export const boutiques = [
   },
 ];
 
+interface BoutiqueView {
+  slug: string;
+  name: string;
+  addr: string;
+  hours: string;
+  img: string;
+  map: string;
+}
+
+interface CrmBoutique {
+  id: string;
+  slug: string;
+  title: string;
+  city: string;
+  address: string;
+  phone: string | null;
+  schedule: string | null;
+  routeUrl: string | null;
+  photoUrl: string | null;
+  priority: number;
+}
+
+const FALLBACK_IMG_BY_SLUG: Record<string, string> = {
+  tsum: imgTsum,
+  barviha: imgBarviha,
+  tret: imgTretyakovsky,
+  raddison: imgRadisson,
+  kutuzovsky: imgKutuzovsky,
+  dlt: imgDlt,
+};
+
+const getBoutiques = createServerFn({ method: "GET" }).handler(async (): Promise<BoutiqueView[]> => {
+  const CRM_URL = process.env.CRM_URL ?? "http://localhost:3001";
+  try {
+    const ctrl = new AbortController();
+    const timeout = setTimeout(() => ctrl.abort(), 5_000);
+    const res = await fetch(`${CRM_URL}/api/public/boutiques`, {
+      signal: ctrl.signal,
+      headers: { Accept: "application/json" },
+    });
+    clearTimeout(timeout);
+    if (!res.ok) throw new Error(`crm ${res.status}`);
+    const data = (await res.json()) as { boutiques: CrmBoutique[] };
+    if (!Array.isArray(data?.boutiques) || data.boutiques.length === 0) return fallbackBoutiques;
+    return data.boutiques.map((b) => ({
+      slug: b.slug,
+      name: b.title,
+      addr: [b.city, b.address].filter(Boolean).join(", "),
+      hours: b.schedule ?? "",
+      img: b.photoUrl ?? FALLBACK_IMG_BY_SLUG[b.slug] ?? imgTsum,
+      map:
+        b.routeUrl ??
+        `https://yandex.ru/maps/?text=${encodeURIComponent(`${b.title} ${b.city} ${b.address}`)}`,
+    }));
+  } catch (err) {
+    console.error(
+      JSON.stringify({
+        level: "warn",
+        source: "boutiques",
+        operation: "getBoutiques",
+        error: err instanceof Error ? err.message : String(err),
+      }),
+    );
+    return fallbackBoutiques;
+  }
+});
+
+export const Route = createFileRoute("/boutiques")({
+  head: () => ({
+    meta: [
+      { title: "Бутики MVST" },
+      { name: "description", content: "Адреса бутиков MVST в Москве и Санкт-Петербурге." },
+      { property: "og:title", content: "Бутики MVST" },
+      { property: "og:description", content: "Адреса и часы работы бутиков MVST." },
+    ],
+  }),
+  loader: async () => ({ boutiques: await getBoutiques() }),
+  staleTime: 30 * 1000,
+  component: BoutiquesPage,
+});
+
+export const boutiques = fallbackBoutiques;
+
 function BoutiquesPage() {
+  const { boutiques } = Route.useLoaderData();
   return (
     <SiteLayout>
       <section className="px-6 md:px-12 py-20 text-center">
