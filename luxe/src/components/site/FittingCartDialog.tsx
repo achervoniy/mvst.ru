@@ -94,7 +94,7 @@ export function FittingCartDialog() {
       clear();
       setStep("success");
     } catch {
-      toast.error("Не удалось отправить заявку. Попробуйте ещё раз.");
+      toast.error("Не удалось отправить заявку. Попробуйте еще раз.");
     } finally {
       setSubmitting(false);
     }

@@ -75,7 +75,7 @@ export function ProductShelf({
             <button
               type="button"
               onClick={() => scrollByCard(1)}
-              aria-label="Прокрутить вперёд"
+              aria-label="Прокрутить вперед"
               disabled={!canRight}
               className={cn(
                 "size-10 flex items-center justify-center border border-foreground/30 hover:border-foreground transition-colors",

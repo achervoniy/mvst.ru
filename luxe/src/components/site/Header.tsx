@@ -7,8 +7,8 @@ import closeIcon from "@/assets/icons/CloseIcon.svg";
 import { HeaderCartButton } from "@/components/site/HeaderCartButton";
 
 const nav = [
-  { to: "/collection-ss26", label: "Коллекция SS26" },
-  { to: "/catalog/$gender", label: "Для неё", params: { gender: "women" as const } },
+  { to: "/collection-ss26", label: "Коллекция весна-лето 2026" },
+  { to: "/catalog/$gender", label: "Для нее", params: { gender: "women" as const } },
   { to: "/catalog/$gender", label: "Для него", params: { gender: "men" as const } },
   { to: "/boutiques", label: "Бутики" },
   { to: "/about", label: "О бренде" },

@@ -1104,7 +1104,7 @@ function PaginationStrip({
           nextDisabled && "pointer-events-none opacity-40",
         )}
       >
-        <span className="hidden sm:inline">Вперёд</span>
+        <span className="hidden sm:inline">Вперед</span>
         <ChevronRight className="size-4" />
       </button>
     </nav>

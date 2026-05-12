@@ -13,16 +13,16 @@ const collection = looksData as unknown as Collection;
 export const Route = createFileRoute("/collection-ss26")({
   head: () => ({
     meta: [
-      { title: `Коллекция ${collection.title} — MVST` },
+      { title: "Коллекция весна-лето 2026 — MVST" },
       {
         name: "description",
         content:
-          "Лукбук коллекции MVST SS'26. 158 образов: кожа, шёлк, лён и японский деним. Архитектурные силуэты и природная палитра.",
+          "Лукбук коллекции MVST весна-лето 2026. 158 образов: кожа, шелк, лен и японский деним. Архитектурные силуэты и природная палитра.",
       },
-      { property: "og:title", content: `Коллекция ${collection.title} — MVST` },
+      { property: "og:title", content: "Коллекция весна-лето 2026 — MVST" },
       {
         property: "og:description",
-        content: "Editorial-лукбук MVST Весна–Лето 26 — 158 образов сезона.",
+        content: "Editorial-лукбук MVST Весна-лето 2026 — 158 образов сезона.",
       },
       { property: "og:image", content: heroSs26 },
       { property: "twitter:image", content: heroSs26 },
@@ -85,12 +85,12 @@ function CollectionSS26() {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-transparent to-black/35" />
         <div className="relative z-10 h-full flex flex-col items-center justify-end pb-20 px-6 text-center text-cream">
-          <div className="eyebrow-lg mb-6 opacity-90">Лукбук · Весна–Лето 26</div>
+          <div className="eyebrow-lg mb-6 opacity-90">Лукбук</div>
           <h1 className="font-serif text-5xl md:text-7xl font-light leading-[1.05]">
-            Коллекция SS26
+            Коллекция весна-лето 2026
           </h1>
           <p className="mt-6 max-w-md text-sm md:text-base opacity-90">
-            {total} образов нового сезона — кожа, шёлк, лён и японский деним.
+            {total} образов нового сезона: кожа, шелк, лен и японский деним.
           </p>
         </div>
       </section>
@@ -159,7 +159,7 @@ function CollectionSS26() {
       {/* CTA */}
       <section className="py-24 md:py-32 px-6 text-center">
         <div className="eyebrow text-foreground/60 mb-6">Каталог</div>
-        <h2 className="font-serif text-4xl md:text-5xl mb-10">Перейти к вещам коллекции</h2>
+        <h2 className="font-serif text-4xl md:text-5xl mb-10">Перейти к покупкам</h2>
         <div className="flex justify-center gap-10">
           <Link
             to="/catalog/$gender"
@@ -167,7 +167,7 @@ function CollectionSS26() {
             preload="intent"
             className="eyebrow-lg border-b border-foreground pb-2 hover:text-accent hover:border-accent transition-colors"
           >
-            Для неё
+            Для нее
           </Link>
           <Link
             to="/catalog/$gender"
