@@ -6,9 +6,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Drawer from 'react-modern-drawer';
 import 'react-modern-drawer/dist/index.css';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
-import { BOUTIQUES, getBoutiqueById } from '@/shared/boutiques';
+import { type Boutique, getBoutiqueById, useBoutiques } from '@/shared/boutiques';
 
 import { Icon } from '@/ui/assets/Icon';
 
@@ -83,7 +83,11 @@ export function CartDrawer() {
     requestReset,
   ]);
 
-  const boutique = useMemo(() => getBoutiqueById(selectedBoutiqueId), [selectedBoutiqueId]);
+  const { boutiques } = useBoutiques();
+  const boutique = useMemo(
+    () => getBoutiqueById(boutiques, selectedBoutiqueId),
+    [boutiques, selectedBoutiqueId],
+  );
 
   const canGoToBoutique = items.length > 0;
   const canGoToContacts = canGoToBoutique && !!selectedBoutiqueId;
@@ -165,7 +169,11 @@ export function CartDrawer() {
           )}
 
           {step === 'boutique' && (
-            <BoutiqueStep selected={selectedBoutiqueId} onSelect={id => setBoutique(id)} />
+            <BoutiqueStep
+              list={boutiques}
+              selected={selectedBoutiqueId}
+              onSelect={id => setBoutique(id)}
+            />
           )}
 
           {step === 'contacts' && (
@@ -324,43 +332,65 @@ function ItemsStep({
 }
 
 function BoutiqueStep({
+  list,
   selected,
   onSelect,
 }: {
+  list: Boutique[];
   selected: string | null;
   onSelect: (id: string) => void;
 }) {
   return (
     <div className={st.boutiqueList}>
       <p className={st.sectionHelp}>Выберите бутик, где хотите примерить выбранные вещи.</p>
-      {BOUTIQUES.map(b => (
-        <label
-          key={b.id}
-          className={cn(st.boutiqueCard, { [st.boutiqueCardActive]: selected === b.id })}
-        >
-          <input
-            type="radio"
-            name="boutique"
-            value={b.id}
-            checked={selected === b.id}
-            onChange={() => onSelect(b.id)}
-            className={st.boutiqueRadio}
-          />
-          <div className={st.boutiqueImage}>
-            <Image src={b.image} alt={b.title} fill sizes="120px" />
-          </div>
-          <div className={st.boutiqueInfo}>
-            <p className={st.boutiqueTitle}>{b.title}</p>
-            <p className={st.boutiqueAddress}>
-              {b.city}, {b.address}
-            </p>
-            <p className={st.boutiqueTime}>{b.schedule}</p>
-          </div>
-          <span className={st.boutiqueCheck} aria-hidden />
-        </label>
-      ))}
+      {list.length === 0 && (
+        <p style={{ textAlign: 'center', opacity: 0.6, padding: '12px' }}>Загрузка бутиков…</p>
+      )}
+      {list.map(b => {
+        const value = b.slug;
+        return (
+          <label
+            key={b.id}
+            className={cn(st.boutiqueCard, { [st.boutiqueCardActive]: selected === value })}
+          >
+            <input
+              type="radio"
+              name="boutique"
+              value={value}
+              checked={selected === value}
+              onChange={() => onSelect(value)}
+              className={st.boutiqueRadio}
+            />
+            <div className={st.boutiqueImage}>
+              {b.photoUrl && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={absolutize(b.photoUrl)}
+                  alt={b.title}
+                  style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+              )}
+            </div>
+            <div className={st.boutiqueInfo}>
+              <p className={st.boutiqueTitle}>{b.title}</p>
+              <p className={st.boutiqueAddress}>
+                {b.city}, {b.address}
+              </p>
+              {b.schedule && <p className={st.boutiqueTime}>{b.schedule}</p>}
+            </div>
+            <span className={st.boutiqueCheck} aria-hidden />
+          </label>
+        );
+      })}
     </div>
   );
+}
+
+function absolutize(url: string): string {
+  if (!url) return url;
+  if (/^https?:\/\//.test(url)) return url;
+  const base = process.env.NEXT_PUBLIC_CRM_URL ?? '';
+  return base ? `${base.replace(/\/$/, '')}${url}` : url;
 }
 
 function ContactsStep({

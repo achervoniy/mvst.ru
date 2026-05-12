@@ -1,13 +1,20 @@
+'use client';
+
+import { useBoutiques } from '@/shared/boutiques';
+
 import st from './styles.module.scss';
 
-const stats = [
-  { num: '12', label: 'ателье\nв Москве и СПб' },
-  { num: '6', label: 'фирменных\nбутиков' },
-  { num: '2018', label: 'год основания\nдома' },
-  { num: '38', label: 'мастеров\nкройки и шитья' },
-];
-
 export function Atelier() {
+  const { boutiques, loading } = useBoutiques();
+  const boutiqueCount = !loading && boutiques.length > 0 ? String(boutiques.length) : '6';
+
+  const stats = [
+    { num: '12', label: 'ателье\nв Москве и СПб' },
+    { num: boutiqueCount, label: 'фирменных\nбутиков' },
+    { num: '2018', label: 'год основания\nдома' },
+    { num: '38', label: 'мастеров\nкройки и шитья' },
+  ];
+
   return (
     <section className={st.atelier}>
       <div className={st.inner}>

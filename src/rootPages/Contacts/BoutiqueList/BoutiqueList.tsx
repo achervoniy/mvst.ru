@@ -1,24 +1,25 @@
 'use client';
 
-import Image from 'next/image';
 import { useMemo } from 'react';
 
-import { BOUTIQUES } from '@/shared/boutiques';
+import { type Boutique, useBoutiques } from '@/shared/boutiques';
 
 import { Typography } from '@/ui/index';
 
 import st from './styles.module.scss';
 
 export function BoutiqueList() {
+  const { boutiques, loading } = useBoutiques();
+
   const groups = useMemo(() => {
-    const map = new Map<string, typeof BOUTIQUES>();
-    BOUTIQUES.forEach(b => {
+    const map = new Map<string, Boutique[]>();
+    boutiques.forEach(b => {
       const arr = map.get(b.city) ?? [];
       arr.push(b);
       map.set(b.city, arr);
     });
     return Array.from(map.entries());
-  }, []);
+  }, [boutiques]);
 
   return (
     <section className={st.BoutiqueList} target-id="boutique">
@@ -27,10 +28,16 @@ export function BoutiqueList() {
           Бутики
         </Typography>
         <Typography font="paragraph/regular" className={st.intro} align="center">
-          Шесть&nbsp;адресов&nbsp;— Москва и&nbsp;Санкт-Петербург. Приходите примерить,
-          выбрать и&nbsp;познакомиться с&nbsp;коллекцией MVST лично.
+          {boutiques.length > 0
+            ? <>{boutiques.length}&nbsp;адресов&nbsp;— Москва и&nbsp;Санкт-Петербург. Приходите примерить, выбрать и&nbsp;познакомиться с&nbsp;коллекцией MVST лично.</>
+            : <>Приходите примерить, выбрать и&nbsp;познакомиться с&nbsp;коллекцией MVST лично.</>
+          }
         </Typography>
       </header>
+
+      {loading && boutiques.length === 0 && (
+        <p style={{ textAlign: 'center', opacity: 0.5 }}>Загрузка…</p>
+      )}
 
       {groups.map(([city, items]) => (
         <div key={city} className={st.cityBlock}>
@@ -46,13 +53,15 @@ export function BoutiqueList() {
             {items.map(boutique => (
               <article key={boutique.id} className={st.card}>
                 <div className={st.cardMedia}>
-                  <Image
-                    src={boutique.image}
-                    alt={boutique.title}
-                    fill
-                    sizes="(min-width: 1024px) 33vw, 100vw"
-                    className={st.cardImage}
-                  />
+                  {boutique.photoUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={absolutize(boutique.photoUrl)}
+                      alt={boutique.title}
+                      className={st.cardImage}
+                      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
+                    />
+                  ) : null}
                 </div>
                 <div className={st.cardBody}>
                   <Typography font="paragraph/bold" className={st.cardTitle}>
@@ -64,15 +73,30 @@ export function BoutiqueList() {
                       {boutique.city}, {boutique.address}
                     </span>
                   </p>
-                  <p className={st.cardRow}>
-                    <span className={st.cardLabel}>Режим</span>
-                    <span className={st.cardValue}>{boutique.schedule}</span>
-                  </p>
+                  {boutique.schedule && (
+                    <p className={st.cardRow}>
+                      <span className={st.cardLabel}>Режим</span>
+                      <span className={st.cardValue}>{boutique.schedule}</span>
+                    </p>
+                  )}
                   {boutique.phone && (
                     <p className={st.cardRow}>
                       <span className={st.cardLabel}>Телефон</span>
                       <a className={st.cardValueLink} href={`tel:${boutique.phone.replace(/\D/g, '')}`}>
                         {boutique.phone}
+                      </a>
+                    </p>
+                  )}
+                  {boutique.routeUrl && (
+                    <p className={st.cardRow}>
+                      <span className={st.cardLabel}>Маршрут</span>
+                      <a
+                        className={st.cardValueLink}
+                        href={boutique.routeUrl}
+                        target="_blank"
+                        rel="noreferrer noopener"
+                      >
+                        Построить маршрут
                       </a>
                     </p>
                   )}
@@ -84,4 +108,11 @@ export function BoutiqueList() {
       ))}
     </section>
   );
+}
+
+function absolutize(url: string): string {
+  if (!url) return url;
+  if (/^https?:\/\//.test(url)) return url;
+  const base = process.env.NEXT_PUBLIC_CRM_URL ?? '';
+  return base ? `${base.replace(/\/$/, '')}${url}` : url;
 }
