@@ -213,10 +213,10 @@ function LookStage({
 
   return (
     <div className="relative max-w-[1360px] mx-auto px-2 md:px-6">
-      <div className="grid grid-cols-1 md:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] gap-3 md:gap-4">
+      <div className="grid grid-cols-1 gap-3 md:gap-4 md:flex md:items-stretch md:h-[64vh] md:max-h-[640px]">
         {/* Look image */}
         <div
-          className="relative bg-cream aspect-[3/4] md:aspect-[3/4] md:max-h-[64vh] md:overflow-hidden touch-pan-y"
+          className="relative bg-cream aspect-[3/4] md:aspect-[3/4] md:h-full md:w-auto md:shrink-0 md:overflow-hidden touch-pan-y"
           onTouchStart={onTouchStart}
           onTouchEnd={onTouchEnd}
         >
@@ -253,7 +253,7 @@ function LookStage({
         {/* Products slider — single horizontal row, MVST-only */}
         <div
           key={look.id}
-          className="look-fade md:h-full md:max-h-[64vh] flex items-center min-w-0"
+          className="look-fade md:flex-1 md:h-full flex items-center min-w-0"
         >
           <ProductsSlider products={look.products.filter((p) => p.brand === "MVST")} />
         </div>
@@ -262,12 +262,51 @@ function LookStage({
   );
 }
 
+const TILE_GAP = 16;
+const TILE_MIN = 160;
+const TILE_MAX = 280;
+const TILE_SCROLL_LG = 215;
+const TILE_SCROLL_MD = 200;
+
 function ProductsSlider({ products }: { products: Product[] }) {
+  const wrapRef = useRef<HTMLDivElement>(null);
   const scrollerRef = useRef<HTMLDivElement>(null);
+  const [tileW, setTileW] = useState<number | null>(null);
+  const [fits, setFits] = useState(true);
   const [canLeft, setCanLeft] = useState(false);
   const [canRight, setCanRight] = useState(false);
 
+  // Решение fit vs scroll и размер тайла
   useEffect(() => {
+    const el = wrapRef.current;
+    if (!el || !products.length) return;
+    const compute = () => {
+      const w = el.clientWidth;
+      if (w === 0) return;
+      const n = products.length;
+      const idealW = (w - TILE_GAP * (n - 1)) / n;
+      // До 4 товаров включительно — растягиваем на всю ширину. С 5-го — скролл.
+      if (n <= 4 && idealW >= TILE_MIN) {
+        setFits(true);
+        setTileW(Math.min(idealW, TILE_MAX));
+      } else {
+        setFits(false);
+        setTileW(window.innerWidth < 1024 ? TILE_SCROLL_MD : TILE_SCROLL_LG);
+      }
+    };
+    compute();
+    const ro = new ResizeObserver(compute);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [products]);
+
+  // Скролл-индикаторы (только когда режим scroll)
+  useEffect(() => {
+    if (fits) {
+      setCanLeft(false);
+      setCanRight(false);
+      return;
+    }
     const el = scrollerRef.current;
     if (!el) return;
     const update = () => {
@@ -283,19 +322,17 @@ function ProductsSlider({ products }: { products: Product[] }) {
       el.removeEventListener("scroll", update);
       ro.disconnect();
     };
-  }, [products]);
+  }, [fits, products]);
 
-  // Reset to start on look change
+  // Сброс прокрутки в начало при смене образа
   useEffect(() => {
     scrollerRef.current?.scrollTo({ left: 0, behavior: "auto" });
   }, [products]);
 
   const scrollByCard = (dir: 1 | -1) => {
     const el = scrollerRef.current;
-    if (!el) return;
-    const card = el.querySelector<HTMLElement>("[data-product-card]");
-    const cardW = card?.getBoundingClientRect().width ?? el.clientWidth * 0.3;
-    el.scrollBy({ left: dir * (cardW + 16), behavior: "smooth" });
+    if (!el || !tileW) return;
+    el.scrollBy({ left: dir * (tileW + TILE_GAP), behavior: "smooth" });
   };
 
   if (!products.length) {
@@ -306,71 +343,86 @@ function ProductsSlider({ products }: { products: Product[] }) {
     );
   }
 
+  // Когда тайлы достигли потолка размера и осталось пустое место — центрируем ряд
+  const centerRow = fits && tileW === TILE_MAX;
+
   return (
-    <div className="relative w-full min-w-0">
+    <div ref={wrapRef} className="relative w-full min-w-0">
       {/* Мобилка: плитка 2-в-ряд */}
       <div className="md:hidden grid grid-cols-2 gap-x-3 gap-y-6 w-full pt-2">
         {products.map((p) => (
-          <ProductCell key={p.itemId} product={p} variant="grid" />
+          <ProductCell key={p.itemId} product={p} />
         ))}
       </div>
 
-      {/* Десктоп: горизонтальный слайдер */}
-      <div className="hidden md:block">
-        <div
-          ref={scrollerRef}
-          className="flex gap-3 md:gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-        >
-          {products.map((p) => (
-            <ProductCell key={p.itemId} product={p} variant="scroll" />
-          ))}
-        </div>
+      {/* Десктоп */}
+      <div className="hidden md:block w-full">
+        {fits ? (
+          <div
+            className={cn("flex gap-4 w-full", centerRow ? "justify-center" : "justify-start")}
+          >
+            {products.map((p) => (
+              <div
+                key={p.itemId}
+                style={{ width: tileW ?? undefined }}
+                className="shrink-0"
+              >
+                <ProductCell product={p} />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <>
+            <div
+              ref={scrollerRef}
+              className="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            >
+              {products.map((p) => (
+                <div
+                  key={p.itemId}
+                  style={{ width: tileW ?? undefined }}
+                  className="shrink-0 snap-start"
+                >
+                  <ProductCell product={p} />
+                </div>
+              ))}
+            </div>
 
-        <button
-          type="button"
-          onClick={() => scrollByCard(-1)}
-          aria-label="Предыдущие товары"
-          className={cn(
-            "absolute -left-3 top-1/2 -translate-y-1/2 z-20 size-10 flex items-center justify-center rounded-full bg-cream/95 backdrop-blur hairline border hover:bg-cream transition-opacity",
-            canLeft ? "opacity-100" : "opacity-0 pointer-events-none",
-          )}
-        >
-          <ChevronLeft className="size-5" />
-        </button>
-        <button
-          type="button"
-          onClick={() => scrollByCard(1)}
-          aria-label="Следующие товары"
-          className={cn(
-            "absolute -right-3 top-1/2 -translate-y-1/2 z-20 size-10 flex items-center justify-center rounded-full bg-cream/95 backdrop-blur hairline border hover:bg-cream transition-opacity",
-            canRight ? "opacity-100" : "opacity-0 pointer-events-none",
-          )}
-        >
-          <ChevronRight className="size-5" />
-        </button>
+            <button
+              type="button"
+              onClick={() => scrollByCard(-1)}
+              aria-label="Предыдущие товары"
+              className={cn(
+                "absolute left-1 top-1/2 -translate-y-1/2 z-20 size-10 flex items-center justify-center rounded-full bg-cream/95 backdrop-blur hairline border hover:bg-cream transition-opacity",
+                canLeft ? "opacity-100" : "opacity-0 pointer-events-none",
+              )}
+            >
+              <ChevronLeft className="size-5" />
+            </button>
+            <button
+              type="button"
+              onClick={() => scrollByCard(1)}
+              aria-label="Следующие товары"
+              className={cn(
+                "absolute right-1 top-1/2 -translate-y-1/2 z-20 size-10 flex items-center justify-center rounded-full bg-cream/95 backdrop-blur hairline border hover:bg-cream transition-opacity",
+                canRight ? "opacity-100" : "opacity-0 pointer-events-none",
+              )}
+            >
+              <ChevronRight className="size-5" />
+            </button>
+          </>
+        )}
       </div>
     </div>
   );
 }
 
-function ProductCell({
-  product,
-  variant,
-}: {
-  product: Product;
-  variant: "scroll" | "grid";
-}) {
+function ProductCell({ product }: { product: Product }) {
   return (
     <Link
-      data-product-card
       to="/product/$slug"
       params={{ slug: product.slug }}
-      className={cn(
-        "group flex flex-col bg-cream transition-all",
-        variant === "scroll"
-          ? "shrink-0 snap-start w-[60vw] sm:w-[40vw] md:w-[200px] lg:w-[215px]"
-          : "w-full",
-      )}
+      className="group flex flex-col bg-cream transition-all w-full"
     >
       <div className="relative aspect-[3/4] overflow-hidden">
         <img
