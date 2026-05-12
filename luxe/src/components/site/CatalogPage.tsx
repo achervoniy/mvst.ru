@@ -406,6 +406,11 @@ export function CatalogPage(props: CatalogPageProps) {
               >
                 <SlidersHorizontal className="size-3.5" />
                 Фильтры
+                {hasAppliedFilters && (
+                  <span className="inline-flex items-center justify-center min-w-4 h-4 px-1 rounded-full bg-accent text-background text-[10px] leading-none">
+                    {appliedFilterCount}
+                  </span>
+                )}
               </button>
             </div>
           </div>
