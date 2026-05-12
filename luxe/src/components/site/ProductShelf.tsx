@@ -27,6 +27,9 @@ export function ProductShelf({
   useEffect(() => {
     const el = scrollerRef.current;
     if (!el) return;
+    // mx-auto на внутреннем флексе центрирует переполняющий контент, из-за чего
+    // стартовый scrollLeft оказывается в середине — принудительно ставим в начало.
+    el.scrollLeft = 0;
     const update = () => {
       const max = el.scrollWidth - el.clientWidth;
       setCanLeft(el.scrollLeft > 4);
