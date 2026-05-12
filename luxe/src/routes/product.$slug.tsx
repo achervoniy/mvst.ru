@@ -521,7 +521,7 @@ function ProductPage() {
             />
           )}
           {similar.length > 0 && (
-            <ProductShelf title="Похожие вещи" items={similar} />
+            <ProductShelf title="Вам может понравиться" items={similar} />
           )}
           {recent.length > 0 && (
             <ProductShelf title="Вы недавно смотрели" items={recent} />
