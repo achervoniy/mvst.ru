@@ -211,7 +211,7 @@ export function CatalogPage(props: CatalogPageProps) {
         aria-label="breadcrumb"
         className="pt-4 overflow-x-auto whitespace-nowrap [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
-        <ol className="flex items-center px-4 md:px-10 eyebrow text-foreground/60 text-[10px]">
+        <ol className="flex items-center px-4 md:px-10 md:max-w-[1360px] md:mx-auto md:w-full eyebrow text-foreground/60 text-[10px]">
           <li>
             <Link to="/" className="hover:text-accent">
               Главная
@@ -327,7 +327,7 @@ export function CatalogPage(props: CatalogPageProps) {
         </div>
 
         {/* Desktop sticky-бар */}
-        <div className="hidden md:flex h-14 items-center justify-between max-w-[1360px] mx-auto px-12">
+        <div className="hidden md:flex h-14 items-center justify-between max-w-[1360px] mx-auto px-4 md:px-10">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="eyebrow flex items-center gap-2 border-b border-foreground/30 pb-1 hover:border-foreground">
@@ -364,7 +364,7 @@ export function CatalogPage(props: CatalogPageProps) {
         </div>
       </div>
 
-      <div className="px-4 md:px-12 pb-16 max-w-[1360px] mx-auto w-full">
+      <div className="px-4 md:px-10 pb-16 max-w-[1360px] mx-auto w-full">
         <div className="min-w-0">
           {/* Sentinel — отслеживаем, чтобы показать sticky-бар при скролле */}
           <div ref={stickySentinelRef} aria-hidden="true" className="h-px w-full" />
@@ -420,7 +420,7 @@ export function CatalogPage(props: CatalogPageProps) {
               По выбранным фильтрам ничего не найдено.
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 sm:gap-x-5 md:gap-x-6 gap-y-10 pt-4 md:pt-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-4 sm:gap-x-5 md:gap-x-6 gap-y-10 pt-4 md:pt-6">
               {items.map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}
