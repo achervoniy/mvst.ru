@@ -271,7 +271,7 @@ export function CatalogPage(props: CatalogPageProps) {
         >
           <SlidersHorizontal className="h-4 w-4" />
           {hasAppliedFilters && (
-            <span className="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-4 h-4 px-1 rounded-full bg-accent text-background text-[10px] leading-none">
+            <span className="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-4 h-4 px-1 rounded-full bg-accent text-background text-[10px] tracking-normal leading-none">
               {appliedFilterCount}
             </span>
           )}
@@ -298,10 +298,12 @@ export function CatalogPage(props: CatalogPageProps) {
         onChange={updateSearch}
       />
 
-      {/* Sticky filters bar — появляется при скролле мимо исходной кнопки (на мобиле и десктопе) */}
+      {/* Sticky filters bar — появляется при скролле мимо исходной кнопки.
+          fixed (а не sticky), чтобы при невидимом состоянии бар не занимал
+          место в потоке и не отрывал хлебные крошки от тулбара. */}
       <div
         className={cn(
-          "sticky z-30 bg-background border-y hairline overflow-visible transition-opacity duration-200 after:absolute after:inset-x-0 after:top-full after:h-2 after:pointer-events-none after:bg-background after:content-['']",
+          "fixed inset-x-0 z-30 bg-background border-y hairline overflow-visible transition-opacity duration-200 after:absolute after:inset-x-0 after:top-full after:h-2 after:pointer-events-none after:bg-background after:content-['']",
           showStickyBar ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none",
         )}
         style={{ top: "calc(var(--header-h, 60px) - 1px)" }}
@@ -320,7 +322,7 @@ export function CatalogPage(props: CatalogPageProps) {
           >
             <SlidersHorizontal className="h-4 w-4" />
             {hasAppliedFilters && (
-              <span className="absolute top-2 right-2 inline-flex items-center justify-center min-w-4 h-4 px-1 rounded-full bg-accent text-background text-[10px] leading-none">
+              <span className="absolute top-2 right-2 inline-flex items-center justify-center min-w-4 h-4 px-1 rounded-full bg-accent text-background text-[10px] tracking-normal leading-none">
                 {appliedFilterCount}
               </span>
             )}
@@ -357,7 +359,7 @@ export function CatalogPage(props: CatalogPageProps) {
             <SlidersHorizontal className="size-3.5" />
             Фильтры
             {hasAppliedFilters && (
-              <span className="inline-flex items-center justify-center min-w-4 h-4 px-1 rounded-full bg-accent text-background text-[10px] leading-none">
+              <span className="inline-flex items-center justify-center min-w-4 h-4 px-1 rounded-full bg-accent text-background text-[10px] tracking-normal leading-none">
                 {appliedFilterCount}
               </span>
             )}
@@ -365,7 +367,7 @@ export function CatalogPage(props: CatalogPageProps) {
         </div>
       </div>
 
-      <div className="px-4 md:px-10 pb-16 max-w-[1360px] 3xl:max-w-[1800px] mx-auto w-full">
+      <div className="px-4 md:px-10 pt-4 md:pt-6 pb-16 max-w-[1360px] 3xl:max-w-[1800px] mx-auto w-full">
         <div className="min-w-0">
           {/* Sentinel — отслеживаем, чтобы показать sticky-бар при скролле */}
           <div ref={stickySentinelRef} aria-hidden="true" className="h-px w-full" />
@@ -407,7 +409,7 @@ export function CatalogPage(props: CatalogPageProps) {
                 <SlidersHorizontal className="size-3.5" />
                 Фильтры
                 {hasAppliedFilters && (
-                  <span className="inline-flex items-center justify-center min-w-4 h-4 px-1 rounded-full bg-accent text-background text-[10px] leading-none">
+                  <span className="inline-flex items-center justify-center min-w-4 h-4 px-1 rounded-full bg-accent text-background text-[10px] tracking-normal leading-none">
                     {appliedFilterCount}
                   </span>
                 )}
