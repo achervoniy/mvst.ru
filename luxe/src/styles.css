@@ -59,6 +59,8 @@
 
   --font-serif: "Cormorant Garamond", "Playfair Display", Georgia, serif;
   --font-sans: "Inter", "Manrope", system-ui, sans-serif;
+
+  --breakpoint-3xl: 1800px;
 }
 
 :root {

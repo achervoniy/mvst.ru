@@ -11,8 +11,28 @@ import type {
   SortId,
 } from "./types";
 
-const TSUM_V1 = "https://api.tsum.ru/v1";
+const TSUM_ROOT = "https://api.tsum.ru";
+const TSUM_V1 = `${TSUM_ROOT}/v1`;
+const TSUM_V4 = `${TSUM_ROOT}/v4`;
+// tsumFetch по умолчанию ходит в /v2: /catalog/filter — относительный путь,
+// /v4/* и /catalog/search/counter — переопределяем baseUrl явно.
+const TSUM_V4_SEARCH = "/catalog/search";
+const TSUM_V2_FILTER = "/catalog/filter";
+const TSUM_COUNTER = "/catalog/search/counter";
 const TSUM_CACHE_TTL_MS = 5 * 60 * 1000;
+// Counter дёргается часто из drawer-а на каждое изменение staged-фильтра —
+// держим короткий TTL, чтобы не показывать стейл при возврате к старой комбинации.
+const TSUM_COUNTER_TTL_MS = 60 * 1000;
+
+interface V4SearchResponse {
+  models: TsumProduct[];
+  correctedString?: string;
+  pagination?: {
+    pageNumber?: number;
+    pageCount?: number;
+    totalCount?: number;
+  };
+}
 
 type TsumCacheEntry<T> = {
   expiresAt: number;
@@ -79,26 +99,39 @@ function logTsumFailure(operation: string, data: Record<string, unknown>, err: u
   );
 }
 
-function buildBody(
-  input: z.infer<typeof searchInput>,
-  opts?: { includePage?: boolean; includePrice?: boolean },
-): Record<string, unknown> {
-  const includePage = opts?.includePage ?? true;
-  // ЦУМ-эндпоинт /catalog/search/brand игнорирует priceFrom/priceTo —
-  // фильтрацию по цене делаем на нашей стороне в searchProducts.
-  const includePrice = opts?.includePrice ?? false;
+// Тело для POST /v4/catalog/search. Параметры именуются как ожидает v4:
+// price_min/price_max (а не priceFrom/priceTo), labels (а не label).
+function buildSearchBody(input: z.infer<typeof searchInput>): Record<string, unknown> {
   const body: Record<string, unknown> = {
     category: input.sectionId ? String(input.sectionId) : GENDER_CATEGORY[input.gender],
     brand: MVST_BRAND_ID,
   };
   if (input.sort) body.sort = input.sort;
-  if (includePage && input.page) body.page = input.page;
-  if (input.color && input.color.length > 0) body.color = input.color;
-  if (input.size && input.size.length > 0) body.size = input.size;
-  if (includePrice && input.priceFrom != null) body.priceFrom = input.priceFrom;
-  if (includePrice && input.priceTo != null) body.priceTo = input.priceTo;
-  if (input.label != null) body.label = input.label;
-  if (input.attribute && input.attribute.length > 0) body.attribute = input.attribute;
+  if (input.page) body.page = input.page;
+  if (input.color?.length) body.color = input.color;
+  if (input.size?.length) body.size = input.size;
+  if (input.priceFrom != null) body.price_min = input.priceFrom;
+  if (input.priceTo != null) body.price_max = input.priceTo;
+  if (input.label != null) body.labels = input.label;
+  if (input.attribute?.length) body.attribute = input.attribute;
+  return body;
+}
+
+// Тело для POST /v2/catalog/filter. Важно: root_category — это всегда
+// гендерный корень (18368/18327), иначе counts по size/price будут неверными.
+// Текущая выбранная категория опционально передаётся как category.
+function buildFilterBody(input: z.infer<typeof searchInput>): Record<string, unknown> {
+  const body: Record<string, unknown> = {
+    root_category: Number(GENDER_CATEGORY[input.gender]),
+    brand: MVST_BRAND_ID,
+  };
+  if (input.sectionId) body.category = String(input.sectionId);
+  if (input.color?.length) body.color = input.color;
+  if (input.size?.length) body.size = input.size;
+  if (input.priceFrom != null) body.price_min = input.priceFrom;
+  if (input.priceTo != null) body.price_max = input.priceTo;
+  if (input.label != null) body.labels = input.label;
+  if (input.attribute?.length) body.attribute = input.attribute;
   return body;
 }
 
@@ -140,47 +173,58 @@ function normalize(p: TsumProduct): CatalogProduct {
 
 const PER_PAGE = 60;
 
+// Лёгкий counter для preview «Показать N» в drawer-е до применения фильтров.
+// TSUM-эндпоинт — GET /catalog/search/counter с query-string. Multi-value
+// (color, size, attribute) принимает только в формате comma-separated:
+// `color=A,B` → OR. Повтор параметра (`color=A&color=B`) у counter ломается
+// (last wins), поэтому всегда join(","). Sort на total не влияет.
+function buildCounterQuery(input: z.infer<typeof searchInput>): string {
+  const params = new URLSearchParams();
+  params.set(
+    "section",
+    input.sectionId ? String(input.sectionId) : GENDER_CATEGORY[input.gender],
+  );
+  params.set("brand", String(MVST_BRAND_ID));
+  if (input.color?.length) params.set("color", input.color.join(","));
+  if (input.size?.length) params.set("size", input.size.join(","));
+  if (input.attribute?.length) params.set("attribute", input.attribute.join(","));
+  if (input.label != null) params.set("labels", String(input.label));
+  if (input.priceFrom != null) params.set("price_min", String(input.priceFrom));
+  if (input.priceTo != null) params.set("price_max", String(input.priceTo));
+  return params.toString();
+}
+
+export const getCatalogCount = createServerFn({ method: "GET" })
+  .inputValidator((input: unknown) => searchInput.parse(input))
+  .handler(async ({ data }) => {
+    try {
+      const qs = buildCounterQuery(data);
+      const res = await cachedTsumFetch<{ total?: number }>(
+        `${TSUM_COUNTER}?${qs}`,
+        null,
+        { method: "GET", baseUrl: TSUM_ROOT, ttlMs: TSUM_COUNTER_TTL_MS },
+      );
+      return { total: res?.total ?? 0 };
+    } catch (err) {
+      logTsumFailure("getCatalogCount", data, err);
+      throw err;
+    }
+  });
+
 export const searchProducts = createServerFn({ method: "GET" })
   .inputValidator((input: unknown) => searchInput.parse(input))
   .handler(async ({ data }) => {
     try {
-      const hasPriceFilter = data.priceFrom != null || data.priceTo != null;
-      const requestedPage = data.page ?? 1;
-
-      if (!hasPriceFilter) {
-        const items = await cachedTsumFetch<TsumProduct[]>(
-          "/catalog/search/brand",
-          buildBody(data),
-        );
-        return {
-          items: items.map(normalize),
-          page: requestedPage,
-          perPage: PER_PAGE,
-        };
-      }
-
-      const all: TsumProduct[] = [];
-      for (let p = 1; p <= 10; p++) {
-        const chunk = await cachedTsumFetch<TsumProduct[]>(
-          "/catalog/search/brand",
-          buildBody({ ...data, page: p }),
-        );
-        all.push(...chunk);
-        if (chunk.length < PER_PAGE) break;
-      }
-
-      const normalized = all.map(normalize);
-      const min = data.priceFrom ?? 0;
-      const max = data.priceTo ?? Number.POSITIVE_INFINITY;
-      const filtered = normalized.filter((p) => p.minPrice >= min && p.minPrice <= max);
-      const start = (requestedPage - 1) * PER_PAGE;
-
-      return {
-        items: filtered.slice(start, start + PER_PAGE),
-        page: requestedPage,
-        perPage: PER_PAGE,
-        filteredTotal: filtered.length,
-      };
+      const res = await cachedTsumFetch<V4SearchResponse>(
+        TSUM_V4_SEARCH,
+        buildSearchBody(data),
+        { baseUrl: TSUM_V4 },
+      );
+      const items = (res.models ?? []).map(normalize);
+      const total = res.pagination?.totalCount ?? items.length;
+      const pageCount = res.pagination?.pageCount ?? Math.max(1, Math.ceil(total / PER_PAGE));
+      const page = res.pagination?.pageNumber ?? data.page ?? 1;
+      return { items, page, perPage: PER_PAGE, total, pageCount };
     } catch (err) {
       logTsumFailure("searchProducts", data, err);
       throw err;
@@ -198,129 +242,25 @@ const EMPTY_FILTERS: TsumFilters = {
   attribute: { items: [], applied: [], title: "" },
 };
 
-async function fetchAllProducts(
-  data: z.infer<typeof searchInput>,
-  maxPages = 30,
-): Promise<TsumProduct[]> {
-  const all: TsumProduct[] = [];
-  for (let p = 1; p <= maxPages; p++) {
-    const chunk = await cachedTsumFetch<TsumProduct[]>(
-      "/catalog/search/brand",
-      buildBody({ ...data, page: p }),
-    );
-    all.push(...chunk);
-    if (chunk.length < PER_PAGE) break;
-  }
-  return all;
-}
-
-function productMinPrice(p: TsumProduct): number {
-  const prices = p.offers.map((o) => o.price.priceWithDiscount).filter((n) => n > 0);
-  return prices.length ? Math.min(...prices) : 0;
-}
-
 export const getCatalogFilters = createServerFn({ method: "GET" })
   .inputValidator((input: unknown) => searchInput.parse(input))
   .handler(async ({ data }) => {
     try {
-      // TSUM /catalog/filter не учитывает priceFrom/priceTo и считает counts
-      // по каждому измерению независимо от других применённых фильтров.
-      // Запрашиваем «структуру» (полный список вариантов) без priceFrom/priceTo,
-      // а реальные counts/min/max пересчитываем клиентски по продуктам,
-      // прошедшим через ВСЕ текущие фильтры.
-      const filters = await cachedTsumFetch<TsumFilters>(
-        "/catalog/filter",
-        buildBody({ ...data, color: undefined, size: undefined, attribute: undefined }),
+      const raw = await cachedTsumFetch<TsumFilters>(
+        TSUM_V2_FILTER,
+        buildFilterBody(data),
       );
-      const safe: TsumFilters = { ...EMPTY_FILTERS, ...(filters ?? {}) };
-
-      const allInCategory = await fetchAllProducts(data);
-      const minP = data.priceFrom ?? 0;
-      const maxP = data.priceTo ?? Number.POSITIVE_INFINITY;
-      const matching = allInCategory.filter((p) => {
-        const price = productMinPrice(p);
-        return price >= minP && price <= maxP;
-      });
-
-      // counts «если выбрать ещё это значение» по каждому измерению:
-      // для дименшна X учитываем все фильтры КРОМЕ X.
-      const matchesExcept = (p: TsumProduct, exclude: "color" | "size") => {
-        if (exclude !== "color" && data.color && data.color.length > 0) {
-          if (!data.color.includes(p.color?.id ?? -1)) return false;
-        }
-        if (exclude !== "size" && data.size && data.size.length > 0) {
-          if (!p.offers.some((o) => data.size!.includes(o.size?.id ?? -1))) return false;
-        }
-        const price = productMinPrice(p);
-        if (price < minP || price > maxP) return false;
-        return true;
-      };
-
-      // У TSUM color.id в /catalog/filter — это «бакет» (1202820=Чёрный),
-      // а у продукта — конкретный оттенок (например, 661003=Тёмно-коричневый).
-      // Эти ID не совпадают. Маппим продукты на бакеты по нижнерегистровому title.
-      const colorTitleToId = new Map<string, number>();
-      for (const c of safe.color.items ?? []) {
-        if (c.title) colorTitleToId.set(c.title.trim().toLowerCase(), c.id);
-      }
-      const colorCounts = new Map<number, number>();
-      for (const p of allInCategory) {
-        if (!matchesExcept(p, "color")) continue;
-        const bucketId = colorTitleToId.get((p.color?.title ?? "").trim().toLowerCase());
-        if (bucketId != null) colorCounts.set(bucketId, (colorCounts.get(bucketId) ?? 0) + 1);
-      }
-      const sizeCounts = new Map<number, number>();
-      for (const p of allInCategory) {
-        if (!matchesExcept(p, "size")) continue;
-        for (const sid of new Set(p.offers.map((o) => o.size?.id).filter((x): x is number => x != null))) {
-          sizeCounts.set(sid, (sizeCounts.get(sid) ?? 0) + 1);
-        }
-      }
-
-      // Цена: min/max по продуктам, прошедшим все ОСТАЛЬНЫЕ фильтры (без price).
-      const forPriceRange = allInCategory.filter((p) => {
-        if (data.color && data.color.length > 0) {
-          if (!data.color.includes(p.color?.id ?? -1)) return false;
-        }
-        if (data.size && data.size.length > 0) {
-          if (!p.offers.some((o) => data.size!.includes(o.size?.id ?? -1))) return false;
-        }
-        return true;
-      });
-      const priceValues = forPriceRange.map(productMinPrice).filter((n) => n > 0);
-      const computedMin = priceValues.length ? Math.min(...priceValues) : 0;
-      const computedMax = priceValues.length ? Math.max(...priceValues) : 0;
-
+      const safe: TsumFilters = { ...EMPTY_FILTERS, ...(raw ?? {}) };
+      // Скрываем пункты с count=0 и пустые группы — TSUM отдаёт «всё подряд»
+      // даже если по текущим фильтрам выборка пустая.
       safe.color = {
         ...safe.color,
-        items: (safe.color.items ?? [])
-          .map((c) => ({ ...c, count: colorCounts.get(c.id) ?? 0 }))
-          .filter((c) => c.count > 0),
+        items: (safe.color.items ?? []).filter((c) => (c.count ?? 0) > 0),
       };
       safe.size = {
         ...safe.size,
-        items: (safe.size.items ?? [])
-          .map((s) => ({ ...s, count: sizeCounts.get(s.id) ?? 0 }))
-          .filter((s) => s.count > 0),
+        items: (safe.size.items ?? []).filter((s) => (s.count ?? 0) > 0),
       };
-      safe.price = {
-        ...safe.price,
-        items: [
-          {
-            min: computedMin,
-            max: computedMax,
-            count: matching.length,
-          },
-        ],
-      };
-
-      // Атрибуты (Материал, Состав и т.п.) TSUM /catalog/filter возвращает с
-      // глобальными counts по категории — без учёта применённых color/size/price.
-      // Honest per-attribute counts требовали бы per-product attribute data,
-      // которой нет в /catalog/search/brand. Минимум, что делаем:
-      //   1) скрываем пункты с count = 0;
-      //   2) убираем группы, в которых не осталось пунктов.
-      // Это не уберёт случай «Вискоза 1 → 0 после применения», но уменьшит шум.
       safe.attribute = {
         ...safe.attribute,
         items: (safe.attribute.items ?? [])
@@ -334,7 +274,6 @@ export const getCatalogFilters = createServerFn({ method: "GET" })
         ...safe.label,
         items: (safe.label.items ?? []).filter((l) => (l.count ?? 0) > 0),
       };
-
       // Rebrand sort label
       if (safe.sort?.items?.length) {
         safe.sort = {
@@ -342,9 +281,7 @@ export const getCatalogFilters = createServerFn({ method: "GET" })
           items: safe.sort.items.map((s) => (s.id === "our" ? { ...s, title: "Выбор MVST" } : s)),
         };
       }
-      const total = matching.length;
-      const pageCount = Math.max(1, Math.ceil(total / PER_PAGE));
-      return { filters: safe, total, pageCount };
+      return { filters: safe };
     } catch (err) {
       logTsumFailure("getCatalogFilters", data, err);
       throw err;
@@ -358,8 +295,8 @@ export const getCategoryTree = createServerFn({ method: "GET" })
   .inputValidator((input: unknown) => genderTreeInput.parse(input))
   .handler(async ({ data }) => {
     try {
-      const filters = await cachedTsumFetch<TsumFilters>("/catalog/filter", {
-        category: GENDER_CATEGORY[data.gender],
+      const filters = await cachedTsumFetch<TsumFilters>(TSUM_V2_FILTER, {
+        root_category: Number(GENDER_CATEGORY[data.gender]),
         brand: MVST_BRAND_ID,
       });
       return { tree: filters.category.items ?? [] };
@@ -391,8 +328,8 @@ export const resolveSection = createServerFn({ method: "GET" })
       return { sectionId: Number(data.slug), title: null as string | null };
     }
     try {
-      const filters = await cachedTsumFetch<TsumFilters>("/catalog/filter", {
-        category: GENDER_CATEGORY[data.gender],
+      const filters = await cachedTsumFetch<TsumFilters>(TSUM_V2_FILTER, {
+        root_category: Number(GENDER_CATEGORY[data.gender]),
         brand: MVST_BRAND_ID,
       });
       for (const root of filters?.category?.items ?? []) {
@@ -422,14 +359,20 @@ export const getProductBySlug = createServerFn({ method: "GET" })
       if (!modelExtId) return { product: null };
       // Перебираем страницы (у MVST ~150 товаров — максимум 3 страницы по 60).
       for (let page = 1; page <= 5; page++) {
-        const items = await cachedTsumFetch<TsumProduct[]>("/catalog/search/brand", {
-          category: GENDER_CATEGORY[data.gender],
-          brand: MVST_BRAND_ID,
-          page,
-        });
+        const res = await cachedTsumFetch<V4SearchResponse>(
+          TSUM_V4_SEARCH,
+          {
+            category: GENDER_CATEGORY[data.gender],
+            brand: MVST_BRAND_ID,
+            page,
+          },
+          { baseUrl: TSUM_V4 },
+        );
+        const items = res.models ?? [];
         const found = items.find((p) => p.modelExtId === modelExtId);
         if (found) return { product: normalize(found) };
-        if (items.length < PER_PAGE) break;
+        const last = res.pagination?.pageCount ?? page;
+        if (page >= last || items.length < PER_PAGE) break;
       }
       return { product: null };
     } catch (err) {
@@ -475,8 +418,8 @@ export const getProductDetail = createServerFn({ method: "GET" })
       } else {
         const loadedDetail = detail;
         // Определим gender из категории через дерево фильтров women; если категории там нет, это men.
-        const womenFilters = await cachedTsumFetch<TsumFilters>("/catalog/filter", {
-          category: GENDER_CATEGORY.women,
+        const womenFilters = await cachedTsumFetch<TsumFilters>(TSUM_V2_FILTER, {
+          root_category: Number(GENDER_CATEGORY.women),
           brand: MVST_BRAND_ID,
         });
         const inWomen = womenFilters.category.items.some((root) =>
