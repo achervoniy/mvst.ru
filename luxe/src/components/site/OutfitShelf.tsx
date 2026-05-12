@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -19,7 +19,6 @@ export function OutfitShelf({
 
   if (total === 0) return null;
   const safeIndex = Math.min(active, total - 1);
-  const current = outfits[safeIndex];
 
   const go = (dir: 1 | -1) => {
     setActive((i) => (((i + dir) % total) + total) % total);
@@ -30,7 +29,9 @@ export function OutfitShelf({
       <div className="flex items-end justify-between mb-4 md:mb-6 gap-4">
         <h2 className="font-serif text-2xl md:text-3xl leading-tight">{title}</h2>
         {total > 1 && (
-          <div className="flex items-center gap-4 md:gap-5">
+          // На мобиле счётчик+стрелки прячем — навигация идёт через свайп фото и
+          // стрелки поверх кадра (как на странице коллекции).
+          <div className="hidden md:flex items-center gap-4 md:gap-5">
             <div className="font-serif text-sm tabular-nums text-foreground/70">
               <span className="text-foreground">
                 {String(safeIndex + 1).padStart(2, "0")}
@@ -61,10 +62,10 @@ export function OutfitShelf({
       </div>
 
       <OutfitStage
-        outfit={current}
+        outfits={outfits}
+        active={safeIndex}
         onPrev={() => go(-1)}
         onNext={() => go(1)}
-        showSwipe={total > 1}
         currentItemId={currentItemId}
       />
     </section>
@@ -72,46 +73,36 @@ export function OutfitShelf({
 }
 
 function OutfitStage({
-  outfit,
+  outfits,
+  active,
   onPrev,
   onNext,
-  showSwipe,
   currentItemId,
 }: {
-  outfit: LookOutfit;
+  outfits: LookOutfit[];
+  active: number;
   onPrev: () => void;
   onNext: () => void;
-  showSwipe: boolean;
   currentItemId: number;
 }) {
-  const touchStartX = useRef<number | null>(null);
-  const touchStartY = useRef<number | null>(null);
-
-  const onTouchStart = (e: React.TouchEvent) => {
-    if (!showSwipe) return;
-    touchStartX.current = e.touches[0].clientX;
-    touchStartY.current = e.touches[0].clientY;
-  };
-  const onTouchEnd = (e: React.TouchEvent) => {
-    if (!showSwipe) return;
-    if (touchStartX.current === null || touchStartY.current === null) return;
-    const dx = e.changedTouches[0].clientX - touchStartX.current;
-    const dy = e.changedTouches[0].clientY - touchStartY.current;
-    touchStartX.current = null;
-    touchStartY.current = null;
-    if (Math.abs(dx) < 50 || Math.abs(dy) > Math.abs(dx)) return;
-    if (dx < 0) onNext();
-    else onPrev();
-  };
+  const outfit = outfits[active];
+  const total = outfits.length;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-[auto_minmax(0,1fr)] gap-3 md:gap-4">
-      {/* Model photo */}
-      <div
-        className="relative aspect-[11/17] md:h-[72vh] md:aspect-auto md:w-[calc(72vh*11/17)] overflow-hidden touch-pan-y"
-        onTouchStart={onTouchStart}
-        onTouchEnd={onTouchEnd}
-      >
+      {/* Mobile: свайпер с физикой пальца и стрелками поверх фото */}
+      <div className="md:hidden">
+        <MobileOutfitSwiper
+          outfits={outfits}
+          active={active}
+          total={total}
+          onPrev={onPrev}
+          onNext={onNext}
+        />
+      </div>
+
+      {/* Desktop: статичное модельное фото */}
+      <div className="hidden md:block relative md:h-[72vh] md:aspect-auto md:w-[calc(72vh*11/17)] overflow-hidden">
         <img
           key={outfit.image}
           src={outfit.image}
@@ -142,6 +133,212 @@ function OutfitStage({
           <OutfitCarousel products={outfit.products} currentItemId={currentItemId} />
         </div>
       </div>
+    </div>
+  );
+}
+
+const SWIPE_EASE = "cubic-bezier(0.22, 0.61, 0.36, 1)";
+const SWIPE_DURATION = 420;
+const SWIPE_THRESHOLD_FRACTION = 0.22;
+const SWIPE_FLICK_VELOCITY = 0.45;
+
+function MobileOutfitSwiper({
+  outfits,
+  active,
+  total,
+  onPrev,
+  onNext,
+}: {
+  outfits: LookOutfit[];
+  active: number;
+  total: number;
+  onPrev: () => void;
+  onNext: () => void;
+}) {
+  const curr = outfits[active];
+  const prev = outfits[(active - 1 + total) % total];
+  const next = outfits[(active + 1) % total];
+
+  const containerRef = useRef<HTMLDivElement>(null);
+  const startX = useRef<number | null>(null);
+  const startY = useRef<number | null>(null);
+  const startT = useRef(0);
+  const horizontalRef = useRef(false);
+  const dragRef = useRef(0);
+  const widthRef = useRef(0);
+  const animatingRef = useRef(false);
+  const [width, setWidth] = useState(0);
+  const [dragX, setDragX] = useState(0);
+  const [animating, setAnimating] = useState(false);
+
+  useEffect(() => {
+    widthRef.current = width;
+  }, [width]);
+  useEffect(() => {
+    animatingRef.current = animating;
+  }, [animating]);
+
+  useLayoutEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const update = () => setWidth(el.clientWidth);
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  // Нативные touch-listeners с passive:false — нужны, чтобы preventDefault на
+  // touchmove блокировал вертикальный скролл страницы, как только направление
+  // жеста зафиксировано как горизонтальное.
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el || total < 2) return;
+
+    const onTouchStart = (e: TouchEvent) => {
+      if (animatingRef.current) return;
+      startX.current = e.touches[0].clientX;
+      startY.current = e.touches[0].clientY;
+      startT.current = performance.now();
+      horizontalRef.current = false;
+      dragRef.current = 0;
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (startX.current === null || animatingRef.current) return;
+      const dx = e.touches[0].clientX - startX.current;
+      const dy = e.touches[0].clientY - (startY.current ?? 0);
+      if (!horizontalRef.current) {
+        if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+        if (Math.abs(dy) > Math.abs(dx)) {
+          startX.current = null;
+          return;
+        }
+        horizontalRef.current = true;
+      }
+      if (e.cancelable) e.preventDefault();
+      dragRef.current = dx;
+      setDragX(dx);
+    };
+
+    const onTouchEnd = () => {
+      if (startX.current === null) {
+        horizontalRef.current = false;
+        return;
+      }
+      const wasHorizontal = horizontalRef.current;
+      const dx = dragRef.current;
+      const dt = performance.now() - startT.current;
+      const v = Math.abs(dx) / Math.max(dt, 1);
+      startX.current = null;
+      startY.current = null;
+      horizontalRef.current = false;
+      if (!wasHorizontal) return;
+      const w = widthRef.current || 1;
+      const commit = Math.abs(dx) > w * SWIPE_THRESHOLD_FRACTION || v > SWIPE_FLICK_VELOCITY;
+      if (!commit) {
+        setAnimating(true);
+        setDragX(0);
+        return;
+      }
+      const dir: 1 | -1 = dx < 0 ? 1 : -1;
+      setAnimating(true);
+      setDragX(dir === 1 ? -w : w);
+    };
+
+    el.addEventListener("touchstart", onTouchStart, { passive: true });
+    el.addEventListener("touchmove", onTouchMove, { passive: false });
+    el.addEventListener("touchend", onTouchEnd, { passive: true });
+    el.addEventListener("touchcancel", onTouchEnd, { passive: true });
+    return () => {
+      el.removeEventListener("touchstart", onTouchStart);
+      el.removeEventListener("touchmove", onTouchMove);
+      el.removeEventListener("touchend", onTouchEnd);
+      el.removeEventListener("touchcancel", onTouchEnd);
+    };
+  }, [total]);
+
+  const triggerNav = (dir: 1 | -1) => {
+    if (animating || width === 0 || total < 2) return;
+    setAnimating(true);
+    setDragX(dir === 1 ? -width : width);
+  };
+
+  const onTransitionEnd = (e: React.TransitionEvent) => {
+    if (e.propertyName !== "transform" || !animating) return;
+    const w = width || 1;
+    if (Math.abs(dragX) >= w - 0.5) {
+      const dir = dragX < 0 ? 1 : -1;
+      // Порядок важен: setDragX(0) + смена active батчатся, и трек одновременно
+      // снэпится с -2W обратно на -W, а слайды смещаются — старая «следующая»
+      // картинка остаётся ровно в том же месте кадра. Без вспышек.
+      setAnimating(false);
+      setDragX(0);
+      if (dir === 1) onNext();
+      else onPrev();
+    } else {
+      setAnimating(false);
+    }
+  };
+
+  return (
+    <div
+      ref={containerRef}
+      className="relative aspect-[11/17] overflow-hidden"
+      style={{ touchAction: "pan-y" }}
+    >
+      <div
+        onTransitionEnd={onTransitionEnd}
+        className="absolute inset-0 flex will-change-transform"
+        style={{
+          transform: `translate3d(${-width + dragX}px, 0, 0)`,
+          transition: animating ? `transform ${SWIPE_DURATION}ms ${SWIPE_EASE}` : "none",
+        }}
+      >
+        <MobileOutfitSlide outfit={prev} />
+        <MobileOutfitSlide outfit={curr} />
+        <MobileOutfitSlide outfit={next} />
+      </div>
+
+      {total > 1 && (
+        <>
+          <button
+            type="button"
+            onClick={() => triggerNav(-1)}
+            aria-label="Предыдущий образ"
+            className="absolute -left-2 top-1/2 -translate-y-1/2 z-10 p-2 text-foreground/70 [filter:drop-shadow(0_1px_2px_rgb(0_0_0/0.15))]"
+          >
+            <ChevronLeft className="size-7" strokeWidth={1.25} />
+          </button>
+          <button
+            type="button"
+            onClick={() => triggerNav(1)}
+            aria-label="Следующий образ"
+            className="absolute -right-2 top-1/2 -translate-y-1/2 z-10 p-2 text-foreground/70 [filter:drop-shadow(0_1px_2px_rgb(0_0_0/0.15))]"
+          >
+            <ChevronRight className="size-7" strokeWidth={1.25} />
+          </button>
+
+          <div className="absolute bottom-3 right-3 z-10 font-serif text-xs tabular-nums text-cream bg-foreground/40 backdrop-blur px-2 py-1 rounded-full">
+            {String(active + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function MobileOutfitSlide({ outfit }: { outfit: LookOutfit }) {
+  return (
+    <div className="relative w-full h-full shrink-0">
+      <img
+        src={outfit.image}
+        alt={`Образ ${outfit.sort}`}
+        draggable={false}
+        loading="lazy"
+        decoding="async"
+        className="absolute inset-0 size-full object-contain p-2 pointer-events-none select-none"
+      />
     </div>
   );
 }
