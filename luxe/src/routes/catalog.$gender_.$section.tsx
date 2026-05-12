@@ -117,12 +117,6 @@ function SectionRouteComponent() {
   const data = Route.useLoaderData();
   const search = Route.useSearch();
   const gender: "women" | "men" = data.gender === "men" ? "men" : "women";
-  const filteredTotal = (data.list as { filteredTotal?: number }).filteredTotal;
-  const total = filteredTotal ?? data.filters.total;
-  const pageCount =
-    filteredTotal != null
-      ? Math.max(1, Math.ceil(filteredTotal / data.list.perPage))
-      : data.filters.pageCount;
   return (
     <CatalogPage
       gender={gender}
@@ -132,9 +126,9 @@ function SectionRouteComponent() {
       items={data.list.items}
       filters={data.filters.filters}
       categoryTree={data.categoryTree}
-      total={total}
+      total={data.list.total}
       page={data.list.page}
-      pageCount={pageCount}
+      pageCount={data.list.pageCount}
       search={search}
     />
   );

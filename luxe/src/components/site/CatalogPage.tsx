@@ -463,11 +463,11 @@ function FiltersSidebar({
   onNavigate?: () => void;
   mobile?: boolean;
 }) {
-  const genderRoot =
-    filters.category.items.find((r) =>
-      r.title.toLowerCase().startsWith(gender === "women" ? "женск" : "мужск"),
-    ) ?? filters.category.items[gender === "men" ? 1 : 0];
-  const tree = genderRoot?.items ?? [];
+  // /v2/catalog/filter с root_category уже возвращает дерево, сразу
+  // отскопленное на гендер (внутри items — Одежда / Обувь / Аксессуары …),
+  // поэтому никаких «найти Женское/Мужское и спуститься в children» не нужно.
+  void gender;
+  const tree = filters.category.items ?? [];
   const colors = useMemo(() => filters.color.items ?? [], [filters.color.items]);
   const sizes = useMemo(() => filters.size.items ?? [], [filters.size.items]);
   const attributes = useMemo(() => filters.attribute.items ?? [], [filters.attribute.items]);
@@ -876,10 +876,7 @@ function getSectionParamFromTree(roots: CategoryNode[], id: number): string | nu
 }
 
 function getCategoryPath(roots: CategoryNode[], gender: Gender, activeId: number): CategoryNode[] {
-  const genderRoot =
-    roots.find((r) => r.title.toLowerCase().startsWith(gender === "women" ? "женск" : "мужск")) ??
-    roots[gender === "men" ? 1 : 0];
-  if (!genderRoot) return [];
+  void gender;
   const dfs = (node: CategoryNode, trail: CategoryNode[]): CategoryNode[] | null => {
     const next = [...trail, node];
     if (node.id === activeId) return next;
@@ -889,7 +886,7 @@ function getCategoryPath(roots: CategoryNode[], gender: Gender, activeId: number
     }
     return null;
   };
-  for (const top of genderRoot.items ?? []) {
+  for (const top of roots) {
     const found = dfs(top, []);
     if (found) return found;
   }
@@ -1354,12 +1351,7 @@ function MobileFiltersDrawer({
 
           {panel === "category" &&
             (() => {
-              const source = categoryTree?.length ? categoryTree : filters.category.items;
-              const genderRoot =
-                source.find((r) =>
-                  r.title.toLowerCase().startsWith(gender === "women" ? "женск" : "мужск"),
-                ) ?? source[gender === "men" ? 1 : 0];
-              const tree = genderRoot?.items ?? source;
+              const tree = (categoryTree?.length ? categoryTree : filters.category.items) ?? [];
               return (
                 <div className="px-2">
                   <CategoryTree
