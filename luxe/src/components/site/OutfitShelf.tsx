@@ -134,7 +134,6 @@ function OutfitStage({
             <OutfitCard
               key={item.id}
               item={item}
-              variant="grid"
               isCurrent={item.id === currentItemId}
             />
           ))}
@@ -147,6 +146,13 @@ function OutfitStage({
   );
 }
 
+const TILE_GAP = 16;
+const TILE_MIN = 160;
+const TILE_MAX = 280;
+const TILE_SCROLL_LG = 240;
+const TILE_SCROLL_MD = 220;
+const FIT_MAX_COUNT = 4;
+
 function OutfitCarousel({
   products,
   currentItemId,
@@ -154,11 +160,42 @@ function OutfitCarousel({
   products: ShelfItem[];
   currentItemId: number;
 }) {
+  const wrapRef = useRef<HTMLDivElement>(null);
   const scrollerRef = useRef<HTMLDivElement>(null);
+  const [tileW, setTileW] = useState<number | null>(null);
+  const [fits, setFits] = useState(true);
   const [canLeft, setCanLeft] = useState(false);
   const [canRight, setCanRight] = useState(false);
 
   useEffect(() => {
+    const el = wrapRef.current;
+    if (!el || !products.length) return;
+    const compute = () => {
+      const w = el.clientWidth;
+      if (w === 0) return;
+      const n = products.length;
+      const idealW = (w - TILE_GAP * (n - 1)) / n;
+      // До 4 товаров включительно — растягиваем на всю ширину. С 5-го — скролл.
+      if (n <= FIT_MAX_COUNT && idealW >= TILE_MIN) {
+        setFits(true);
+        setTileW(Math.min(idealW, TILE_MAX));
+      } else {
+        setFits(false);
+        setTileW(window.innerWidth < 1024 ? TILE_SCROLL_MD : TILE_SCROLL_LG);
+      }
+    };
+    compute();
+    const ro = new ResizeObserver(compute);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [products]);
+
+  useEffect(() => {
+    if (fits) {
+      setCanLeft(false);
+      setCanRight(false);
+      return;
+    }
     const el = scrollerRef.current;
     if (!el) return;
     const update = () => {
@@ -174,7 +211,7 @@ function OutfitCarousel({
       el.removeEventListener("scroll", update);
       ro.disconnect();
     };
-  }, [products]);
+  }, [fits, products]);
 
   useEffect(() => {
     scrollerRef.current?.scrollTo({ left: 0, behavior: "auto" });
@@ -182,72 +219,82 @@ function OutfitCarousel({
 
   const scrollByCard = (dir: 1 | -1) => {
     const el = scrollerRef.current;
-    if (!el) return;
-    const card = el.querySelector<HTMLElement>("[data-outfit-card]");
-    const cardW = card?.getBoundingClientRect().width ?? el.clientWidth * 0.3;
-    el.scrollBy({ left: dir * (cardW + 16), behavior: "smooth" });
+    if (!el || !tileW) return;
+    el.scrollBy({ left: dir * (tileW + TILE_GAP), behavior: "smooth" });
   };
 
+  const centerRow = fits && tileW === TILE_MAX;
+
   return (
-    <div className="relative w-full min-w-0">
-      <div
-        ref={scrollerRef}
-        className="overflow-x-auto snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-      >
-        <div className="flex gap-3 md:gap-4 w-max mx-auto">
+    <div ref={wrapRef} className="relative w-full min-w-0">
+      {fits ? (
+        <div
+          className={cn("flex gap-4 w-full", centerRow ? "justify-center" : "justify-start")}
+        >
           {products.map((item) => (
-            <OutfitCard
+            <div
               key={item.id}
-              item={item}
-              variant="scroll"
-              isCurrent={item.id === currentItemId}
-            />
+              style={{ width: tileW ?? undefined }}
+              className="shrink-0"
+            >
+              <OutfitCard item={item} isCurrent={item.id === currentItemId} />
+            </div>
           ))}
         </div>
-      </div>
+      ) : (
+        <>
+          <div
+            ref={scrollerRef}
+            className="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          >
+            {products.map((item) => (
+              <div
+                key={item.id}
+                style={{ width: tileW ?? undefined }}
+                className="shrink-0 snap-start"
+              >
+                <OutfitCard item={item} isCurrent={item.id === currentItemId} />
+              </div>
+            ))}
+          </div>
 
-      <button
-        type="button"
-        onClick={() => scrollByCard(-1)}
-        aria-label="Предыдущие товары"
-        className={cn(
-          "hidden md:flex absolute -left-3 top-1/2 -translate-y-1/2 z-20 size-10 items-center justify-center rounded-full bg-cream/95 backdrop-blur hairline border hover:bg-cream transition-opacity",
-          canLeft ? "opacity-100" : "opacity-0 pointer-events-none",
-        )}
-      >
-        <ChevronLeft className="size-5" />
-      </button>
-      <button
-        type="button"
-        onClick={() => scrollByCard(1)}
-        aria-label="Следующие товары"
-        className={cn(
-          "hidden md:flex absolute -right-3 top-1/2 -translate-y-1/2 z-20 size-10 items-center justify-center rounded-full bg-cream/95 backdrop-blur hairline border hover:bg-cream transition-opacity",
-          canRight ? "opacity-100" : "opacity-0 pointer-events-none",
-        )}
-      >
-        <ChevronRight className="size-5" />
-      </button>
+          <button
+            type="button"
+            onClick={() => scrollByCard(-1)}
+            aria-label="Предыдущие товары"
+            className={cn(
+              "absolute left-1 top-1/2 -translate-y-1/2 z-20 size-10 flex items-center justify-center rounded-full bg-cream/95 backdrop-blur hairline border hover:bg-cream transition-opacity",
+              canLeft ? "opacity-100" : "opacity-0 pointer-events-none",
+            )}
+          >
+            <ChevronLeft className="size-5" />
+          </button>
+          <button
+            type="button"
+            onClick={() => scrollByCard(1)}
+            aria-label="Следующие товары"
+            className={cn(
+              "absolute right-1 top-1/2 -translate-y-1/2 z-20 size-10 flex items-center justify-center rounded-full bg-cream/95 backdrop-blur hairline border hover:bg-cream transition-opacity",
+              canRight ? "opacity-100" : "opacity-0 pointer-events-none",
+            )}
+          >
+            <ChevronRight className="size-5" />
+          </button>
+        </>
+      )}
     </div>
   );
 }
 
 function OutfitCard({
   item,
-  variant,
   isCurrent,
 }: {
   item: ShelfItem;
-  variant: "scroll" | "grid";
   isCurrent: boolean;
 }) {
   const hasDiscount = item.originalPrice > item.price && item.price > 0;
-  const wrapperClass = cn(
-    "group flex flex-col text-left",
-    variant === "scroll"
-      ? "shrink-0 snap-start w-[60vw] sm:w-[40vw] md:w-[220px] lg:w-[240px]"
-      : "w-full",
-  );
+  const wrapperClass = "group flex flex-col text-left w-full";
 
   const inner = (
     <>
@@ -279,7 +326,6 @@ function OutfitCard({
   if (isCurrent) {
     return (
       <button
-        data-outfit-card
         type="button"
         aria-label={`${item.title} — текущий товар, прокрутить наверх`}
         onClick={() => {
@@ -294,7 +340,6 @@ function OutfitCard({
 
   return (
     <Link
-      data-outfit-card
       to="/product/$slug"
       params={{ slug: item.slug }}
       className={wrapperClass}
