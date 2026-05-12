@@ -464,7 +464,7 @@ function ProductPage() {
               <AccordionItem value="props">
                 <AccordionTrigger className="eyebrow">Характеристики</AccordionTrigger>
                 <AccordionContent>
-                  <dl className="grid grid-cols-[max-content_1fr] gap-x-6 gap-y-2 text-sm">
+                  <dl className="grid grid-cols-[fit-content(10rem)_minmax(0,1fr)] gap-x-6 gap-y-2 text-sm">
                     {productSection.properties.map((p) => (
                       <div key={p.label} className="contents">
                         <dt className="text-foreground/55">{p.label}</dt>
@@ -480,7 +480,7 @@ function ProductPage() {
               <AccordionItem value="sizes">
                 <AccordionTrigger className="eyebrow">Размеры и посадка</AccordionTrigger>
                 <AccordionContent>
-                  <dl className="grid grid-cols-[max-content_1fr] gap-x-6 gap-y-2 text-sm">
+                  <dl className="grid grid-cols-[fit-content(10rem)_minmax(0,1fr)] gap-x-6 gap-y-2 text-sm">
                     {sizesSection.properties.map((p) => (
                       <div key={p.label} className="contents">
                         <dt className="text-foreground/55">{p.label}</dt>
