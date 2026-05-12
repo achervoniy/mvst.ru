@@ -431,23 +431,23 @@ function ProductPage() {
             </div>
           )}
 
-          <div className="hidden md:flex flex-col gap-3">
-            <button
-              type="button"
-              onClick={handleAddToFitting}
-              disabled={buyableOffers.length === 0}
-              className="w-full h-12 bg-foreground text-primary-foreground eyebrow-lg hover:bg-accent transition-colors disabled:opacity-50 disabled:hover:bg-foreground"
-            >
-              {inCart ? "В корзине ✓" : "Примерить в бутике"}
-            </button>
+          <div className="hidden md:flex md:flex-wrap gap-3">
             <a
               href={tsumUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="block w-full h-12 border border-foreground text-foreground eyebrow-lg hover:bg-foreground hover:text-primary-foreground transition-colors text-center leading-[3rem]"
+              className="grow basis-56 h-12 border border-foreground text-foreground eyebrow-lg hover:bg-foreground hover:text-primary-foreground transition-colors text-center leading-[3rem]"
             >
               Купить в ЦУМе
             </a>
+            <button
+              type="button"
+              onClick={handleAddToFitting}
+              disabled={buyableOffers.length === 0}
+              className="grow basis-56 h-12 bg-foreground text-primary-foreground eyebrow-lg hover:bg-accent transition-colors disabled:opacity-50 disabled:hover:bg-foreground"
+            >
+              {inCart ? "В корзине ✓" : "Примерить в бутике"}
+            </button>
           </div>
 
           <Accordion type="single" collapsible className="border-t hairline">
