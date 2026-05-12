@@ -16,7 +16,7 @@ export function SiteLayout({
   // We use a CSS class instead of JS-derived state to keep SSR/CSR identical
   // and avoid layout flashes during hydration.
   const mainClass = transparentHeader
-    ? "flex-1 pt-[var(--header-h,60px)] md:pt-0"
+    ? "flex-1 pt-[var(--header-h,60px)] lg:pt-0"
     : "flex-1 pt-[var(--header-h,88px)]";
 
   return (

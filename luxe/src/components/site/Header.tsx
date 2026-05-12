@@ -86,13 +86,13 @@ export function Header({ variant = "solid" }: { variant?: "transparent" | "solid
         {showGradient && (
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-x-0 top-0 h-[140%] bg-gradient-to-b from-black/45 via-black/15 to-transparent hidden md:block"
+            className="pointer-events-none absolute inset-x-0 top-0 h-[140%] bg-gradient-to-b from-black/45 via-black/15 to-transparent hidden lg:block"
           />
         )}
 
         <div className="relative">
           {/* Mobile: logo row with menu button */}
-          <div className="flex items-center justify-between px-6 pt-5 pb-4 md:hidden">
+          <div className="flex items-center justify-between px-6 pt-5 pb-4 lg:hidden">
             <button
               className="-ml-2 p-2 text-foreground transition-colors duration-[280ms] ease-out"
               aria-label="Меню"
@@ -109,7 +109,7 @@ export function Header({ variant = "solid" }: { variant?: "transparent" | "solid
           </div>
 
           {/* Desktop: 3-col grid so logo + nav share one vertical center */}
-          <div className="hidden md:grid md:grid-cols-[auto_1fr_auto] md:items-center md:gap-10 md:px-10 md:py-7">
+          <div className="hidden lg:grid lg:grid-cols-[auto_1fr_auto] lg:items-center lg:gap-10 lg:px-10 lg:py-7">
             <Link to="/" aria-label="MVST" className="block shrink-0 justify-self-start">
               <img
                 src={logoFull}
@@ -177,7 +177,7 @@ export function Header({ variant = "solid" }: { variant?: "transparent" | "solid
       {/* Mobile nav — fixed overlay, completely outside header to avoid layout shifts */}
       <div
         className={cn(
-          "md:hidden fixed inset-x-0 z-50 overflow-hidden bg-background transition-[max-height,visibility] duration-300",
+          "lg:hidden fixed inset-x-0 z-50 overflow-hidden bg-background transition-[max-height,visibility] duration-300",
           open ? "visible max-h-96 border-b hairline" : "invisible max-h-0 border-0",
         )}
         style={{ top: "var(--header-h, 60px)" }}
