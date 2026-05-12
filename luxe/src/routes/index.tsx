@@ -29,7 +29,7 @@ const wardrobeTabs: ReadonlyArray<{
 }> = [
   {
     key: "women",
-    label: "Для неё",
+    label: "Для нее",
     items: [
       { label: "Одежда", img: wCoat, gender: "women", section: "odezhda-18413" },
       { label: "Обувь", img: wLoafers, gender: "women", section: "obuv-18405" },
@@ -50,13 +50,13 @@ const wardrobeTabs: ReadonlyArray<{
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "MVST — Весна–Лето 26" },
+      { title: "MVST — Весна-лето 2026" },
       {
         name: "description",
         content:
-          "Кашемир, шерсть, лён и кожа высочайшего качества. Откройте новую коллекцию MVST Весна–Лето 26.",
+          "Кашемир, шерсть, лен и кожа высочайшего качества. Откройте новую коллекцию MVST Весна-лето 2026.",
       },
-      { property: "og:title", content: "MVST — Весна–Лето 26" },
+      { property: "og:title", content: "MVST — Весна-лето 2026" },
       {
         property: "og:description",
         content: "Новая коллекция MVST. Тихий люкс ручной работы.",
@@ -96,7 +96,7 @@ function HomePage() {
       >
         <img
           src={homeHero}
-          alt="MVST Весна–Лето 26"
+          alt="MVST Весна-лето 2026"
           fetchPriority="high"
           decoding="async"
           className="absolute inset-0 size-full object-cover object-[50%_16%] md:object-[50%_12%] xl:object-[50%_8%]"
@@ -104,14 +104,14 @@ function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-transparent to-black/35" />
         <div className="relative z-10 h-full flex flex-col items-center justify-end pb-16 md:pb-20 px-6 text-center text-cream">
           <h1 className="font-serif text-5xl md:text-7xl font-light leading-[1.05]">
-            Весна-Лето 26
+            Весна-лето 2026
           </h1>
           <Link
             to="/collection-ss26"
             preload="intent"
             className="mt-8 md:mt-10 inline-block eyebrow-lg border-b border-cream/70 pb-2 hover:border-cream"
           >
-            Открыть коллекцию
+            Перейти к коллекции
           </Link>
         </div>
       </section>
@@ -119,7 +119,7 @@ function HomePage() {
       {/* WOMEN / MEN SPLIT */}
       <section className="grid md:grid-cols-2 gap-px bg-foreground/10">
         {[
-          { gender: "women" as const, label: "Для неё", img: homeWomen },
+          { gender: "women" as const, label: "Для нее", img: homeWomen },
           { gender: "men" as const, label: "Для него", img: homeMen },
         ].map((s) => (
           <Link
@@ -137,7 +137,6 @@ function HomePage() {
             />
             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors" />
             <div className="absolute inset-0 flex flex-col items-center justify-center text-cream">
-              <div className="eyebrow-lg mb-4 opacity-90">SS26</div>
               <div className="font-serif text-5xl md:text-6xl">{s.label}</div>
               <div className="mt-8 eyebrow border-b border-cream/70 pb-1">Открыть каталог</div>
             </div>
@@ -200,25 +199,24 @@ function HomePage() {
         </div>
       </section>
 
-      {/* CRAFTSMANSHIP STRIP */}
+      {/* PHILOSOPHY STRIP */}
       <section className="bg-sand/60 py-24 md:py-32 px-6 md:px-16">
         <div className="max-w-3xl mx-auto text-center">
-          <div className="eyebrow text-foreground/60 mb-6">Мастерство MVST</div>
+          <div className="eyebrow text-foreground/60 mb-6">Философия MVST</div>
           <h2 className="font-serif text-4xl md:text-5xl leading-tight mb-8">
-            Элегантность, которая не зависит <br />
-            от времени и сезона
+            Архитектура личного стиля
           </h2>
           <p className="text-foreground/75 leading-relaxed mb-10">
-            MVST создаёт мужской и женский гардероб для тех, кто ценит качество, точность и
-            сдержанную выразительность. Безупречный крой, премиальные материалы и благородные
-            оттенки лежат в основе вещей, которые остаются актуальными сегодня и спустя годы.
+            Исключительность в каждой детали. Лаконичный крой, благородные материалы,
+            сдержанная палитра и безупречное исполнение для тех, чьи стандарты не знают
+            компромиссов.
           </p>
           <Link
             to="/about"
             preload="intent"
             className="eyebrow border-b border-foreground pb-1 hover:text-accent hover:border-accent"
           >
-            Узнать о бренде
+            О бренде
           </Link>
         </div>
       </section>
@@ -228,7 +226,7 @@ function HomePage() {
         <div className="flex items-end justify-between mb-12">
           <div>
             <div className="eyebrow text-foreground/60 mb-3">Бутики</div>
-            <h2 className="font-serif text-3xl md:text-4xl">Найти MVST в вашем городе</h2>
+            <h2 className="font-serif text-3xl md:text-4xl">География MVST</h2>
           </div>
           <Link
             to="/boutiques"

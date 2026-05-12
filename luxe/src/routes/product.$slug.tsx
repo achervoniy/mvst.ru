@@ -241,7 +241,7 @@ function ProductPage() {
         </Link>
         <span className="mx-2">·</span>
         <Link to="/catalog/$gender" params={{ gender }} className="hover:text-accent">
-          {gender === "women" ? "Для неё" : "Для него"}
+          {gender === "women" ? "Для нее" : "Для него"}
         </Link>
         <span className="mx-2">·</span>
         <span className="text-foreground">{detail.title}</span>

@@ -17,7 +17,7 @@ export function Footer() {
                 preload="intent"
                 className="hover:text-accent"
               >
-                Для неё
+                Для нее
               </Link>
             </li>
             <li>
@@ -32,7 +32,7 @@ export function Footer() {
             </li>
             <li>
               <Link to="/collection-ss26" preload="intent" className="hover:text-accent">
-                Коллекция SS26
+                Коллекция весна-лето 2026
               </Link>
             </li>
           </ul>
@@ -42,7 +42,7 @@ export function Footer() {
           <ul className="space-y-2 text-sm">
             <li>
               <Link to="/contacts" preload="intent" className="hover:text-accent">
-                Клиентский сервис
+                Контакты
               </Link>
             </li>
             <li>
@@ -64,15 +64,19 @@ export function Footer() {
               </Link>
             </li>
             <li>
-              <span className="text-foreground/60">Мастерство</span>
+              <Link to="/about" hash="craft" preload="intent" className="hover:text-accent">
+                Мастерство
+              </Link>
             </li>
             <li>
-              <span className="text-foreground/60">Устойчивое развитие</span>
+              <Link to="/about" hash="sustainability" preload="intent" className="hover:text-accent">
+                Устойчивое развитие
+              </Link>
             </li>
           </ul>
         </div>
         <div>
-          <div className="eyebrow text-foreground/60 mb-4">Связь</div>
+          <div className="eyebrow text-foreground/60 mb-4">Контакты</div>
           <ul className="space-y-2 text-sm">
             <li>
               <a

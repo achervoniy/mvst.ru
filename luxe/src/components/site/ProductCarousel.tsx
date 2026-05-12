@@ -68,7 +68,7 @@ export function ProductCarousel({ items, viewAllGender }: ProductCarouselProps) 
       </button>
       <button
         type="button"
-        aria-label="Вперёд"
+        aria-label="Вперед"
         onClick={() => scrollByCard(1)}
         className={cn(
           "hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 size-11 items-center justify-center rounded-full bg-background/90 border hairline shadow-sm transition-opacity duration-200 hover:bg-background",

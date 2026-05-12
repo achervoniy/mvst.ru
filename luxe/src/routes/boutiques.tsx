@@ -188,9 +188,9 @@ function BoutiquesPage() {
     <SiteLayout>
       <section className="px-6 md:px-12 py-20 text-center">
         <div className="eyebrow text-foreground/60 mb-4">Бутики</div>
-        <h1 className="font-serif text-5xl md:text-6xl">Найти MVST</h1>
+        <h1 className="font-serif text-5xl md:text-6xl">География MVST</h1>
         <p className="mt-6 max-w-xl mx-auto text-foreground/75">
-          Бутики MVST в Москве и Санкт-Петербурге — пространства, в которых можно увидеть и примерить коллекции.
+          Бутики MVST в Москве и Санкт-Петербурге: познакомьтесь с новой коллекцией в атмосфере бренда.
         </p>
       </section>
 

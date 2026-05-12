@@ -11,13 +11,13 @@ export const Route = createFileRoute("/about")({
       {
         name: "description",
         content:
-          "Современный дом одежды с производством в Италии. Безупречный крой, благородные материалы, нейтральная палитра — вещи, которые остаются с вами дольше одного сезона.",
+          "Идеальный капсульный гардероб для тех, кто выбирает лучшее. Лаконичный крой, благородные материалы и безупречное исполнение MVST.",
       },
       { property: "og:title", content: "О бренде — MVST" },
       {
         property: "og:description",
         content:
-          "Архитектура спокойствия: лучшие мануфактуры мира, ручной труд итальянских фабрик и авторская технология La Nuvola.",
+          "Архитектура личного стиля: лучшие мануфактуры мира, ручной труд итальянских фабрик и авторская технология La Nuvola.",
       },
       { property: "og:image", content: heroImg },
     ],
@@ -26,20 +26,20 @@ export const Route = createFileRoute("/about")({
 });
 
 const mills: ReadonlyArray<{ name: string; note: string }> = [
-  { name: "Loro Piana", note: "Кашемир, шерсть, шёлк" },
+  { name: "Loro Piana", note: "Кашемир, шерсть, шелк" },
   { name: "Cariaggi", note: "Кашемировая пряжа" },
   { name: "Colombo", note: "Викунья, альпака" },
   { name: "Vitale Barberis Canonico", note: "Шерсть мериноса" },
   { name: "Reda 1865", note: "Костюмные ткани" },
   { name: "Candiani", note: "Деним" },
-  { name: "Olmetex", note: "Хлопок и лён" },
+  { name: "Olmetex", note: "Хлопок и лен" },
 ];
 
-const figures: ReadonlyArray<{ n: string; l: string }> = [
-  { n: "Italy", l: "Страна производства" },
-  { n: "6+", l: "Ведущих мануфактур-партнёров" },
-  { n: "La Nuvola", l: "Авторская технология" },
-  { n: "Premium", l: "Премиальные материалы" },
+const facts: ReadonlyArray<{ label: string; value: string }> = [
+  { label: "Страна производства", value: "Италия" },
+  { label: "Ведущих мануфактур-партнеров", value: "6+" },
+  { label: "Авторская технология", value: "La Nuvola" },
+  { label: "Исключительное качество", value: "Роскошные материалы" },
 ];
 
 function AboutPage() {
@@ -59,9 +59,7 @@ function AboutPage() {
           <div className="eyebrow-lg mb-6 opacity-90">О бренде</div>
           <h1 className="font-serif text-6xl md:text-8xl font-light leading-[1.05]">MVST</h1>
           <p className="mt-8 max-w-2xl text-base md:text-lg leading-relaxed opacity-90">
-            Современный дом одежды с производством в Италии. Безупречный крой,
-            благородные материалы, нейтральная палитра — вещи, которые остаются
-            с вами дольше одного сезона.
+            Идеальный капсульный гардероб для тех, кто выбирает лучшее.
           </p>
         </div>
       </section>
@@ -70,14 +68,12 @@ function AboutPage() {
       <section className="px-6 py-14 md:py-32 max-w-3xl mx-auto text-center">
         <div className="eyebrow text-foreground/60 mb-6">Философия</div>
         <h2 className="font-serif text-4xl md:text-5xl leading-tight mb-10">
-          Архитектура спокойствия
+          Архитектура личного стиля
         </h2>
         <p className="text-foreground/75 leading-relaxed text-lg">
-          Хорошая одежда не требует внимания — она его удерживает. MVST строится
-          вокруг чистых линий, продуманных силуэтов и материалов, которые с годами
-          становятся только лучше. Универсальная палитра, мягкие силуэты, графичные
-          жакеты, пальто со спущенным плечом и классические тренчи — основа,
-          на которой собирается весь гардероб.
+          Исключительность в каждой детали. Лаконичный крой, благородные материалы,
+          сдержанная палитра и безупречное исполнение для тех, чьи стандарты
+          не знают компромиссов.
         </p>
       </section>
 
@@ -93,9 +89,9 @@ function AboutPage() {
           <div className="eyebrow text-foreground/60 mb-4">Материалы</div>
           <h3 className="font-serif text-3xl md:text-4xl mb-6">Лучшие мануфактуры мира</h3>
           <p className="text-foreground/75 leading-relaxed mb-8">
-            Всё начинается с ткани. MVST работает с поставщиками, которые задают
-            стандарт индустрии — от кашемира и шёлка Mulberry до шерсти мериноса,
-            викуньи и альпаки.
+            Все начинается с ткани. MVST сотрудничает с поставщиками, задающими
+            стандарты индустрии: от благородных кашемира и шелка Mulberry до
+            раритетной шерсти мериноса, викуньи и альпаки.
           </p>
 
           <ul className="divide-y divide-foreground/10 border-y border-foreground/10 mb-8">
@@ -115,24 +111,23 @@ function AboutPage() {
           </ul>
 
           <p className="text-foreground/75 leading-relaxed">
-            Для верхней одежды — испанская овчина, мех, высокотехнологичный нейлон,
-            гусиный пух и утеплитель Thermore. Гладкая кожа сочетается с замшей
-            и каракульчой, струящийся атлас — с разными видами трикотажа.
+            В верхней одежде — драгоценный мех, испанская овчина, технологичные
+            нейлон и утеплитель Thermore. Игру контрастов создают сочетания
+            гладкой кожи с фактурной замшей и каракульчой.
           </p>
         </div>
       </section>
 
       {/* CRAFT */}
-      <section className="grid md:grid-cols-2 gap-px bg-foreground/10">
+      <section id="craft" className="scroll-mt-24 grid md:grid-cols-2 gap-px bg-foreground/10">
         <div className="p-10 md:p-16 flex flex-col justify-center bg-background order-2 md:order-1">
           <div className="eyebrow text-foreground/60 mb-4">Мастерство</div>
           <h3 className="font-serif text-3xl md:text-4xl mb-6">Сделано в Италии</h3>
           <p className="text-foreground/75 leading-relaxed">
-            Каждая коллекция создаётся на ведущих фабриках Италии. Архитектурный
-            крой и высокое портновское искусство — то, ради чего бренд работает
-            только с проверенными производствами Северной и Центральной Италии.
-            Особое внимание — ручным операциям там, где машина не справляется:
-            обработке лацканов, посадке плеча, финальной утюжке.
+            MVST доверяет производство коллекций старейшим итальянским фабрикам.
+            Наследие портновского мастерства проявляется в деталях, требующих
+            ручного труда: филигранной обработке лацканов, идеальной линии плеча
+            и бережной финальной отделке, придающей вещи ее характер.
           </p>
         </div>
         <img
@@ -146,7 +141,7 @@ function AboutPage() {
       {/* LA NUVOLA */}
       <section className="bg-foreground text-background px-6 py-28 md:py-36">
         <div className="max-w-3xl mx-auto text-center">
-          <div className="eyebrow text-background/55 mb-8">Технология</div>
+          <div className="eyebrow text-background/55 mb-8">Технологии</div>
           <h3 className="font-serif text-5xl md:text-7xl leading-[1.05] mb-10">
             La&nbsp;Nuvola
           </h3>
@@ -158,18 +153,38 @@ function AboutPage() {
         </div>
       </section>
 
-      {/* FIGURES */}
-      <section className="px-6 py-28 md:py-32 max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-10 md:gap-6 text-center">
-        {figures.map((s) => (
-          <div key={s.l} className="flex flex-col items-center">
-            <div className="font-serif text-3xl md:text-5xl text-foreground leading-tight">
-              {s.n}
-            </div>
-            <div className="eyebrow text-foreground/60 mt-4 max-w-[14ch]">
-              {s.l}
-            </div>
-          </div>
-        ))}
+      {/* FACTS */}
+      <section className="px-6 pt-24 md:pt-28 pb-12 md:pb-16 max-w-3xl mx-auto">
+        <ul className="divide-y divide-foreground/10 border-y border-foreground/10">
+          {facts.map((f) => (
+            <li
+              key={f.label}
+              className="flex items-center justify-between gap-6 py-5 md:py-6"
+            >
+              <span className="eyebrow text-foreground/55 max-w-[18ch]">{f.label}</span>
+              <span className="font-serif text-2xl md:text-3xl text-foreground text-right">
+                {f.value}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      {/* SUSTAINABILITY */}
+      <section
+        id="sustainability"
+        className="scroll-mt-24 px-6 pt-4 pb-20 md:pt-8 md:pb-28 max-w-3xl mx-auto text-center"
+      >
+        <div className="eyebrow text-foreground/60 mb-6">Устойчивое развитие</div>
+        <h2 className="font-serif text-4xl md:text-5xl leading-tight mb-8">
+          Рациональный гардероб
+        </h2>
+        <p className="text-foreground/75 leading-relaxed text-lg">
+          MVST создает коллекции, которые не конкурируют, а дополняют и продолжают
+          друг друга. Безупречная сочетаемость новых моделей с вещами прошлых
+          сезонов и качество материалов и исполнения обеспечивают вашему гардеробу
+          долголетие, делая моду осознанным выбором.
+        </p>
       </section>
     </SiteLayout>
   );
