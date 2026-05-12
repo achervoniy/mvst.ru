@@ -57,6 +57,11 @@ services:
     ports:
       - "127.0.0.1:${CRM_HOST_PORT:-3101}:3001"
     networks: [mvst]
+    volumes:
+      # Загруженные через админку фото бутиков должны переживать ребилд
+      # контейнера. Том монтируется поверх /app/public/uploads, иначе
+      # docker compose up --build стирает всё, что лежит в этой папке.
+      - mvst_crm_uploads:/app/public/uploads
     depends_on:
       postgres:
         condition: service_healthy
@@ -67,3 +72,4 @@ networks:
 
 volumes:
   mvst_pg_data:
+  mvst_crm_uploads:
