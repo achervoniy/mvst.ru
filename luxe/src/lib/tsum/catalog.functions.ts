@@ -15,10 +15,14 @@ const TSUM_ROOT = "https://api.tsum.ru";
 const TSUM_V1 = `${TSUM_ROOT}/v1`;
 const TSUM_V4 = `${TSUM_ROOT}/v4`;
 // tsumFetch по умолчанию ходит в /v2: /catalog/filter — относительный путь,
-// /v4/* — переопределяем baseUrl явно.
+// /v4/* и /catalog/search/counter — переопределяем baseUrl явно.
 const TSUM_V4_SEARCH = "/catalog/search";
 const TSUM_V2_FILTER = "/catalog/filter";
+const TSUM_COUNTER = "/catalog/search/counter";
 const TSUM_CACHE_TTL_MS = 5 * 60 * 1000;
+// Counter дёргается часто из drawer-а на каждое изменение staged-фильтра —
+// держим короткий TTL, чтобы не показывать стейл при возврате к старой комбинации.
+const TSUM_COUNTER_TTL_MS = 60 * 1000;
 
 interface V4SearchResponse {
   models: TsumProduct[];
@@ -168,6 +172,44 @@ function normalize(p: TsumProduct): CatalogProduct {
 }
 
 const PER_PAGE = 60;
+
+// Лёгкий counter для preview «Показать N» в drawer-е до применения фильтров.
+// TSUM-эндпоинт — GET /catalog/search/counter с query-string. Multi-value
+// (color, size, attribute) принимает только в формате comma-separated:
+// `color=A,B` → OR. Повтор параметра (`color=A&color=B`) у counter ломается
+// (last wins), поэтому всегда join(","). Sort на total не влияет.
+function buildCounterQuery(input: z.infer<typeof searchInput>): string {
+  const params = new URLSearchParams();
+  params.set(
+    "section",
+    input.sectionId ? String(input.sectionId) : GENDER_CATEGORY[input.gender],
+  );
+  params.set("brand", String(MVST_BRAND_ID));
+  if (input.color?.length) params.set("color", input.color.join(","));
+  if (input.size?.length) params.set("size", input.size.join(","));
+  if (input.attribute?.length) params.set("attribute", input.attribute.join(","));
+  if (input.label != null) params.set("labels", String(input.label));
+  if (input.priceFrom != null) params.set("price_min", String(input.priceFrom));
+  if (input.priceTo != null) params.set("price_max", String(input.priceTo));
+  return params.toString();
+}
+
+export const getCatalogCount = createServerFn({ method: "GET" })
+  .inputValidator((input: unknown) => searchInput.parse(input))
+  .handler(async ({ data }) => {
+    try {
+      const qs = buildCounterQuery(data);
+      const res = await cachedTsumFetch<{ total?: number }>(
+        `${TSUM_COUNTER}?${qs}`,
+        null,
+        { method: "GET", baseUrl: TSUM_ROOT, ttlMs: TSUM_COUNTER_TTL_MS },
+      );
+      return { total: res?.total ?? 0 };
+    } catch (err) {
+      logTsumFailure("getCatalogCount", data, err);
+      throw err;
+    }
+  });
 
 export const searchProducts = createServerFn({ method: "GET" })
   .inputValidator((input: unknown) => searchInput.parse(input))

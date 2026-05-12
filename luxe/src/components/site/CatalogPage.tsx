@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/accordion";
 import { cn } from "@/lib/utils";
 import { formatRub, pluralizeRu } from "@/lib/format";
+import { getCatalogCount } from "@/lib/tsum/catalog.functions";
 import type { CatalogProduct } from "@/lib/tsum/types";
 import type { TsumFilters, CategoryNode, Gender, AttrGroup } from "@/lib/tsum/types";
 
@@ -947,18 +948,19 @@ function PriceFilter({
     onApply(nf, nt);
   };
 
-  const applyFromInputs = () => {
-    applyValues(parse(fromStr), parse(toStr));
-  };
-
-  const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      applyFromInputs();
-    }
-  };
-
   const step = Math.max(1, Math.round((max - min) / 100));
+
+  // Каждое изменение сразу пушим в onApply — родитель сам дебаунсит для counter.
+  const handleFromInput = (v: string) => {
+    const cleaned = v.replace(/\D/g, "");
+    setFromStr(cleaned);
+    applyValues(parse(cleaned), parse(toStr));
+  };
+  const handleToInput = (v: string) => {
+    const cleaned = v.replace(/\D/g, "");
+    setToStr(cleaned);
+    applyValues(parse(fromStr), parse(cleaned));
+  };
 
   const handleSliderChange = (v: number[]) => {
     const a = v[0] ?? min;
@@ -966,11 +968,6 @@ function PriceFilter({
     setRange([a, b]);
     setFromStr(a > min ? String(a) : "");
     setToStr(b < max ? String(b) : "");
-  };
-
-  const handleSliderCommit = (v: number[]) => {
-    const a = v[0] ?? min;
-    const b = v[1] ?? max;
     applyValues(a > min ? a : undefined, b < max ? b : undefined);
   };
 
@@ -991,9 +988,7 @@ function PriceFilter({
             inputMode="numeric"
             placeholder={String(min)}
             value={fromStr}
-            onChange={(e) => setFromStr(e.target.value.replace(/\D/g, ""))}
-            onKeyDown={onKeyDown}
-            onBlur={applyFromInputs}
+            onChange={(e) => handleFromInput(e.target.value)}
             className={inputCls}
             aria-label="Цена от"
           />
@@ -1003,9 +998,7 @@ function PriceFilter({
             inputMode="numeric"
             placeholder={String(max)}
             value={toStr}
-            onChange={(e) => setToStr(e.target.value.replace(/\D/g, ""))}
-            onKeyDown={onKeyDown}
-            onBlur={applyFromInputs}
+            onChange={(e) => handleToInput(e.target.value)}
             className={inputCls}
             aria-label="Цена до"
           />
@@ -1017,7 +1010,6 @@ function PriceFilter({
             step={step}
             value={[Math.max(min, Math.min(max, range[0])), Math.max(min, Math.min(max, range[1]))]}
             onValueChange={handleSliderChange}
-            onValueCommit={handleSliderCommit}
             aria-label="Диапазон цен"
           />
           <div
@@ -1164,8 +1156,87 @@ function MobileFiltersDrawer({
   const attributes = useMemo(() => filters.attribute.items ?? [], [filters.attribute.items]);
   const priceBucket = filters.price.items?.[0];
 
-  const activeColors = search.color ?? [];
-  const activeSizes = search.size ?? [];
+  // Staging: drawer держит локальное состояние staged, которое отвязано от URL
+  // до нажатия «Показать N». Counter дёргается на каждое изменение staged
+  // с debounce — текст кнопки отражает «сколько останется, если применить».
+  const [staged, setStaged] = useState<CatalogSearch>(search);
+  const [stagedCount, setStagedCount] = useState<number>(total);
+  const [counterPending, setCounterPending] = useState(false);
+  const reqGenRef = useRef(0);
+
+  // Re-sync staged с applied search при открытии drawer-а или внешнем изменении.
+  useEffect(() => {
+    if (!open) return;
+    setStaged(search);
+    setStagedCount(total);
+  }, [open, search, total]);
+
+  // Дешёвое сравнение staged ≡ search (для skip counter, когда ничего не
+  // меняли). Сортировка ключей не важна — поля известны заранее.
+  const stagedMatchesApplied = useMemo(() => {
+    const arrSame = (a?: (number | string)[], b?: (number | string)[]) => {
+      if ((a?.length ?? 0) !== (b?.length ?? 0)) return false;
+      if (!a || !b) return true;
+      const s = new Set(a as (number | string)[]);
+      return b.every((x) => s.has(x));
+    };
+    return (
+      (staged.sort ?? "") === (search.sort ?? "") &&
+      (staged.priceFrom ?? null) === (search.priceFrom ?? null) &&
+      (staged.priceTo ?? null) === (search.priceTo ?? null) &&
+      (staged.label ?? "") === (search.label ?? "") &&
+      arrSame(staged.color, search.color) &&
+      arrSame(staged.size, search.size) &&
+      arrSame(staged.attribute, search.attribute)
+    );
+  }, [staged, search]);
+
+  // Counter с debounce + защита от стейл-ответов.
+  useEffect(() => {
+    if (!open) return;
+    if (stagedMatchesApplied) {
+      setStagedCount(total);
+      setCounterPending(false);
+      return;
+    }
+    const myGen = ++reqGenRef.current;
+    setCounterPending(true);
+    const handle = setTimeout(() => {
+      getCatalogCount({
+        data: {
+          gender,
+          sectionId: activeSectionId,
+          sort: staged.sort,
+          color: staged.color,
+          size: staged.size,
+          priceFrom: staged.priceFrom,
+          priceTo: staged.priceTo,
+          attribute: staged.attribute,
+          label: staged.label,
+        },
+      })
+        .then((res) => {
+          if (reqGenRef.current !== myGen) return;
+          setStagedCount(res.total);
+        })
+        .catch(() => {
+          /* оставим прошлое значение */
+        })
+        .finally(() => {
+          if (reqGenRef.current === myGen) setCounterPending(false);
+        });
+    }, 300);
+    return () => clearTimeout(handle);
+  }, [staged, stagedMatchesApplied, total, open, gender, activeSectionId]);
+
+  const activeColors = staged.color ?? [];
+  const activeSizes = staged.size ?? [];
+  const activeAttrs = staged.attribute ?? [];
+
+  const stagedSortTitle = useMemo(() => {
+    const id = (staged.sort ?? "our") as string;
+    return filters.sort?.items?.find((s) => s.id === id)?.title ?? currentSortTitle;
+  }, [staged.sort, filters.sort, currentSortTitle]);
 
   const colorTitle = useMemo(() => {
     if (activeColors.length === 0) return "—";
@@ -1182,65 +1253,72 @@ function MobileFiltersDrawer({
     return `Выбрано: ${activeSizes.length}`;
   }, [sizes, activeSizes]);
   const priceTitle = useMemo(() => {
-    if (search.priceFrom != null || search.priceTo != null) {
-      const f = search.priceFrom != null ? formatRub(search.priceFrom) : "0";
-      const t = search.priceTo != null ? formatRub(search.priceTo) : "∞";
+    if (staged.priceFrom != null || staged.priceTo != null) {
+      const f = staged.priceFrom != null ? formatRub(staged.priceFrom) : "0";
+      const t = staged.priceTo != null ? formatRub(staged.priceTo) : "∞";
       return `${f} — ${t}`;
     }
     return "—";
-  }, [search.priceFrom, search.priceTo]);
-
-  const activeAttrs = search.attribute ?? [];
+  }, [staged.priceFrom, staged.priceTo]);
 
   const toggleAttr = (id: number) => {
-    const set = new Set(activeAttrs);
-    if (set.has(id)) set.delete(id);
-    else set.add(id);
-    const next = Array.from(set);
-    onChange({ attribute: next.length > 0 ? next : undefined });
+    setStaged((prev) => {
+      const set = new Set(prev.attribute ?? []);
+      if (set.has(id)) set.delete(id);
+      else set.add(id);
+      const next = Array.from(set);
+      return { ...prev, attribute: next.length > 0 ? next : undefined };
+    });
   };
   const toggleColor = (id: number) => {
-    const set = new Set(activeColors);
-    if (set.has(id)) set.delete(id);
-    else set.add(id);
-    const next = Array.from(set);
-    onChange({ color: next.length > 0 ? next : undefined });
+    setStaged((prev) => {
+      const set = new Set(prev.color ?? []);
+      if (set.has(id)) set.delete(id);
+      else set.add(id);
+      const next = Array.from(set);
+      return { ...prev, color: next.length > 0 ? next : undefined };
+    });
   };
   const toggleSize = (id: number) => {
-    const set = new Set(activeSizes);
-    if (set.has(id)) set.delete(id);
-    else set.add(id);
-    const next = Array.from(set);
-    onChange({ size: next.length > 0 ? next : undefined });
+    setStaged((prev) => {
+      const set = new Set(prev.size ?? []);
+      if (set.has(id)) set.delete(id);
+      else set.add(id);
+      const next = Array.from(set);
+      return { ...prev, size: next.length > 0 ? next : undefined };
+    });
   };
 
   const hasAnyFilter =
     activeColors.length > 0 ||
     activeSizes.length > 0 ||
-    !!search.priceFrom ||
-    !!search.priceTo ||
-    !!search.sort ||
+    !!staged.priceFrom ||
+    !!staged.priceTo ||
+    !!staged.sort ||
     activeAttrs.length > 0;
 
   const resetAll = () => {
-    onChange(
-      {
-        color: undefined,
-        size: undefined,
-        priceFrom: undefined,
-        priceTo: undefined,
-        sort: undefined,
-        attribute: undefined,
-      },
-      true,
-    );
+    setStaged({});
+  };
+
+  const applyStaged = () => {
+    onChange({
+      sort: staged.sort,
+      color: staged.color,
+      size: staged.size,
+      priceFrom: staged.priceFrom,
+      priceTo: staged.priceTo,
+      label: staged.label,
+      attribute: staged.attribute,
+    });
+    onOpenChange(false);
   };
 
   const close = () => onOpenChange(false);
   const back = () => setPanel(null);
 
   const rows: { key: PanelKey; label: string; value: string }[] = [
-    { key: "sort", label: "Сортировка", value: currentSortTitle },
+    { key: "sort", label: "Сортировка", value: stagedSortTitle },
     { key: "category", label: "Категории", value: sectionTitle ?? "Все" },
     ...(colors.length > 0 ? [{ key: "color" as PanelKey, label: "Цвет", value: colorTitle }] : []),
     ...(sizes.length > 0 ? [{ key: "size" as PanelKey, label: "Размер", value: sizeTitle }] : []),
@@ -1325,14 +1403,17 @@ function MobileFiltersDrawer({
           {panel === "sort" && (
             <ul>
               {(filters.sort?.items ?? []).map((s) => {
-                const currentId = search.sort ?? "our";
+                const currentId = staged.sort ?? "our";
                 const active = currentId === s.id;
                 return (
                   <li key={s.id}>
                     <button
                       type="button"
                       onClick={() => {
-                        onChange({ sort: s.id === "our" ? undefined : s.id });
+                        setStaged((prev) => ({
+                          ...prev,
+                          sort: s.id === "our" ? undefined : s.id,
+                        }));
                         back();
                       }}
                       className={cn(
@@ -1451,10 +1532,10 @@ function MobileFiltersDrawer({
               <PriceFilter
                 min={priceBucket.min}
                 max={priceBucket.max}
-                from={search.priceFrom}
-                to={search.priceTo}
+                from={staged.priceFrom}
+                to={staged.priceTo}
                 onApply={(f, t) => {
-                  onChange({ priceFrom: f, priceTo: t });
+                  setStaged((prev) => ({ ...prev, priceFrom: f, priceTo: t }));
                 }}
                 mobile
               />
@@ -1525,11 +1606,14 @@ function MobileFiltersDrawer({
           )}
           <button
             type="button"
-            onClick={close}
-            className="w-full h-14 bg-foreground text-background eyebrow text-sm hover:bg-foreground/90 transition-colors"
+            onClick={applyStaged}
+            className={cn(
+              "w-full h-14 bg-foreground text-background eyebrow text-sm hover:bg-foreground/90 transition-[opacity,background-color] duration-150",
+              counterPending && "opacity-70",
+            )}
           >
-            Показать {total.toLocaleString("ru-RU")}{" "}
-            {pluralizeRu(total, ["товар", "товара", "товаров"])}
+            Показать {stagedCount.toLocaleString("ru-RU")}{" "}
+            {pluralizeRu(stagedCount, ["товар", "товара", "товаров"])}
           </button>
         </div>
       </SheetContent>
