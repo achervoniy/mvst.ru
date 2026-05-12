@@ -91,11 +91,41 @@ const FALLBACK_IMG_BY_SLUG: Record<string, string> = {
   dlt: imgDlt,
 };
 
+function isBrowserReachable(url: string): boolean {
+  // Хостнеймы вроде "mvst-crm", "localhost", "127.0.0.1" и т.п. недоступны
+  // из браузера конечного пользователя. Если CRM_PUBLIC_URL не задан и базой
+  // оказался внутренний URL — фотки лучше показать из локального fallback,
+  // чем отдать заведомо нерабочий URL.
+  try {
+    const host = new URL(url).hostname.toLowerCase();
+    if (host === "localhost" || host === "127.0.0.1" || host === "0.0.0.0") return false;
+    // Docker-имя сервиса: без точек, не «обычный» домен.
+    if (!host.includes(".")) return false;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function resolvePhotoUrl(photoUrl: string | null, slug: string, publicBase: string): string {
   if (!photoUrl) return FALLBACK_IMG_BY_SLUG[slug] ?? imgTsum;
   if (/^(https?:)?\/\//i.test(photoUrl)) return photoUrl;
   // Относительный путь из CRM (например, /uploads/boutiques/...) — резолвим
   // через публичный URL CRM, чтобы браузер мог его загрузить.
+  if (!isBrowserReachable(publicBase)) {
+    console.warn(
+      JSON.stringify({
+        level: "warn",
+        source: "boutiques",
+        operation: "resolvePhotoUrl",
+        message:
+          "CRM_PUBLIC_URL не задан или указывает на внутренний хост — фото бутика загрузить нельзя, используется fallback. Установите CRM_PUBLIC_URL на публичный домен CRM.",
+        slug,
+        publicBase,
+      }),
+    );
+    return FALLBACK_IMG_BY_SLUG[slug] ?? imgTsum;
+  }
   return `${publicBase.replace(/\/$/, "")}${photoUrl.startsWith("/") ? "" : "/"}${photoUrl}`;
 }
 

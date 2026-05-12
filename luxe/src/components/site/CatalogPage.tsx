@@ -219,7 +219,12 @@ export function CatalogPage(props: CatalogPageProps) {
           </li>
           <li className="flex items-center">
             <span className="mx-2">·</span>
-            <Link to="/catalog/$gender" params={{ gender }} className="hover:text-accent">
+            <Link
+              to="/catalog/$gender"
+              params={{ gender }}
+              search={(prev: CatalogSearch) => prev}
+              className="hover:text-accent"
+            >
               {title}
             </Link>
           </li>
@@ -238,6 +243,7 @@ export function CatalogPage(props: CatalogPageProps) {
                     <Link
                       to="/catalog/$gender/$section"
                       params={{ gender, section: node.slug }}
+                      search={(prev: CatalogSearch) => prev}
                       className="hover:text-accent"
                     >
                       {node.title}
@@ -831,7 +837,7 @@ function CategoryTree({
             <Link
               to="/catalog/$gender/$section"
               params={{ gender, section: current.slug }}
-              search={(prev: CatalogSearch) => ({ sort: prev.sort })}
+              search={(prev: CatalogSearch) => prev}
               onClick={onNavigate}
               className={cn(
                 rowCls,

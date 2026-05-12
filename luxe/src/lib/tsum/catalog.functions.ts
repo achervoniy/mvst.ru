@@ -314,6 +314,27 @@ export const getCatalogFilters = createServerFn({ method: "GET" })
         ],
       };
 
+      // Атрибуты (Материал, Состав и т.п.) TSUM /catalog/filter возвращает с
+      // глобальными counts по категории — без учёта применённых color/size/price.
+      // Honest per-attribute counts требовали бы per-product attribute data,
+      // которой нет в /catalog/search/brand. Минимум, что делаем:
+      //   1) скрываем пункты с count = 0;
+      //   2) убираем группы, в которых не осталось пунктов.
+      // Это не уберёт случай «Вискоза 1 → 0 после применения», но уменьшит шум.
+      safe.attribute = {
+        ...safe.attribute,
+        items: (safe.attribute.items ?? [])
+          .map((group) => ({
+            ...group,
+            items: (group.items ?? []).filter((a) => (a.count ?? 0) > 0),
+          }))
+          .filter((group) => group.items.length > 0),
+      };
+      safe.label = {
+        ...safe.label,
+        items: (safe.label.items ?? []).filter((l) => (l.count ?? 0) > 0),
+      };
+
       // Rebrand sort label
       if (safe.sort?.items?.length) {
         safe.sort = {
