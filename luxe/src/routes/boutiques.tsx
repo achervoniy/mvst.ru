@@ -91,8 +91,17 @@ const FALLBACK_IMG_BY_SLUG: Record<string, string> = {
   dlt: imgDlt,
 };
 
+function resolvePhotoUrl(photoUrl: string | null, slug: string, publicBase: string): string {
+  if (!photoUrl) return FALLBACK_IMG_BY_SLUG[slug] ?? imgTsum;
+  if (/^(https?:)?\/\//i.test(photoUrl)) return photoUrl;
+  // Относительный путь из CRM (например, /uploads/boutiques/...) — резолвим
+  // через публичный URL CRM, чтобы браузер мог его загрузить.
+  return `${publicBase.replace(/\/$/, "")}${photoUrl.startsWith("/") ? "" : "/"}${photoUrl}`;
+}
+
 const getBoutiques = createServerFn({ method: "GET" }).handler(async (): Promise<BoutiqueView[]> => {
   const CRM_URL = process.env.CRM_URL ?? "http://localhost:3001";
+  const CRM_PUBLIC_URL = process.env.CRM_PUBLIC_URL ?? CRM_URL;
   try {
     const ctrl = new AbortController();
     const timeout = setTimeout(() => ctrl.abort(), 5_000);
@@ -109,7 +118,7 @@ const getBoutiques = createServerFn({ method: "GET" }).handler(async (): Promise
       name: b.title,
       addr: [b.city, b.address].filter(Boolean).join(", "),
       hours: b.schedule ?? "",
-      img: b.photoUrl ?? FALLBACK_IMG_BY_SLUG[b.slug] ?? imgTsum,
+      img: resolvePhotoUrl(b.photoUrl, b.slug, CRM_PUBLIC_URL),
       map:
         b.routeUrl ??
         `https://yandex.ru/maps/?text=${encodeURIComponent(`${b.title} ${b.city} ${b.address}`)}`,
