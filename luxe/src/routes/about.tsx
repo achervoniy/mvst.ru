@@ -83,9 +83,9 @@ function AboutPage() {
           src={materialsImg}
           alt=""
           loading="lazy"
-          className="w-full h-full aspect-[4/5] object-cover order-2 md:order-1"
+          className="w-full h-full aspect-[4/5] object-cover"
         />
-        <div className="p-10 md:p-16 flex flex-col justify-center bg-background order-1 md:order-2">
+        <div className="p-10 md:p-16 flex flex-col justify-center bg-background">
           <div className="eyebrow text-foreground/60 mb-4">Материалы</div>
           <h3 className="font-serif text-3xl md:text-4xl mb-6">Лучшие мануфактуры мира</h3>
           <p className="text-foreground/75 leading-relaxed mb-8">
