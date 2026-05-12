@@ -104,7 +104,7 @@ export function FittingCartDialog() {
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetContent
         side="right"
-        className="w-full sm:max-w-[480px] p-0 flex flex-col gap-0"
+        className="w-full sm:max-w-[480px] p-0 flex flex-col gap-0 [&>button.absolute]:hidden"
       >
         <SheetTitle className="sr-only">
           {step === "cart" && "Корзина для примерки"}
@@ -113,13 +113,15 @@ export function FittingCartDialog() {
           {step === "success" && "Заявка принята"}
         </SheetTitle>
 
-        {/* Header */}
+        {/* Header — back-стрелка слева и крестик-закрытие справа зеркальны по
+            размеру/паддингу/смещению, чтобы оптические центры обоих иконок
+            ровно совпадали по вертикали и по расстоянию до краёв. */}
         <div className="flex items-center justify-between px-6 py-5 border-b hairline">
           {step !== "cart" && step !== "success" ? (
             <button
               type="button"
               onClick={() => setStep(step === "boutique" ? "cart" : "boutique")}
-              className="-ml-2 p-2 text-foreground/70 hover:text-foreground"
+              className="-ml-2 p-2 text-foreground/70 hover:text-foreground focus:outline-none focus-visible:outline-none"
               aria-label="Назад"
             >
               <ArrowLeft className="size-5" />
@@ -133,7 +135,14 @@ export function FittingCartDialog() {
             {step === "confirm" && "Подтверждение"}
             {step === "success" && "Готово"}
           </div>
-          <div className="w-9" />
+          <button
+            type="button"
+            onClick={() => setOpen(false)}
+            className="-mr-2 p-2 text-foreground/70 hover:text-foreground focus:outline-none focus-visible:outline-none"
+            aria-label="Закрыть"
+          >
+            <X className="size-5" />
+          </button>
         </div>
 
         {/* Body */}
@@ -162,13 +171,13 @@ export function FittingCartDialog() {
           {step === "cart" && (
             <>
               <div className="flex items-baseline justify-between mb-3">
-                <div className="eyebrow text-foreground/60">
+                <div className="eyebrow-lg text-foreground/70">
                   Итого{" "}
-                  <span className="text-foreground/40 normal-case">
+                  <span className="text-foreground/45 normal-case">
                     · {count} {pluralizeRu(count, ["вещь", "вещи", "вещей"])}
                   </span>
                 </div>
-                <div className="font-serif text-lg">{formatRub(total)}</div>
+                <div className="text-lg font-medium tabular-nums">{formatRub(total)}</div>
               </div>
               <button
                 type="button"
@@ -250,7 +259,7 @@ function CartStep({
                 />
               )}
             </Link>
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0 flex flex-col min-h-20">
               <Link
                 to="/product/$slug"
                 params={{ slug: it.productSlug }}
@@ -261,7 +270,8 @@ function CartStep({
               <div className="mt-1 text-xs text-foreground/55">
                 {it.color} · размер {it.size}
               </div>
-              <div className="mt-2 text-sm">{formatRub(it.price)}</div>
+              {/* mt-auto прижимает цену к нижней кромке фото товара (size-20) */}
+              <div className="mt-auto pt-2 text-sm">{formatRub(it.price)}</div>
             </div>
             <button
               type="button"
@@ -373,7 +383,7 @@ function ConfirmStep({
         </ul>
         <div className="mt-3 pt-3 border-t hairline flex justify-between">
           <span className="eyebrow text-foreground/60">Итого</span>
-          <span className="font-serif text-lg">{formatRub(total)}</span>
+          <span className="text-lg font-medium tabular-nums">{formatRub(total)}</span>
         </div>
       </div>
 
