@@ -211,7 +211,7 @@ export function CatalogPage(props: CatalogPageProps) {
         aria-label="breadcrumb"
         className="pt-4 overflow-x-auto whitespace-nowrap [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
-        <ol className="flex items-center px-4 md:px-10 md:max-w-[1360px] 3xl:max-w-[1800px] md:mx-auto md:w-full eyebrow text-foreground/60 text-[10px]">
+        <ol className="flex items-center px-4 md:px-10 max-w-[1360px] 3xl:max-w-[1800px] md:mx-auto md:w-full eyebrow text-foreground/60 text-[10px]">
           <li>
             <Link to="/" className="hover:text-accent">
               Главная
