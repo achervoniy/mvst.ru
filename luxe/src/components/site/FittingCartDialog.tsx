@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { useFittingCart, submitFittingOrder, type FittingBoutique } from "@/lib/fitting-cart";
 import { useRecentlyViewed } from "@/lib/recently-viewed";
 import { boutiques } from "@/routes/boutiques";
-import { formatRub, pluralizeRu } from "@/lib/format";
+import { formatRub, pluralizeRu, formatRuPhone, ruPhoneDigits, ruPhoneNational } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -18,8 +18,7 @@ const formSchema = z.object({
   name: z.string().trim().min(2, "Введите имя").max(60, "Слишком длинное имя"),
   phone: z
     .string()
-    .trim()
-    .regex(/^(\+7|7|8)[\s\-(]*\d{3}[\s\-)]*\d{3}[\s\-]*\d{2}[\s\-]*\d{2}$/, "Введите корректный номер"),
+    .refine((v) => ruPhoneDigits(v).length === 11, "Введите корректный номер"),
 });
 
 export function FittingCartDialog() {
@@ -407,8 +406,26 @@ function ConfirmStep({
           <Input
             id="fc-phone"
             inputMode="tel"
+            autoComplete="tel"
+            placeholder="+7 (___) ___ __ __"
             value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            onChange={(e) => {
+              const next = e.target.value;
+              const nextDigits = ruPhoneNational(next);
+              const prevDigits = ruPhoneNational(phone);
+              // Бэкспейс по разделителю (скобка/пробел) не меняет число цифр —
+              // в этом случае дополнительно дропаем последнюю цифру, иначе
+              // разделитель сразу возвращается маской и удалить ничего нельзя.
+              if (
+                next.length < phone.length &&
+                nextDigits.length > 0 &&
+                nextDigits.length === prevDigits.length
+              ) {
+                setPhone(formatRuPhone(nextDigits.slice(0, -1)));
+              } else {
+                setPhone(formatRuPhone(next));
+              }
+            }}
             className="mt-2 h-11 rounded-none border-foreground/30 focus-visible:ring-0 focus-visible:border-foreground"
           />
           {errors.phone && <div className="mt-1 text-xs text-destructive">{errors.phone}</div>}
