@@ -23,8 +23,9 @@ import {
   CarouselItem,
 } from "@/components/ui/carousel";
 import type { CarouselApi } from "@/components/ui/carousel";
-import { getProductDetail } from "@/lib/tsum/catalog.functions";
+import { getProductDetail, searchProducts } from "@/lib/tsum/catalog.functions";
 import type { TsumImage, TsumOffer, TsumInformationSection, TsumProductVariant } from "@/lib/tsum/types";
+import type { ShelfItem } from "@/components/site/ProductShelf";
 import { formatRub } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { useFittingCart } from "@/lib/fitting-cart";
@@ -35,7 +36,13 @@ export const Route = createFileRoute("/product/$slug")({
     const { detail, gender } = await getProductDetail({ data: { slug: params.slug } });
     if (!detail) throw notFound();
     const outfits = getLookOutfitsByItemId(detail.id, 6);
-    return { detail, gender: gender ?? "women", outfits };
+    const resolvedGender = gender ?? "women";
+    const similar = await loadSimilarProducts({
+      gender: resolvedGender,
+      categoryId: detail.category.id,
+      excludeId: detail.id,
+    });
+    return { detail, gender: resolvedGender, outfits, similar };
   },
   staleTime: 5 * 60 * 1000,
   head: ({ loaderData }) => {
@@ -83,6 +90,33 @@ function pickImage(img: TsumImage): string {
   return img.w2000 ?? img.w1320 ?? img.w400 ?? img.large ?? img.middle ?? "";
 }
 
+const SIMILAR_LIMIT = 12;
+
+async function loadSimilarProducts(args: {
+  gender: "women" | "men";
+  categoryId: number;
+  excludeId: number;
+}): Promise<ShelfItem[]> {
+  try {
+    const { items } = await searchProducts({
+      data: { gender: args.gender, sectionId: args.categoryId, sort: "our" },
+    });
+    return items
+      .filter((p) => p.id !== args.excludeId)
+      .slice(0, SIMILAR_LIMIT)
+      .map((p) => ({
+        id: p.id,
+        slug: p.slug,
+        title: p.title,
+        image: p.primaryImage,
+        price: p.minPrice,
+        originalPrice: p.originalPrice,
+      }));
+  } catch {
+    return [];
+  }
+}
+
 // Кнопка-размер: сверху брендовый размер, снизу российский. Брендовая строка
 // рисуется только когда у API есть label (IT/FR/INT/...) и vendorSize !== russianSize.
 // Расшифровка лейблов выносится в заголовок селектора (см. sizeTitleSuffix).
@@ -119,7 +153,7 @@ function sizeTitleSuffix(offers: TsumOffer[]): string {
 }
 
 function ProductPage() {
-  const { detail, gender, outfits } = Route.useLoaderData();
+  const { detail, gender, outfits, similar } = Route.useLoaderData();
   const [selectedOfferId, setSelectedOfferId] = useState<number | null>(null);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
@@ -477,7 +511,7 @@ function ProductPage() {
       </div>
 
       {/* Рекомендательные полки */}
-      {(outfits.length > 0 || recent.length > 0) && (
+      {(outfits.length > 0 || similar.length > 0 || recent.length > 0) && (
         <div className="border-t hairline">
           {outfits.length > 0 && (
             <OutfitShelf
@@ -485,6 +519,9 @@ function ProductPage() {
               outfits={outfits}
               currentItemId={detail.id}
             />
+          )}
+          {similar.length > 0 && (
+            <ProductShelf title="Похожие вещи" items={similar} />
           )}
           {recent.length > 0 && (
             <ProductShelf title="Вы недавно смотрели" items={recent} />
