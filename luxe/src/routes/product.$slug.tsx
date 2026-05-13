@@ -117,15 +117,15 @@ async function loadSimilarProducts(args: {
   }
 }
 
-// Кнопка-размер: сверху брендовый размер, снизу российский. Брендовая строка
-// рисуется только когда у API есть label (IT/FR/INT/...) и vendorSize !== russianSize.
+// Кнопка-размер: сверху брендовый размер, снизу российский. Дубликаты значений
+// не схлопываем — для обуви IT и RU часто совпадают, но мы всё равно показываем
+// обе строки, чтобы вид кнопок был одинаковый в мужских и женских товарах.
 // Расшифровка лейблов выносится в заголовок селектора (см. sizeTitleSuffix).
 function SizeLabels({ size }: { size: TsumOffer["size"] }) {
   const vendorLabel = size.vendorLabel?.trim();
   const vendorSize = size.vendorSize?.trim();
   const russianSize = size.russianSize?.trim();
-  const showVendor =
-    !!vendorLabel && !!vendorSize && vendorSize !== russianSize;
+  const showVendor = !!vendorLabel && !!vendorSize;
   const primary = russianSize || vendorSize || "—";
   return (
     <span className="flex flex-col items-center justify-center leading-none gap-0.5">
@@ -144,8 +144,7 @@ function sizeTitleSuffix(offers: TsumOffer[]): string {
   for (const o of offers) {
     const vl = o.size.vendorLabel?.trim();
     const vs = o.size.vendorSize?.trim();
-    const rs = o.size.russianSize?.trim();
-    if (vl && vs && vs !== rs) labels.add(vl);
+    if (vl && vs) labels.add(vl);
   }
   if (labels.size !== 1) return "";
   const [label] = labels;
