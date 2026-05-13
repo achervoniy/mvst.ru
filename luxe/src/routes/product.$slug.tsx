@@ -296,7 +296,7 @@ function ProductPage() {
         <span className="text-foreground">{detail.title}</span>
       </div>
 
-      <div className="grid md:grid-cols-[1.4fr_1fr] gap-10 md:gap-16 px-6 md:px-12 pb-10 md:py-10">
+      <div className="grid md:grid-cols-[1.4fr_1fr] gap-4 md:gap-16 px-6 md:px-12 pb-10 md:py-10">
         {/* Gallery — мобильная карусель */}
         <div className="md:hidden -mx-6">
           <Carousel
@@ -396,10 +396,10 @@ function ProductPage() {
         </div>
 
         {/* Info */}
-        <div className="md:sticky md:top-6 md:self-start space-y-8 pt-2">
+        <div className="md:sticky md:top-6 md:self-start space-y-8 md:pt-2">
           <div>
             <h1 className="font-serif text-3xl md:text-4xl leading-tight">{detail.title}</h1>
-            <div className="mt-4 flex items-baseline gap-3">
+            <div className="mt-3 flex items-baseline gap-3">
               <div className="text-lg">{formatRub(minPrice)}</div>
               {hasDiscount && (
                 <>
