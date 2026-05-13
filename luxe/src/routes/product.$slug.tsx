@@ -164,6 +164,10 @@ function ProductPage() {
   // Берём только товарные фото (макс. 5). Иногда ЦУМ-API подмешивает
   // лукбук-кадры с другими вещами в самом конце массива — отсекаем.
   const images = ((detail.images ?? []) as TsumImage[]).slice(0, 5);
+  const video = detail.video?.trim() || null;
+  const videoSlideIndex = video ? images.length : -1;
+  const totalSlides = images.length + (video ? 1 : 0);
+  const videoPoster = images[0] ? pickImage(images[0]) : undefined;
   const variants: TsumProductVariant[] = detail.products ?? [];
   const buyableOffers = offers.filter((o) => o.quantity > 0 && o.isBuyable !== false);
   const showSizes = offers.length > 0 && offers[0].size?.russianSize;
@@ -280,7 +284,7 @@ function ProductPage() {
 
   return (
     <SiteLayout>
-      <div className="px-6 md:px-12 pt-8 eyebrow text-foreground/60">
+      <div className="hidden md:block px-6 md:px-12 pt-8 eyebrow text-foreground/60">
         <Link to="/" className="hover:text-accent">
           Главная
         </Link>
@@ -292,7 +296,7 @@ function ProductPage() {
         <span className="text-foreground">{detail.title}</span>
       </div>
 
-      <div className="grid md:grid-cols-[1.4fr_1fr] gap-10 md:gap-16 px-6 md:px-12 py-10 pb-28 md:pb-10">
+      <div className="grid md:grid-cols-[1.4fr_1fr] gap-10 md:gap-16 px-6 md:px-12 pb-10 md:py-10">
         {/* Gallery — мобильная карусель */}
         <div className="md:hidden -mx-6">
           <Carousel
@@ -318,14 +322,35 @@ function ProductPage() {
                   </button>
                 </CarouselItem>
               ))}
+              {video && (
+                <CarouselItem key="video" className="pl-0 basis-full">
+                  <button
+                    type="button"
+                    onClick={() => setLightboxIndex(videoSlideIndex)}
+                    className="relative block w-full h-[62vh] max-h-[560px] cursor-zoom-in bg-background"
+                    aria-label="Открыть видео"
+                  >
+                    <video
+                      src={video}
+                      poster={videoPoster}
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      preload="metadata"
+                      className="absolute inset-0 size-full object-cover"
+                    />
+                  </button>
+                </CarouselItem>
+              )}
             </CarouselContent>
           </Carousel>
-          {images.length > 1 && (
+          {totalSlides > 1 && (
             <div
               className="mt-2 text-center eyebrow text-foreground/55"
               aria-live="polite"
             >
-              {carouselIndex + 1} / {images.length}
+              {carouselIndex + 1} / {totalSlides}
             </div>
           )}
         </div>
@@ -348,6 +373,26 @@ function ProductPage() {
               />
             </button>
           ))}
+          {video && (
+            <button
+              key="video"
+              type="button"
+              onClick={() => setLightboxIndex(videoSlideIndex)}
+              className="relative aspect-[3/4] cursor-zoom-in group bg-background"
+              aria-label="Открыть видео"
+            >
+              <video
+                src={video}
+                poster={videoPoster}
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="metadata"
+                className="absolute inset-0 size-full object-cover transition-opacity group-hover:opacity-90"
+              />
+            </button>
+          )}
         </div>
 
         {/* Info */}
@@ -540,8 +585,22 @@ function ProductPage() {
         </div>
       )}
 
-      {/* Sticky CTA на мобильных */}
-      <div className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-background/95 backdrop-blur border-t hairline px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] grid grid-cols-2 gap-2">
+      {/* Хлебные крошки — мобильный вариант, в самом низу страницы */}
+      <div className="md:hidden px-6 pt-8 pb-8 eyebrow text-foreground/60">
+        <Link to="/" className="hover:text-accent">
+          Главная
+        </Link>
+        <span className="mx-2">·</span>
+        <Link to="/catalog/$gender" params={{ gender }} className="hover:text-accent">
+          {gender === "women" ? "Для нее" : "Для него"}
+        </Link>
+        <span className="mx-2">·</span>
+        <span className="text-foreground">{detail.title}</span>
+      </div>
+
+      {/* Sticky CTA на мобильных: pinned к низу вьюпорта, на самом низу
+          страницы «отстёгивается» — встаёт под крошками, дальше идёт footer. */}
+      <div className="md:hidden sticky bottom-0 z-40 bg-background/95 backdrop-blur border-t hairline px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] grid grid-cols-2 gap-2">
         <a
           href={tsumUrl}
           target="_blank"
@@ -591,11 +650,28 @@ function ProductPage() {
                       />
                     </CarouselItem>
                   ))}
+                  {video && (
+                    <CarouselItem
+                      key="video"
+                      className="pl-0 basis-full flex items-center justify-center bg-background"
+                    >
+                      <video
+                        src={video}
+                        poster={videoPoster}
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        preload="metadata"
+                        className="max-h-[92vh] max-w-[92vw] object-contain select-none"
+                      />
+                    </CarouselItem>
+                  )}
                 </CarouselContent>
               </Carousel>
             )}
 
-            {images.length > 1 && (
+            {totalSlides > 1 && (
               <>
                 <button
                   type="button"
@@ -604,7 +680,7 @@ function ProductPage() {
                     lightboxApi?.scrollPrev();
                   }}
                   className="hidden md:flex absolute left-4 md:left-8 top-1/2 -translate-y-1/2 size-12 items-center justify-center text-foreground/70 hover:text-foreground transition-colors"
-                  aria-label="Предыдущее фото"
+                  aria-label="Предыдущий слайд"
                 >
                   <ChevronLeft className="size-8" />
                 </button>
@@ -615,7 +691,7 @@ function ProductPage() {
                     lightboxApi?.scrollNext();
                   }}
                   className="hidden md:flex absolute right-4 md:right-8 top-1/2 -translate-y-1/2 size-12 items-center justify-center text-foreground/70 hover:text-foreground transition-colors"
-                  aria-label="Следующее фото"
+                  aria-label="Следующий слайд"
                 >
                   <ChevronRight className="size-8" />
                 </button>
@@ -629,9 +705,9 @@ function ProductPage() {
               <X className="size-7" />
             </DialogPrimitive.Close>
 
-            {lightboxIndex !== null && images.length > 1 && (
+            {lightboxIndex !== null && totalSlides > 1 && (
               <div className="absolute bottom-6 left-1/2 -translate-x-1/2 eyebrow text-foreground/60">
-                {lightboxSlide + 1} / {images.length}
+                {lightboxSlide + 1} / {totalSlides}
               </div>
             )}
           </DialogPrimitive.Content>
