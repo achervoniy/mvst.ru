@@ -158,6 +158,8 @@ function ProductPage() {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
   const [carouselIndex, setCarouselIndex] = useState(0);
+  const [lightboxApi, setLightboxApi] = useState<CarouselApi | null>(null);
+  const [lightboxSlide, setLightboxSlide] = useState(0);
   const [sizePickerOpen, setSizePickerOpen] = useState(false);
   const offers: TsumOffer[] = detail.offers ?? [];
   // Берём только товарные фото (макс. 5). Иногда ЦУМ-API подмешивает
@@ -225,17 +227,27 @@ function ProductPage() {
 
   // Клавиатурная навигация по лайтбоксу
   useEffect(() => {
-    if (lightboxIndex === null) return;
+    if (lightboxIndex === null || !lightboxApi) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft") {
-        setLightboxIndex((i) => (i === null ? i : (i - 1 + images.length) % images.length));
-      } else if (e.key === "ArrowRight") {
-        setLightboxIndex((i) => (i === null ? i : (i + 1) % images.length));
-      }
+      if (e.key === "ArrowLeft") lightboxApi.scrollPrev();
+      else if (e.key === "ArrowRight") lightboxApi.scrollNext();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [lightboxIndex, images.length]);
+  }, [lightboxIndex, lightboxApi]);
+
+  // Синхронизация счётчика лайтбокса
+  useEffect(() => {
+    if (!lightboxApi) return;
+    const onSelect = () => setLightboxSlide(lightboxApi.selectedScrollSnap());
+    onSelect();
+    lightboxApi.on("select", onSelect);
+    lightboxApi.on("reInit", onSelect);
+    return () => {
+      lightboxApi.off("select", onSelect);
+      lightboxApi.off("reInit", onSelect);
+    };
+  }, [lightboxApi]);
 
   // Счётчик для мобильной карусели
   useEffect(() => {
@@ -556,15 +568,32 @@ function ProductPage() {
           <DialogPrimitive.Content
             className="fixed inset-0 z-50 flex items-center justify-center bg-background outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
             aria-describedby={undefined}
+            onOpenAutoFocus={(e) => e.preventDefault()}
           >
             <DialogPrimitive.Title className="sr-only">{detail.title}</DialogPrimitive.Title>
 
-            {lightboxIndex !== null && images[lightboxIndex] && (
-              <img
-                src={pickImage(images[lightboxIndex])}
-                alt={`${detail.title} — ${lightboxIndex + 1}`}
-                className="max-h-[92vh] max-w-[92vw] object-contain mix-blend-multiply"
-              />
+            {lightboxIndex !== null && (
+              <Carousel
+                opts={{ loop: true, startIndex: lightboxIndex }}
+                setApi={setLightboxApi}
+                className="w-full h-full"
+              >
+                <CarouselContent className="ml-0 h-[100dvh]">
+                  {images.map((img: TsumImage, i: number) => (
+                    <CarouselItem
+                      key={i}
+                      className="pl-0 basis-full flex items-center justify-center bg-background"
+                    >
+                      <img
+                        src={pickImage(img)}
+                        alt={`${detail.title} — ${i + 1}`}
+                        className="max-h-[92vh] max-w-[92vw] object-contain mix-blend-multiply select-none"
+                        draggable={false}
+                      />
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+              </Carousel>
             )}
 
             {images.length > 1 && (
@@ -573,11 +602,9 @@ function ProductPage() {
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
-                    setLightboxIndex((i) =>
-                      i === null ? i : (i - 1 + images.length) % images.length,
-                    );
+                    lightboxApi?.scrollPrev();
                   }}
-                  className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 size-12 flex items-center justify-center text-foreground/70 hover:text-foreground transition-colors"
+                  className="hidden md:flex absolute left-4 md:left-8 top-1/2 -translate-y-1/2 size-12 items-center justify-center text-foreground/70 hover:text-foreground transition-colors"
                   aria-label="Предыдущее фото"
                 >
                   <ChevronLeft className="size-8" />
@@ -586,9 +613,9 @@ function ProductPage() {
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
-                    setLightboxIndex((i) => (i === null ? i : (i + 1) % images.length));
+                    lightboxApi?.scrollNext();
                   }}
-                  className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 size-12 flex items-center justify-center text-foreground/70 hover:text-foreground transition-colors"
+                  className="hidden md:flex absolute right-4 md:right-8 top-1/2 -translate-y-1/2 size-12 items-center justify-center text-foreground/70 hover:text-foreground transition-colors"
                   aria-label="Следующее фото"
                 >
                   <ChevronRight className="size-8" />
@@ -605,7 +632,7 @@ function ProductPage() {
 
             {lightboxIndex !== null && images.length > 1 && (
               <div className="absolute bottom-6 left-1/2 -translate-x-1/2 eyebrow text-foreground/60">
-                {lightboxIndex + 1} / {images.length}
+                {lightboxSlide + 1} / {images.length}
               </div>
             )}
           </DialogPrimitive.Content>
