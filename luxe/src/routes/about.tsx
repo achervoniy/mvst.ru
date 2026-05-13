@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/site/SiteLayout";
-import heroImg from "@/assets/ss26-campaign.webp";
-import materialsImg from "@/assets/lookbook-2.webp";
-import craftImg from "@/assets/lookbook-1.jpg";
+import heroImg from "@/assets/lookbook-hero.webp";
+import materialsImg from "@/assets/lookbook-materials.webp";
+import craftImg from "@/assets/lookbook-craft.webp";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
