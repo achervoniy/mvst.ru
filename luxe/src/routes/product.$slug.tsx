@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { SiteLayout } from "@/components/site/SiteLayout";
+import { ProductGalleryVideo } from "@/components/site/ProductGalleryVideo";
 import { ProductShelf } from "@/components/site/ProductShelf";
 import { OutfitShelf } from "@/components/site/OutfitShelf";
 import { getLookOutfitsByItemId } from "@/lib/look-recommendations";
@@ -330,16 +331,7 @@ function ProductPage() {
                     className="relative block w-full h-[62vh] max-h-[560px] cursor-zoom-in bg-background"
                     aria-label="Открыть видео"
                   >
-                    <video
-                      src={video}
-                      poster={videoPoster}
-                      autoPlay
-                      loop
-                      muted
-                      playsInline
-                      preload="metadata"
-                      className="absolute inset-0 size-full object-cover"
-                    />
+                    <ProductGalleryVideo src={video} poster={videoPoster} mode="card" />
                   </button>
                 </CarouselItem>
               )}
@@ -381,15 +373,11 @@ function ProductPage() {
               className="relative aspect-[3/4] cursor-zoom-in group bg-background"
               aria-label="Открыть видео"
             >
-              <video
+              <ProductGalleryVideo
                 src={video}
                 poster={videoPoster}
-                autoPlay
-                loop
-                muted
-                playsInline
-                preload="metadata"
-                className="absolute inset-0 size-full object-cover transition-opacity group-hover:opacity-90"
+                mode="card"
+                videoClassName="group-hover:opacity-90"
               />
             </button>
           )}
@@ -655,16 +643,7 @@ function ProductPage() {
                       key="video"
                       className="pl-0 basis-full flex items-center justify-center bg-background"
                     >
-                      <video
-                        src={video}
-                        poster={videoPoster}
-                        autoPlay
-                        loop
-                        muted
-                        playsInline
-                        preload="metadata"
-                        className="max-h-[92vh] max-w-[92vw] object-contain select-none"
-                      />
+                      <ProductGalleryVideo src={video} poster={videoPoster} mode="lightbox" />
                     </CarouselItem>
                   )}
                 </CarouselContent>
