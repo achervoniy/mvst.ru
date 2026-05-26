@@ -102,7 +102,7 @@ export function Header({ variant = "solid" }: { variant?: "transparent" | "solid
             </button>
 
             <Link to="/" aria-label="MVST" className="block">
-              <img src={logoFull} alt="MVST" className="h-5 w-auto" />
+              <img src={logoFull} alt="MVST" className="h-[25px] w-auto" />
             </Link>
 
             <HeaderCartButton />
@@ -115,7 +115,7 @@ export function Header({ variant = "solid" }: { variant?: "transparent" | "solid
                 src={logoFull}
                 alt="MVST"
                 className={cn(
-                  "h-5 w-auto transition-[filter] duration-[280ms] ease-out",
+                  "h-[25px] w-auto transition-[filter] duration-[280ms] ease-out",
                   showGradient && "brightness-0 invert",
                 )}
               />

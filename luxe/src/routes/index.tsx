@@ -109,7 +109,7 @@ function HomePage() {
           <Link
             to="/collection-ss26"
             preload="intent"
-            className="mt-8 md:mt-10 inline-block eyebrow-lg border-b border-cream/70 pb-2 hover:border-cream"
+            className="mt-5 md:mt-6 inline-block eyebrow-lg border-b border-cream/70 pb-1 hover:border-cream"
           >
             Перейти к коллекции
           </Link>
@@ -136,9 +136,9 @@ function HomePage() {
               className="absolute inset-0 size-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.02] motion-reduce:transition-none motion-reduce:transform-none"
             />
             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors" />
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-cream">
+            <div className="absolute inset-0 flex flex-col items-center justify-end pb-14 md:justify-center md:pb-0 text-cream">
               <div className="font-serif text-5xl md:text-6xl">{s.label}</div>
-              <div className="mt-8 eyebrow border-b border-cream/70 pb-1">Открыть каталог</div>
+              <div className="mt-5 eyebrow border-b border-cream/70 pb-1">Открыть каталог</div>
             </div>
           </Link>
         ))}
