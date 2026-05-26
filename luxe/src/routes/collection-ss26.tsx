@@ -36,9 +36,14 @@ function CollectionSS26() {
   const [active, setActive] = useState(0);
   const stripRef = useRef<HTMLDivElement>(null);
   const thumbRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const looksRef = useRef<HTMLElement>(null);
 
   const total = looks.length;
   const current = looks[active];
+
+  const scrollToLooks = () => {
+    looksRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   const goTo = useCallback(
     (i: number) => {
@@ -85,13 +90,19 @@ function CollectionSS26() {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-transparent to-black/35" />
         <div className="relative z-10 h-full flex flex-col items-center justify-end pb-20 px-6 text-center text-cream">
-          <div className="eyebrow-lg mb-6 opacity-90">Лукбук</div>
           <h1 className="font-serif text-5xl md:text-7xl font-light leading-[1.05]">
             Коллекция весна-лето 2026
           </h1>
           <p className="mt-6 max-w-md text-sm md:text-base opacity-90">
             {total} образов нового сезона: кожа, шелк, лен и японский деним.
           </p>
+          <button
+            type="button"
+            onClick={scrollToLooks}
+            className="mt-8 md:mt-10 inline-flex items-center justify-center rounded-full bg-cream text-foreground px-7 py-3 eyebrow hover:bg-white transition-colors"
+          >
+            Смотреть образы
+          </button>
         </div>
       </section>
 
@@ -104,10 +115,17 @@ function CollectionSS26() {
       </section>
 
       {/* Lookbook stage — compact, fits a laptop screen */}
-      <section className="bg-cream/60 border-y hairline">
-        <div className="hidden md:flex items-baseline gap-3 px-4 md:px-8 pt-6 md:pt-8 pb-3 max-w-[1360px] mx-auto">
+      <section
+        ref={looksRef}
+        id="looks"
+        style={{ scrollMarginTop: "var(--header-h, 96px)" }}
+        className="bg-cream/60 border-y hairline"
+      >
+        {/* Заголовок секции — виден и на мобиле, чтобы было понятно,
+            что фото и товары ниже — один блок про выбранный образ. */}
+        <div className="flex items-baseline justify-center md:justify-start gap-3 px-4 md:px-8 pt-6 md:pt-10 pb-3 max-w-[1360px] mx-auto">
           <div className="eyebrow text-foreground/60">Образ</div>
-          <div className="font-serif text-sm tabular-nums text-foreground/70">
+          <div className="font-serif text-base md:text-lg tabular-nums text-foreground/70">
             <span className="text-foreground">{String(active + 1).padStart(2, "0")}</span>
             <span className="mx-2 text-foreground/30">/</span>
             <span>{String(total).padStart(2, "0")}</span>
@@ -170,7 +188,7 @@ function CollectionSS26() {
             to="/catalog/$gender"
             params={{ gender: "women" }}
             preload="intent"
-            className="eyebrow-lg border-b border-foreground pb-2 hover:text-accent hover:border-accent transition-colors"
+            className="eyebrow-lg border-b border-foreground pb-1 hover:text-accent hover:border-accent transition-colors"
           >
             Для нее
           </Link>
@@ -178,7 +196,7 @@ function CollectionSS26() {
             to="/catalog/$gender"
             params={{ gender: "men" }}
             preload="intent"
-            className="eyebrow-lg border-b border-foreground pb-2 hover:text-accent hover:border-accent transition-colors"
+            className="eyebrow-lg border-b border-foreground pb-1 hover:text-accent hover:border-accent transition-colors"
           >
             Для него
           </Link>
@@ -202,9 +220,9 @@ function LookStage({
   const look = looks[active];
 
   return (
-    <div className="relative max-w-[1360px] mx-auto px-2 md:px-6 pt-6 md:pt-0">
-      <div className="grid grid-cols-1 gap-3 md:gap-4 md:flex md:items-stretch md:h-[64vh] md:max-h-[640px]">
-        {/* Mobile: свайпер с физическим следованием за пальцем */}
+    <div className="relative max-w-[1360px] mx-auto md:px-6 pt-2 md:pt-0">
+      <div className="grid grid-cols-1 gap-4 md:gap-4 md:flex md:items-stretch md:h-[64vh] md:max-h-[640px]">
+        {/* Mobile: свайпер на всю ширину экрана со стрелками поверх кадра */}
         <div className="md:hidden">
           <MobileLookSwiper looks={looks} active={active} onPrev={onPrev} onNext={onNext} />
         </div>
@@ -219,10 +237,11 @@ function LookStage({
           />
         </div>
 
-        {/* Products slider — single horizontal row, MVST-only */}
+        {/* Товары образа. Бизнес-правило (только для страницы коллекции):
+            показываем все MVST включая out-of-stock, скрываем другие бренды. */}
         <div
           key={look.id}
-          className="look-fade md:flex-1 md:h-full flex items-center min-w-0"
+          className="look-fade md:flex-1 md:h-full flex items-center min-w-0 px-2 md:px-0"
         >
           <ProductsSlider products={look.products.filter((p) => p.brand === "MVST")} />
         </div>
@@ -381,7 +400,7 @@ function MobileLookSwiper({
   return (
     <div
       ref={containerRef}
-      className="relative bg-cream aspect-[3/4] overflow-hidden"
+      className="relative bg-cream aspect-[11/17] overflow-hidden"
       style={{ touchAction: "pan-y" }}
     >
       <div
@@ -605,9 +624,12 @@ function ProductCell({ product }: { product: Product }) {
           className="absolute inset-0 size-full object-contain p-3 transition-transform duration-700 group-hover:scale-[1.03] mix-blend-multiply"
         />
       </div>
-      <div className="px-3 pt-3 pb-4 flex flex-col items-center gap-1.5 text-center">
-        <div className="text-sm leading-tight text-foreground/85 line-clamp-1">{product.title}</div>
-        <div className="text-sm font-light text-foreground tabular-nums">
+      <div className="px-2 md:px-3 pt-3 pb-1 md:pb-4 flex flex-col items-center gap-1.5 text-center">
+        {/* Название в 2 строки (как в каталоге и в OutfitShelf) — материалы важны. */}
+        <div className="font-serif text-[15px] md:text-base leading-snug line-clamp-2 min-h-[2.6em] text-foreground">
+          {product.title}
+        </div>
+        <div className="text-xs md:text-sm font-light text-foreground tabular-nums">
           {formatPrice(product.price.discounted)}
         </div>
       </div>
