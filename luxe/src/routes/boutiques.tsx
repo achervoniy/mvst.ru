@@ -221,7 +221,7 @@ function BoutiquesPage() {
                 href={b.map}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="self-start eyebrow border-b border-foreground pb-1 hover:text-accent hover:border-accent"
+                className="self-start eyebrow leading-none border-b border-foreground pb-1 hover:text-accent hover:border-accent"
               >
                 Построить маршрут
               </a>

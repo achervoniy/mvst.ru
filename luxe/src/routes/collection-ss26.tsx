@@ -188,7 +188,7 @@ function CollectionSS26() {
             to="/catalog/$gender"
             params={{ gender: "women" }}
             preload="intent"
-            className="eyebrow-lg border-b border-foreground pb-1 hover:text-accent hover:border-accent transition-colors"
+            className="eyebrow-lg leading-none border-b border-foreground pb-1 hover:text-accent hover:border-accent transition-colors"
           >
             Для нее
           </Link>
@@ -196,7 +196,7 @@ function CollectionSS26() {
             to="/catalog/$gender"
             params={{ gender: "men" }}
             preload="intent"
-            className="eyebrow-lg border-b border-foreground pb-1 hover:text-accent hover:border-accent transition-colors"
+            className="eyebrow-lg leading-none border-b border-foreground pb-1 hover:text-accent hover:border-accent transition-colors"
           >
             Для него
           </Link>

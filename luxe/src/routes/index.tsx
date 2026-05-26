@@ -109,7 +109,7 @@ function HomePage() {
           <Link
             to="/collection-ss26"
             preload="intent"
-            className="mt-5 md:mt-6 inline-block eyebrow-lg border-b border-cream/70 pb-1 hover:border-cream"
+            className="mt-5 md:mt-6 inline-block eyebrow-lg leading-none border-b border-cream/70 pb-1 hover:border-cream"
           >
             Перейти к коллекции
           </Link>
@@ -138,7 +138,7 @@ function HomePage() {
             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors" />
             <div className="absolute inset-0 flex flex-col items-center justify-end pb-14 md:justify-center md:pb-0 text-cream">
               <div className="font-serif text-5xl md:text-6xl">{s.label}</div>
-              <div className="mt-5 eyebrow border-b border-cream/70 pb-1">Открыть каталог</div>
+              <div className="mt-5 eyebrow leading-none border-b border-cream/70 pb-1">Открыть каталог</div>
             </div>
           </Link>
         ))}
@@ -214,7 +214,7 @@ function HomePage() {
           <Link
             to="/about"
             preload="intent"
-            className="eyebrow border-b border-foreground pb-1 hover:text-accent hover:border-accent"
+            className="eyebrow leading-none border-b border-foreground pb-1 hover:text-accent hover:border-accent"
           >
             О бренде
           </Link>
@@ -231,7 +231,7 @@ function HomePage() {
           <Link
             to="/boutiques"
             preload="intent"
-            className="hidden md:inline-block eyebrow border-b border-foreground pb-1 hover:text-accent hover:border-accent"
+            className="hidden md:inline-block eyebrow leading-none border-b border-foreground pb-1 hover:text-accent hover:border-accent"
           >
             Все бутики
           </Link>

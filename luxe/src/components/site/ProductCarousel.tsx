@@ -97,7 +97,7 @@ export function ProductCarousel({ items, viewAllGender }: ProductCarouselProps) 
           to="/catalog/$gender"
           params={{ gender: viewAllGender }}
           preload="intent"
-          className="eyebrow border-b border-foreground pb-1 hover:text-accent hover:border-accent"
+          className="eyebrow leading-none border-b border-foreground pb-1 hover:text-accent hover:border-accent"
         >
           Смотреть все
         </Link>
