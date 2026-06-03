@@ -3,10 +3,10 @@ import { SiteLayout } from "@/components/site/SiteLayout";
 import homeHero from "@/assets/home-hero.webp";
 import { boutiques } from "./boutiques";
 
-const SS26_VIDEO_DESKTOP =
+// На главной EN — используем desktop-исходник и на мобиле: блок горизонтальный
+// (aspect-video), вертикальный mobile-кадр в нём смотрелся бы слишком крупно.
+const SS26_VIDEO =
   "https://st-cdn.tsum.com/static/upload/mvst_desktop_04_26.mov?u=1776854797";
-const SS26_VIDEO_MOBILE =
-  "https://st-cdn.tsum.com/static/upload/mvst_mobile_04_26.mov?u=1776854797";
 
 // Кадры с показа — берём из publicного фешн-шоу.
 const SS26_LOOKS = [
@@ -69,27 +69,16 @@ function EnHome() {
         </div>
 
         <div className="max-w-6xl mx-auto md:px-12">
-          {/* Desktop / mobile источники переключаются классом, autoplay-muted-loop у обоих. */}
           <div className="relative aspect-video bg-foreground/10 overflow-hidden">
             <video
-              src={SS26_VIDEO_DESKTOP}
+              src={SS26_VIDEO}
               poster={homeHero}
               autoPlay
               muted
               loop
               playsInline
               preload="metadata"
-              className="hidden md:block absolute inset-0 size-full object-cover"
-            />
-            <video
-              src={SS26_VIDEO_MOBILE}
-              poster={homeHero}
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="metadata"
-              className="md:hidden absolute inset-0 size-full object-cover"
+              className="absolute inset-0 size-full object-cover"
             />
           </div>
         </div>
