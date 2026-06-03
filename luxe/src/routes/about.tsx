@@ -1,5 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import { Plus } from "lucide-react";
 import { SiteLayout } from "@/components/site/SiteLayout";
+import { cn } from "@/lib/utils";
 import heroImg from "@/assets/lookbook-hero.webp";
 import materialsImg from "@/assets/lookbook-materials.webp";
 import craftImg from "@/assets/lookbook-craft.webp";
@@ -25,14 +28,56 @@ export const Route = createFileRoute("/about")({
   component: AboutPage,
 });
 
-const mills: ReadonlyArray<{ name: string; note: string }> = [
-  { name: "Loro Piana", note: "Кашемир, шерсть, шелк" },
-  { name: "Cariaggi", note: "Кашемировая пряжа" },
-  { name: "Colombo", note: "Викунья, альпака" },
-  { name: "Vitale Barberis Canonico", note: "Шерсть мериноса" },
-  { name: "Reda 1865", note: "Костюмные ткани" },
-  { name: "Candiani", note: "Деним" },
-  { name: "Olmetex", note: "Хлопок и лен" },
+// Материалы — первичная сущность. Мануфактуры — вторичная: раскрываются
+// по клику и показываются мелким набором подписей под названием материала.
+const materials: ReadonlyArray<{
+  name: string;
+  description: string;
+  mills: ReadonlyArray<{ name: string; note?: string }>;
+}> = [
+  {
+    name: "Кашемир",
+    description:
+      "Тончайшее монгольское и итальянское волокно. Лёгкость, тепло, способность держать форму годами.",
+    mills: [
+      { name: "Loro Piana", note: "флагман люкс-волокна" },
+      { name: "Cariaggi", note: "пряжа высшей крутки" },
+    ],
+  },
+  {
+    name: "Шерсть",
+    description:
+      "Меринос superfine, костюмные ткани с двойным кручением и плотной диагональной структурой.",
+    mills: [
+      { name: "Vitale Barberis Canonico", note: "меринос" },
+      { name: "Reda 1865", note: "костюмные ткани" },
+      { name: "Loro Piana", note: "шерсть с шёлком" },
+    ],
+  },
+  {
+    name: "Шёлк",
+    description:
+      "Mulberry-шёлк глубокого блеска. В подкладках и в основных тканях, где важна благородная тяжесть.",
+    mills: [{ name: "Loro Piana" }],
+  },
+  {
+    name: "Викунья и альпака",
+    description:
+      "Раритетные волокна Анд. Самые мягкие из существующих, лимитированный объём в год.",
+    mills: [{ name: "Colombo", note: "историческая мануфактура в Боргосезии" }],
+  },
+  {
+    name: "Лён и хлопок",
+    description:
+      "Итальянский лён длинного волокна и египетский хлопок Giza. Для летних коллекций и сорочек.",
+    mills: [{ name: "Olmetex" }],
+  },
+  {
+    name: "Деним",
+    description:
+      "Сэлвидж-деним из Италии и Японии. Плотная саржа, природная индиго-окраска, благородный износ.",
+    mills: [{ name: "Candiani", note: "родина селвиджа в Европе" }],
+  },
 ];
 
 const facts: ReadonlyArray<{ label: string; value: string }> = [
@@ -78,43 +123,35 @@ function AboutPage() {
       </section>
 
       {/* MATERIALS */}
-      <section className="grid md:grid-cols-2 gap-px bg-foreground/10">
-        <img
-          src={materialsImg}
-          alt=""
-          loading="lazy"
-          className="w-full h-full aspect-[4/5] object-cover"
-        />
-        <div className="p-10 md:p-16 flex flex-col justify-center bg-background">
+      <section className="bg-background">
+        <div className="px-6 md:px-12 pt-20 md:pt-28 pb-6 max-w-6xl mx-auto text-center">
           <div className="eyebrow text-foreground/60 mb-4">Материалы</div>
-          <h3 className="font-serif text-3xl md:text-4xl mb-6">Лучшие мануфактуры мира</h3>
-          <p className="text-foreground/75 leading-relaxed mb-8">
-            Все начинается с ткани. MVST сотрудничает с поставщиками, задающими
-            стандарты индустрии: от благородных кашемира и шелка Mulberry до
-            раритетной шерсти мериноса, викуньи и альпаки.
+          <h3 className="font-serif text-4xl md:text-5xl leading-tight mb-6">
+            Всё начинается с волокна
+          </h3>
+          <p className="text-foreground/70 leading-relaxed max-w-2xl mx-auto">
+            Каждая ткань MVST выбрана за свой характер. Мануфактуры, с которыми
+            мы работаем, — следствие этого выбора, а не его причина.
           </p>
+        </div>
 
-          <ul className="divide-y divide-foreground/10 border-y border-foreground/10 mb-8">
-            {mills.map((m) => (
-              <li
-                key={m.name}
-                className="flex items-baseline justify-between gap-6 py-3"
-              >
-                <span className="font-serif text-lg md:text-xl text-foreground">
-                  {m.name}
-                </span>
-                <span className="eyebrow text-foreground/55 text-right">
-                  {m.note}
-                </span>
-              </li>
-            ))}
-          </ul>
+        <div className="px-6 md:px-12 pb-20 md:pb-28 max-w-6xl mx-auto">
+          <MaterialsList />
+        </div>
 
-          <p className="text-foreground/75 leading-relaxed">
-            В верхней одежде — драгоценный мех, испанская овчина, технологичные
-            нейлон и утеплитель Thermore. Игру контрастов создают сочетания
-            гладкой кожи с фактурной замшей и каракульчой.
-          </p>
+        <div className="border-t hairline px-6 md:px-12 py-14 md:py-16 max-w-3xl mx-auto text-foreground/70 leading-relaxed text-center">
+          В верхней одежде — драгоценный мех, испанская овчина, технологичные
+          нейлон и утеплитель Thermore. Игру контрастов создают сочетания
+          гладкой кожи с фактурной замшей и каракульчой.
+        </div>
+
+        <div className="relative aspect-[16/8] md:aspect-[16/6] overflow-hidden">
+          <img
+            src={materialsImg}
+            alt=""
+            loading="lazy"
+            className="absolute inset-0 size-full object-cover"
+          />
         </div>
       </section>
 
@@ -187,5 +224,77 @@ function AboutPage() {
         </p>
       </section>
     </SiteLayout>
+  );
+}
+
+function MaterialsList() {
+  const [open, setOpen] = useState<string | null>(materials[0]?.name ?? null);
+
+  return (
+    <ul className="border-t hairline">
+      {materials.map((m) => {
+        const isOpen = open === m.name;
+        return (
+          <li key={m.name} className="border-b hairline">
+            <button
+              type="button"
+              onClick={() => setOpen(isOpen ? null : m.name)}
+              aria-expanded={isOpen}
+              className="w-full grid grid-cols-[1fr_auto] md:grid-cols-[1fr_minmax(260px,1.2fr)_auto] items-baseline gap-4 md:gap-10 text-left py-7 md:py-9 group"
+            >
+              <span
+                className={cn(
+                  "font-serif text-3xl md:text-5xl font-light leading-none transition-colors",
+                  isOpen ? "text-foreground" : "text-foreground/85 group-hover:text-foreground",
+                )}
+              >
+                {m.name}
+              </span>
+              <span className="hidden md:block text-foreground/55 text-sm leading-relaxed max-w-md">
+                {m.description}
+              </span>
+              <span
+                aria-hidden
+                className={cn(
+                  "justify-self-end shrink-0 size-9 md:size-10 rounded-full border hairline flex items-center justify-center text-foreground/60 transition-transform duration-300",
+                  isOpen && "rotate-45 border-foreground text-foreground",
+                )}
+              >
+                <Plus className="size-4" strokeWidth={1.25} />
+              </span>
+            </button>
+
+            {/* Мобильный текст-описание — всегда видим под заголовком,
+                чтобы не прятать суть за раскрытием. */}
+            <div className="md:hidden -mt-2 pb-1 text-foreground/55 text-sm leading-relaxed">
+              {m.description}
+            </div>
+
+            <div
+              className={cn(
+                "grid transition-all duration-500 ease-out",
+                isOpen ? "grid-rows-[1fr] opacity-100 pb-8" : "grid-rows-[0fr] opacity-0",
+              )}
+            >
+              <div className="overflow-hidden">
+                <div className="eyebrow text-foreground/45 mb-4">Мануфактуры</div>
+                <ul className="flex flex-wrap gap-x-8 gap-y-4">
+                  {m.mills.map((mill) => (
+                    <li key={mill.name} className="flex flex-col">
+                      <span className="font-serif text-base md:text-lg text-foreground/80">
+                        {mill.name}
+                      </span>
+                      {mill.note && (
+                        <span className="eyebrow text-foreground/45 mt-1">{mill.note}</span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </li>
+        );
+      })}
+    </ul>
   );
 }
