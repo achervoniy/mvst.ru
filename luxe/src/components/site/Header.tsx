@@ -5,17 +5,36 @@ import logoFull from "@/assets/icons/LogoFull.svg";
 import navIcon from "@/assets/icons/NavIcon.svg";
 import closeIcon from "@/assets/icons/CloseIcon.svg";
 import { HeaderCartButton } from "@/components/site/HeaderCartButton";
+import { useLang, useDict } from "@/lib/i18n";
 
-const nav = [
-  { to: "/collection-ss26", label: "Коллекция весна-лето 2026" },
-  { to: "/catalog/$gender", label: "Для нее", params: { gender: "women" as const } },
-  { to: "/catalog/$gender", label: "Для него", params: { gender: "men" as const } },
-  { to: "/boutiques", label: "Бутики" },
-  { to: "/about", label: "О бренде" },
-] as const;
+type NavItem =
+  | { kind: "link"; to: string; label: string }
+  | { kind: "catalog"; gender: "women" | "men"; label: string };
+
+function buildNav(lang: "ru" | "en", d: ReturnType<typeof useDict>): ReadonlyArray<NavItem> {
+  if (lang === "en") {
+    // EN: только Boutiques и About
+    return [
+      { kind: "link", to: "/en/boutiques", label: d.nav.boutiques },
+      { kind: "link", to: "/en/about", label: d.nav.about },
+    ];
+  }
+  return [
+    { kind: "link", to: "/collection-ss26", label: d.nav.collection },
+    { kind: "catalog", gender: "women", label: d.nav.forHer },
+    { kind: "catalog", gender: "men", label: d.nav.forHim },
+    { kind: "link", to: "/fashion-show", label: d.nav.fashionShow },
+    { kind: "link", to: "/boutiques", label: d.nav.boutiques },
+    { kind: "link", to: "/about", label: d.nav.about },
+  ];
+}
 
 export function Header({ variant = "solid" }: { variant?: "transparent" | "solid" }) {
   const transparentVariant = variant === "transparent";
+  const lang = useLang();
+  const d = useDict();
+  const nav = buildNav(lang, d);
+  const homeTo = lang === "en" ? "/en" : "/";
   const [open, setOpen] = useState(false);
   // Scrolled past hero — only relevant for transparent variant. Starts false on
   // both server and client to avoid hydration mismatch / first-paint flash.
@@ -101,7 +120,7 @@ export function Header({ variant = "solid" }: { variant?: "transparent" | "solid
               <img src={open ? closeIcon : navIcon} alt="" className="size-6" />
             </button>
 
-            <Link to="/" aria-label="MVST" className="block">
+            <Link to={homeTo} aria-label="MVST" className="block">
               <img src={logoFull} alt="MVST" className="h-[25px] w-auto" />
             </Link>
 
@@ -110,7 +129,7 @@ export function Header({ variant = "solid" }: { variant?: "transparent" | "solid
 
           {/* Desktop: 3-col grid so logo + nav share one vertical center */}
           <div className="hidden lg:grid lg:grid-cols-[auto_1fr_auto] lg:items-center lg:gap-10 lg:px-10 lg:py-7">
-            <Link to="/" aria-label="MVST" className="block shrink-0 justify-self-start">
+            <Link to={homeTo} aria-label="MVST" className="block shrink-0 justify-self-start">
               <img
                 src={logoFull}
                 alt="MVST"
@@ -139,12 +158,12 @@ export function Header({ variant = "solid" }: { variant?: "transparent" | "solid
                   ),
                 };
 
-                if (n.to === "/catalog/$gender") {
+                if (n.kind === "catalog") {
                   return (
                     <Link
-                      key={`${n.to}-${n.params.gender}`}
+                      key={`catalog-${n.gender}`}
                       to="/catalog/$gender"
-                      params={n.params}
+                      params={{ gender: n.gender }}
                       preload="intent"
                       className={className}
                       activeProps={activeProps}
@@ -184,18 +203,18 @@ export function Header({ variant = "solid" }: { variant?: "transparent" | "solid
       >
         <nav className="flex flex-col px-6 py-5">
           <Link
-            to="/"
+            to={homeTo}
             onClick={() => setOpen(false)}
             className="font-serif text-xl py-3 border-b hairline text-foreground"
           >
-            Главная
+            {d.nav.home}
           </Link>
           {nav.map((n) =>
-            n.to === "/catalog/$gender" ? (
+            n.kind === "catalog" ? (
               <Link
-                key={`${n.to}-${n.params.gender}`}
+                key={`catalog-${n.gender}`}
                 to="/catalog/$gender"
-                params={n.params}
+                params={{ gender: n.gender }}
                 preload="intent"
                 onClick={() => setOpen(false)}
                 className="font-serif text-xl py-3 border-b hairline last:border-0 text-foreground"
