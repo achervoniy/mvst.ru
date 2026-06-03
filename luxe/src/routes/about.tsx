@@ -4,7 +4,6 @@ import { Plus } from "lucide-react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { cn } from "@/lib/utils";
 import heroImg from "@/assets/lookbook-hero.webp";
-import materialsImg from "@/assets/lookbook-materials.webp";
 import craftImg from "@/assets/lookbook-craft.webp";
 
 export const Route = createFileRoute("/about")({
@@ -122,6 +121,22 @@ function AboutPage() {
         </p>
       </section>
 
+      {/* EDITORIAL STRIP — между философией и материалами */}
+      <section className="relative h-[60vh] min-h-[420px] md:h-[78vh] md:min-h-[600px] overflow-hidden">
+        <img
+          src="/about/style-editorial.jpg"
+          alt=""
+          loading="lazy"
+          className="absolute inset-0 size-full object-cover object-[50%_25%]"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/35" />
+        <div className="relative z-10 h-full flex items-end pb-12 md:pb-16 px-6 md:px-12">
+          <p className="font-serif text-xl md:text-2xl text-cream/95 max-w-md leading-snug">
+            Стиль начинается с материала.
+          </p>
+        </div>
+      </section>
+
       {/* MATERIALS */}
       <section className="bg-background">
         <div className="px-6 md:px-12 pt-20 md:pt-28 pb-6 max-w-6xl mx-auto text-center">
@@ -143,15 +158,6 @@ function AboutPage() {
           В верхней одежде — драгоценный мех, испанская овчина, технологичные
           нейлон и утеплитель Thermore. Игру контрастов создают сочетания
           гладкой кожи с фактурной замшей и каракульчой.
-        </div>
-
-        <div className="relative aspect-[16/8] md:aspect-[16/6] overflow-hidden">
-          <img
-            src={materialsImg}
-            alt=""
-            loading="lazy"
-            className="absolute inset-0 size-full object-cover"
-          />
         </div>
       </section>
 

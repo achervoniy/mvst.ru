@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Download } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { ChevronLeft, ChevronRight, Download } from "lucide-react";
 import { SiteLayout } from "@/components/site/SiteLayout";
+import { cn } from "@/lib/utils";
 import heroImg from "@/assets/lookbook-hero.webp";
 
 export const Route = createFileRoute("/fashion-show")({
@@ -10,7 +12,7 @@ export const Route = createFileRoute("/fashion-show")({
       {
         name: "description",
         content:
-          "Fashion Show MVST — записи показов новых коллекций, журналы, кадры и видео с подиума.",
+          "Fashion Show MVST — записи показов, кадры с подиума, закулисье и журналы коллекций.",
       },
       { property: "og:title", content: "Fashion Show — MVST" },
       { property: "og:image", content: heroImg },
@@ -19,44 +21,57 @@ export const Route = createFileRoute("/fashion-show")({
   component: FashionShowPage,
 });
 
-// Медиа лежат в public/fashion-show/ — каталог нужно создать руками и
-// положить туда исходные .mov / .mp4 / .jpg / .pdf файлы.
-const VIDEO_HERO = "/fashion-show/show-hero.mp4"; // основная заставка показа
-const VIDEO_HIGHLIGHTS = "/fashion-show/show-highlights.mp4"; // ролик с показа
+// Видео — с CDN ЦУМа: разные исходники для desktop и mobile.
+const VIDEO_DESKTOP =
+  "https://st-cdn.tsum.com/static/upload/mvst_desktop_04_26.mov?u=1776854797";
+const VIDEO_MOBILE =
+  "https://st-cdn.tsum.com/static/upload/mvst_mobile_04_26.mov?u=1776854797";
 
-// Фото с показа. Имена-плейсхолдеры — замени файлы один к одному.
-const photosWomen = [
-  "/fashion-show/photo-women-01.jpg",
-  "/fashion-show/photo-women-02.jpg",
-  "/fashion-show/photo-women-03.jpg",
-  "/fashion-show/photo-women-04.jpg",
+// Forbes — editorial-серия с показа. Делим на основной подиум и «ещё кадры».
+const podiumPhotos = [
+  "/fashion-show/forbes/0001.jpg",
+  "/fashion-show/forbes/0007.jpg",
+  "/fashion-show/forbes/0021.jpg",
+  "/fashion-show/forbes/0027.jpg",
+  "/fashion-show/forbes/0028.jpg",
+  "/fashion-show/forbes/0045.jpg",
 ];
-const photosMen = [
-  "/fashion-show/photo-men-01.jpg",
-  "/fashion-show/photo-men-02.jpg",
-  "/fashion-show/photo-men-03.jpg",
-  "/fashion-show/photo-men-04.jpg",
+
+const podiumPhotosSecondary = [
+  "/fashion-show/forbes/0002_1.jpg",
+  "/fashion-show/forbes/0005.jpg",
+  "/fashion-show/forbes/0005_1.jpg",
+  "/fashion-show/forbes/0025_2.jpg",
+  "/fashion-show/forbes/0026.jpg",
+  "/fashion-show/forbes/0051.jpg",
+  "/fashion-show/forbes/0053.jpg",
+  "/fashion-show/forbes/0066.jpg",
+  "/fashion-show/forbes/0822.jpg",
 ];
-const photosBackstage = [
-  "/fashion-show/photo-backstage-01.jpg",
-  "/fashion-show/photo-backstage-02.jpg",
-  "/fashion-show/photo-backstage-03.jpg",
-];
+
+// Полные образы с показа — для большой интерактивной галереи.
+const fullLooks = [
+  "0273", "0280", "0287", "0294", "0301", "0308", "0315", "0322", "0329", "0336",
+  "0343", "0350", "0357", "0364", "0371", "0378", "0385", "0392", "0399", "0406",
+  "0413", "0420", "0427", "0434", "0441", "0448", "0455", "0462", "0469", "0476",
+  "0483", "0490", "0497", "0504", "0511", "0518", "0525", "0532", "0539", "0546",
+  "0553", "0560", "0567", "0574", "0581", "0588", "0595", "0602", "0609", "0616",
+].map((n) => `/fashion-show/looks/${n}.jpg`);
 
 const magazines: ReadonlyArray<{ title: string; subtitle: string; file: string }> = [
   {
     title: "MVST FW 25–26",
-    subtitle: "Журнал коллекции «Осень-зима 2025–2026»",
+    subtitle: "Коллекция «Осень-зима 2025–2026»",
     file: "/fashion-show/mvst-fw-25-26.pdf",
   },
   {
     title: "Fashion Show MVST",
-    subtitle: "Каталог-журнал показа",
+    subtitle: "Журнал показа",
     file: "/fashion-show/fashion-show-mvst.pdf",
   },
   {
     title: "Fashion Show MVST · 4",
-    subtitle: "Архив показов — выпуск 4",
+    subtitle: "Архив показов, выпуск 4",
     file: "/fashion-show/fashion-show-mvst-4.pdf",
   },
 ];
@@ -64,29 +79,42 @@ const magazines: ReadonlyArray<{ title: string; subtitle: string; file: string }
 function FashionShowPage() {
   return (
     <SiteLayout transparentHeader>
-      {/* HERO с видео-плейсхолдером и фолбэком на постер */}
+      {/* HERO */}
       <section
         data-hero
         className="relative h-[78vh] min-h-[560px] md:h-[90vh] md:min-h-[680px] overflow-hidden bg-foreground"
       >
+        {/* Десктоп- и мобильная версии — два отдельных видео,
+            переключаются классом без JS, autoplay-muted-loop у обоих. */}
         <video
-          src={VIDEO_HERO}
+          src={VIDEO_DESKTOP}
           poster={heroImg}
           autoPlay
           muted
           loop
           playsInline
-          className="absolute inset-0 size-full object-cover opacity-80"
+          preload="metadata"
+          className="hidden md:block absolute inset-0 size-full object-cover opacity-90"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/15 to-black/55" />
+        <video
+          src={VIDEO_MOBILE}
+          poster={heroImg}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          className="md:hidden absolute inset-0 size-full object-cover opacity-90"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/15 to-black/55" />
         <div className="relative z-10 h-full flex flex-col items-center justify-end pb-20 px-6 text-center text-cream">
           <div className="eyebrow-lg mb-6 opacity-90">Fashion Show</div>
           <h1 className="font-serif text-5xl md:text-7xl font-light leading-[1.05]">
             Подиум MVST
           </h1>
           <p className="mt-8 max-w-xl text-base md:text-lg leading-relaxed opacity-90">
-            Хроника показов новых коллекций — видео с подиума, кадры из закулисья
-            и журналы, которые мы выпускаем к каждому сезону.
+            Хроника показов новых коллекций — видео с подиума, кадры
+            из закулисья и журналы, которые мы выпускаем к каждому сезону.
           </p>
         </div>
       </section>
@@ -98,80 +126,97 @@ function FashionShowPage() {
           Сезон в одном вечере
         </h2>
         <p className="text-foreground/75 leading-relaxed text-lg">
-          Показ — это собственная драматургия коллекции. Свет, музыка и движение
-          модели превращают тихий люкс в подиумный жест. Здесь собраны видео,
-          лучшие кадры и журналы прошедших показов MVST.
+          Показ — это собственная драматургия коллекции. Свет, музыка
+          и движение модели превращают тихий люкс в подиумный жест.
+          Здесь — видео, лучшие кадры и журналы прошедших показов MVST.
         </p>
       </section>
 
       {/* VIDEO MAIN */}
       <section className="bg-foreground/[0.04] py-10 md:py-20">
         <div className="max-w-5xl mx-auto px-4 md:px-6">
-          <div className="eyebrow text-foreground/60 mb-4 md:mb-6 text-center">Запись показа</div>
+          <div className="eyebrow text-foreground/60 mb-4 md:mb-6 text-center">
+            Запись показа
+          </div>
           <div className="relative aspect-video bg-foreground/10 overflow-hidden">
             <video
-              src={VIDEO_HIGHLIGHTS}
               poster={heroImg}
+              autoPlay
+              muted
+              loop
               controls
               playsInline
               preload="metadata"
-              className="absolute inset-0 size-full object-cover"
+              className="hidden md:block absolute inset-0 size-full object-cover"
+              src={VIDEO_DESKTOP}
+            />
+            <video
+              poster={heroImg}
+              autoPlay
+              muted
+              loop
+              controls
+              playsInline
+              preload="metadata"
+              className="md:hidden absolute inset-0 size-full object-cover"
+              src={VIDEO_MOBILE}
             />
           </div>
         </div>
       </section>
 
-      {/* WOMEN */}
+      {/* PODIUM — main editorial grid */}
       <section className="px-6 md:px-12 py-20 md:py-28 max-w-7xl mx-auto">
-        <div className="flex items-baseline justify-between mb-10 md:mb-14">
-          <div>
-            <div className="eyebrow text-foreground/60 mb-3">Образы для нее</div>
-            <h3 className="font-serif text-3xl md:text-4xl">Подиум, женская линия</h3>
-          </div>
+        <div className="text-center mb-12 md:mb-16">
+          <div className="eyebrow text-foreground/60 mb-3">Editorial</div>
+          <h3 className="font-serif text-3xl md:text-5xl leading-tight">
+            Подиум, кадр за кадром
+          </h3>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
-          {photosWomen.map((src, i) => (
-            <PhotoTile key={src} src={src} alt={`Образ ${i + 1}`} />
-          ))}
-        </div>
-      </section>
 
-      {/* MEN */}
-      <section className="bg-foreground/[0.04]">
-        <div className="px-6 md:px-12 py-20 md:py-28 max-w-7xl mx-auto">
-          <div className="flex items-baseline justify-between mb-10 md:mb-14">
-            <div>
-              <div className="eyebrow text-foreground/60 mb-3">Образы для него</div>
-              <h3 className="font-serif text-3xl md:text-4xl">Подиум, мужская линия</h3>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
-            {photosMen.map((src, i) => (
-              <PhotoTile key={src} src={src} alt={`Образ ${i + 1}`} />
-            ))}
-          </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
+          {podiumPhotos.map((src, i) => (
+            <PhotoTile key={src} src={src} alt={`Подиум — кадр ${i + 1}`} />
+          ))}
         </div>
       </section>
 
       {/* PULL QUOTE */}
-      <section className="px-6 py-24 md:py-32 max-w-3xl mx-auto text-center">
-        <p className="font-serif text-3xl md:text-4xl leading-[1.3] text-foreground/85">
-          «Подиум — это коллекция, услышанная вслух».
-        </p>
+      <section className="bg-foreground/[0.04]">
+        <div className="px-6 py-24 md:py-32 max-w-3xl mx-auto text-center">
+          <p className="font-serif text-3xl md:text-4xl leading-[1.3] text-foreground/85">
+            «Подиум — это коллекция, услышанная вслух».
+          </p>
+        </div>
       </section>
 
-      {/* BACKSTAGE */}
-      <section className="px-6 md:px-12 pb-20 md:pb-28 max-w-7xl mx-auto">
-        <div className="flex items-baseline justify-between mb-10 md:mb-14">
-          <div>
-            <div className="eyebrow text-foreground/60 mb-3">Закулисье</div>
-            <h3 className="font-serif text-3xl md:text-4xl">До выхода на подиум</h3>
-          </div>
+      {/* FULL LOOKS — интерактивная галерея */}
+      <section className="px-6 md:px-12 py-20 md:py-28 max-w-7xl mx-auto">
+        <div className="text-center mb-12 md:mb-16">
+          <div className="eyebrow text-foreground/60 mb-3">Образы</div>
+          <h3 className="font-serif text-3xl md:text-5xl leading-tight">
+            Образы целиком
+          </h3>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
-          {photosBackstage.map((src, i) => (
-            <PhotoTile key={src} src={src} alt={`Кадр закулисья ${i + 1}`} ratio="aspect-[4/5]" />
-          ))}
+
+        <LooksGallery images={fullLooks} />
+      </section>
+
+      {/* SECONDARY GALLERY */}
+      <section className="bg-foreground/[0.04]">
+        <div className="px-6 md:px-12 py-20 md:py-28 max-w-7xl mx-auto">
+          <div className="text-center mb-12 md:mb-16">
+            <div className="eyebrow text-foreground/60 mb-3">Закулисье и подиум</div>
+            <h3 className="font-serif text-3xl md:text-5xl leading-tight">
+              Ещё кадры
+            </h3>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-3">
+            {podiumPhotosSecondary.map((src, i) => (
+              <PhotoTile key={src} src={src} alt={`Кадр ${i + 1}`} />
+            ))}
+          </div>
         </div>
       </section>
 
@@ -184,10 +229,11 @@ function FashionShowPage() {
               Скачать выпуски
             </h3>
             <p className="mt-6 text-background/70 max-w-xl mx-auto leading-relaxed">
-              К каждому показу MVST выпускает журнал с лукбуком, интервью и
-              кадрами с подиума.
+              К каждому показу MVST выпускает журнал с лукбуком, интервью
+              и кадрами с подиума.
             </p>
           </div>
+
           <ul className="grid gap-3 md:gap-4 md:grid-cols-3">
             {magazines.map((m) => (
               <li key={m.file}>
@@ -198,7 +244,9 @@ function FashionShowPage() {
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <div className="font-serif text-2xl mb-2 leading-tight">{m.title}</div>
+                      <div className="font-serif text-2xl mb-2 leading-tight">
+                        {m.title}
+                      </div>
                       <div className="eyebrow text-background/55">{m.subtitle}</div>
                     </div>
                     <Download
@@ -219,6 +267,139 @@ function FashionShowPage() {
   );
 }
 
+// Интерактивная галерея: одна большая фотография, превью-полоса,
+// стрелки и навигация клавишами. Свайп на мобильном — без библиотек.
+function LooksGallery({ images }: { images: string[] }) {
+  const [active, setActive] = useState(0);
+  const total = images.length;
+  const stripRef = useRef<HTMLDivElement>(null);
+  const thumbRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const touchStartX = useRef<number | null>(null);
+
+  const goTo = useCallback(
+    (i: number) => setActive(((i % total) + total) % total),
+    [total],
+  );
+
+  // Клавиатура
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") goTo(active - 1);
+      else if (e.key === "ArrowRight") goTo(active + 1);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [active, goTo]);
+
+  // Центрируем активный thumb
+  useEffect(() => {
+    const el = thumbRefs.current[active];
+    const strip = stripRef.current;
+    if (!el || !strip) return;
+    const target = el.offsetLeft - strip.clientWidth / 2 + el.clientWidth / 2;
+    strip.scrollTo({ left: target, behavior: "smooth" });
+  }, [active]);
+
+  // Прелоад соседей
+  useEffect(() => {
+    [active - 1, active + 1].forEach((i) => {
+      const src = images[((i % total) + total) % total];
+      if (!src) return;
+      const im = new Image();
+      im.src = src;
+    });
+  }, [active, images, total]);
+
+  return (
+    <div>
+      {/* Сцена */}
+      <div
+        className="relative bg-cream overflow-hidden aspect-[3/4] md:aspect-[16/10] max-h-[78vh]"
+        onTouchStart={(e) => {
+          touchStartX.current = e.touches[0].clientX;
+        }}
+        onTouchEnd={(e) => {
+          if (touchStartX.current === null) return;
+          const dx = e.changedTouches[0].clientX - touchStartX.current;
+          if (Math.abs(dx) > 40) goTo(active + (dx < 0 ? 1 : -1));
+          touchStartX.current = null;
+        }}
+      >
+        {images.map((src, i) => (
+          <img
+            key={src}
+            src={src}
+            alt={`Образ ${i + 1}`}
+            loading={i === 0 ? "eager" : "lazy"}
+            className={cn(
+              "absolute inset-0 size-full object-contain transition-opacity duration-500 ease-out",
+              i === active ? "opacity-100" : "opacity-0",
+            )}
+          />
+        ))}
+
+        <button
+          type="button"
+          onClick={() => goTo(active - 1)}
+          aria-label="Предыдущий образ"
+          className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-10 size-11 md:size-12 flex items-center justify-center rounded-full bg-background/85 backdrop-blur hairline border text-foreground/80 hover:bg-background hover:text-foreground transition-colors"
+        >
+          <ChevronLeft className="size-5 md:size-6" strokeWidth={1.25} />
+        </button>
+        <button
+          type="button"
+          onClick={() => goTo(active + 1)}
+          aria-label="Следующий образ"
+          className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-10 size-11 md:size-12 flex items-center justify-center rounded-full bg-background/85 backdrop-blur hairline border text-foreground/80 hover:bg-background hover:text-foreground transition-colors"
+        >
+          <ChevronRight className="size-5 md:size-6" strokeWidth={1.25} />
+        </button>
+
+        <div className="absolute bottom-3 md:bottom-4 left-1/2 -translate-x-1/2 z-10 eyebrow text-foreground/70 bg-background/80 backdrop-blur px-3 py-1 rounded-full tabular-nums">
+          {String(active + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
+        </div>
+      </div>
+
+      {/* Превью-полоса */}
+      <div
+        ref={stripRef}
+        className="mt-3 md:mt-4 flex gap-2 md:gap-2.5 overflow-x-auto scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {images.map((src, i) => (
+          <button
+            key={src}
+            ref={(el) => {
+              thumbRefs.current[i] = el;
+            }}
+            type="button"
+            onClick={() => goTo(i)}
+            aria-label={`Образ ${i + 1}`}
+            className={cn(
+              "shrink-0 relative w-16 h-24 md:w-20 md:h-28 overflow-hidden bg-sand transition-opacity",
+              i === active ? "opacity-100" : "opacity-55 hover:opacity-100",
+            )}
+          >
+            <img
+              src={src}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              className="absolute inset-0 size-full object-cover"
+            />
+            <span
+              aria-hidden
+              className={cn(
+                "pointer-events-none absolute inset-0 border-2 transition-colors",
+                i === active ? "border-accent" : "border-transparent",
+              )}
+            />
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function PhotoTile({
   src,
   alt,
@@ -235,11 +416,6 @@ function PhotoTile({
         alt={alt}
         loading="lazy"
         className="absolute inset-0 size-full object-cover"
-        onError={(e) => {
-          // Если файл-плейсхолдер ещё не подложен — показываем мягкий
-          // песочный фон вместо «битой картинки».
-          (e.currentTarget as HTMLImageElement).style.visibility = "hidden";
-        }}
       />
     </div>
   );

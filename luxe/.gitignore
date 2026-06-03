@@ -25,6 +25,18 @@ dist-ssr
 .wrangler/
 .dev.vars
 
+# Тяжёлые медиа fashion-show / about-editorial: коммитить нельзя
+# (single-file и repo-size лимиты GitHub). Положить руками в публичную
+# директорию деплоя при сборке. Структура и имена файлов — см.
+# routes/fashion-show.tsx и routes/about.tsx.
+public/fashion-show/looks/
+public/fashion-show/forbes/
+public/fashion-show/clothing/
+public/fashion-show/*.mov
+public/fashion-show/*.mp4
+public/fashion-show/*.pdf
+public/about/style-editorial.jpg
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
