@@ -13,8 +13,9 @@ type NavItem =
 
 function buildNav(lang: "ru" | "en", d: ReturnType<typeof useDict>): ReadonlyArray<NavItem> {
   if (lang === "en") {
-    // EN: только Boutiques и About
+    // EN: Fashion Show + Boutiques + About
     return [
+      { kind: "link", to: "/en/fashion-show", label: d.nav.fashionShow },
       { kind: "link", to: "/en/boutiques", label: d.nav.boutiques },
       { kind: "link", to: "/en/about", label: d.nav.about },
     ];

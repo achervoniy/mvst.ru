@@ -83,6 +83,11 @@ export function Footer() {
             <div className="eyebrow text-foreground/60 mb-4">{d.footer.brand}</div>
             <ul className="space-y-2 text-sm">
               <li>
+                <Link to="/en/fashion-show" preload="intent" className="hover:text-accent">
+                  {d.nav.fashionShow}
+                </Link>
+              </li>
+              <li>
                 <Link to="/en/about" preload="intent" className="hover:text-accent">
                   {d.nav.about}
                 </Link>

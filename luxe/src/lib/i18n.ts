@@ -12,13 +12,13 @@ export function toggleLangHref(currentPath: string): string {
   if (currentPath.startsWith("/en")) {
     const rest = currentPath.slice(3); // убираем "/en"
     if (rest === "" || rest === "/") return "/";
-    // RU-эквиваленты есть только для "/", "/about", "/boutiques".
+    // RU-эквиваленты есть для "/", "/about", "/boutiques", "/fashion-show".
     // Для остальных вернёмся на главную.
-    const allowed = ["/about", "/boutiques"];
+    const allowed = ["/about", "/boutiques", "/fashion-show"];
     return allowed.some((p) => rest === p || rest.startsWith(p + "/")) ? rest : "/";
   }
-  // RU → EN. EN-версии существуют только для "/", "/about", "/boutiques".
-  const allowedRuToEn = ["/about", "/boutiques"];
+  // RU → EN. EN-версии существуют для "/", "/about", "/boutiques", "/fashion-show".
+  const allowedRuToEn = ["/about", "/boutiques", "/fashion-show"];
   if (currentPath === "/") return "/en";
   const match = allowedRuToEn.find((p) => currentPath === p || currentPath.startsWith(p + "/"));
   return match ? `/en${match}` : "/en";

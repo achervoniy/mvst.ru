@@ -19,6 +19,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as EnIndexRouteImport } from './routes/en.index'
 import { Route as ProductSlugRouteImport } from './routes/product.$slug'
+import { Route as EnFashionShowRouteImport } from './routes/en.fashion-show'
 import { Route as EnBoutiquesRouteImport } from './routes/en.boutiques'
 import { Route as EnAboutRouteImport } from './routes/en.about'
 import { Route as CatalogGenderRouteImport } from './routes/catalog.$gender'
@@ -74,6 +75,11 @@ const ProductSlugRoute = ProductSlugRouteImport.update({
   path: '/product/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EnFashionShowRoute = EnFashionShowRouteImport.update({
+  id: '/en/fashion-show',
+  path: '/en/fashion-show',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EnBoutiquesRoute = EnBoutiquesRouteImport.update({
   id: '/en/boutiques',
   path: '/en/boutiques',
@@ -107,6 +113,7 @@ export interface FileRoutesByFullPath {
   '/catalog/$gender': typeof CatalogGenderRoute
   '/en/about': typeof EnAboutRoute
   '/en/boutiques': typeof EnBoutiquesRoute
+  '/en/fashion-show': typeof EnFashionShowRoute
   '/product/$slug': typeof ProductSlugRoute
   '/en/': typeof EnIndexRoute
   '/catalog/$gender/$section': typeof CatalogGenderSectionRoute
@@ -123,6 +130,7 @@ export interface FileRoutesByTo {
   '/catalog/$gender': typeof CatalogGenderRoute
   '/en/about': typeof EnAboutRoute
   '/en/boutiques': typeof EnBoutiquesRoute
+  '/en/fashion-show': typeof EnFashionShowRoute
   '/product/$slug': typeof ProductSlugRoute
   '/en': typeof EnIndexRoute
   '/catalog/$gender/$section': typeof CatalogGenderSectionRoute
@@ -140,6 +148,7 @@ export interface FileRoutesById {
   '/catalog/$gender': typeof CatalogGenderRoute
   '/en/about': typeof EnAboutRoute
   '/en/boutiques': typeof EnBoutiquesRoute
+  '/en/fashion-show': typeof EnFashionShowRoute
   '/product/$slug': typeof ProductSlugRoute
   '/en/': typeof EnIndexRoute
   '/catalog/$gender_/$section': typeof CatalogGenderSectionRoute
@@ -158,6 +167,7 @@ export interface FileRouteTypes {
     | '/catalog/$gender'
     | '/en/about'
     | '/en/boutiques'
+    | '/en/fashion-show'
     | '/product/$slug'
     | '/en/'
     | '/catalog/$gender/$section'
@@ -174,6 +184,7 @@ export interface FileRouteTypes {
     | '/catalog/$gender'
     | '/en/about'
     | '/en/boutiques'
+    | '/en/fashion-show'
     | '/product/$slug'
     | '/en'
     | '/catalog/$gender/$section'
@@ -190,6 +201,7 @@ export interface FileRouteTypes {
     | '/catalog/$gender'
     | '/en/about'
     | '/en/boutiques'
+    | '/en/fashion-show'
     | '/product/$slug'
     | '/en/'
     | '/catalog/$gender_/$section'
@@ -207,6 +219,7 @@ export interface RootRouteChildren {
   CatalogGenderRoute: typeof CatalogGenderRoute
   EnAboutRoute: typeof EnAboutRoute
   EnBoutiquesRoute: typeof EnBoutiquesRoute
+  EnFashionShowRoute: typeof EnFashionShowRoute
   ProductSlugRoute: typeof ProductSlugRoute
   EnIndexRoute: typeof EnIndexRoute
   CatalogGenderSectionRoute: typeof CatalogGenderSectionRoute
@@ -284,6 +297,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/en/fashion-show': {
+      id: '/en/fashion-show'
+      path: '/en/fashion-show'
+      fullPath: '/en/fashion-show'
+      preLoaderRoute: typeof EnFashionShowRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/en/boutiques': {
       id: '/en/boutiques'
       path: '/en/boutiques'
@@ -327,6 +347,7 @@ const rootRouteChildren: RootRouteChildren = {
   CatalogGenderRoute: CatalogGenderRoute,
   EnAboutRoute: EnAboutRoute,
   EnBoutiquesRoute: EnBoutiquesRoute,
+  EnFashionShowRoute: EnFashionShowRoute,
   ProductSlugRoute: ProductSlugRoute,
   EnIndexRoute: EnIndexRoute,
   CatalogGenderSectionRoute: CatalogGenderSectionRoute,
