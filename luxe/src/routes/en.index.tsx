@@ -1,9 +1,19 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import homeHero from "@/assets/home-hero.webp";
-import homeWomen from "@/assets/home-women.webp";
-import homeMen from "@/assets/home-men.webp";
 import { boutiques } from "./boutiques";
+
+const SS26_VIDEO_DESKTOP =
+  "https://st-cdn.tsum.com/static/upload/mvst_desktop_04_26.mov?u=1776854797";
+const SS26_VIDEO_MOBILE =
+  "https://st-cdn.tsum.com/static/upload/mvst_mobile_04_26.mov?u=1776854797";
+
+// Кадры с показа — берём из publicного фешн-шоу.
+const SS26_LOOKS = [
+  "/fashion-show/looks/0274.jpg",
+  "/fashion-show/looks/0405.jpg",
+  "/fashion-show/looks/0539.jpg",
+];
 
 export const Route = createFileRoute("/en/")({
   head: () => ({
@@ -45,31 +55,56 @@ function EnHome() {
         </div>
       </section>
 
-      {/* TWO STORIES */}
-      <section className="grid md:grid-cols-2 gap-px bg-foreground/10">
-        <div className="relative block aspect-[5/7] md:aspect-[2/3] overflow-hidden bg-sand">
-          <img
-            src={homeWomen}
-            alt=""
-            loading="lazy"
-            className="absolute inset-0 size-full object-cover object-top"
-          />
-          <div className="absolute inset-0 bg-black/15" />
-          <div className="absolute inset-0 flex flex-col items-center justify-end pb-14 md:justify-center md:pb-0 text-cream">
-            <div className="font-serif text-5xl md:text-6xl">Women</div>
+      {/* FASHION SHOW SS26 */}
+      <section className="bg-foreground/[0.04] py-20 md:py-28">
+        <div className="max-w-6xl mx-auto px-6 md:px-12 text-center mb-10 md:mb-14">
+          <div className="eyebrow text-foreground/60 mb-4">Fashion Show</div>
+          <h2 className="font-serif text-4xl md:text-5xl leading-tight mb-6">
+            Spring–Summer 2026
+          </h2>
+          <p className="max-w-2xl mx-auto text-foreground/75 leading-relaxed">
+            The runway film of the new collection — light, linen and sea air.
+            Italian craftsmanship of the finest MVST mills, captured in motion.
+          </p>
+        </div>
+
+        <div className="max-w-6xl mx-auto md:px-12">
+          {/* Desktop / mobile источники переключаются классом, autoplay-muted-loop у обоих. */}
+          <div className="relative aspect-video bg-foreground/10 overflow-hidden">
+            <video
+              src={SS26_VIDEO_DESKTOP}
+              poster={homeHero}
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              className="hidden md:block absolute inset-0 size-full object-cover"
+            />
+            <video
+              src={SS26_VIDEO_MOBILE}
+              poster={homeHero}
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              className="md:hidden absolute inset-0 size-full object-cover"
+            />
           </div>
         </div>
-        <div className="relative block aspect-[5/7] md:aspect-[2/3] overflow-hidden bg-sand">
-          <img
-            src={homeMen}
-            alt=""
-            loading="lazy"
-            className="absolute inset-0 size-full object-cover object-top"
-          />
-          <div className="absolute inset-0 bg-black/15" />
-          <div className="absolute inset-0 flex flex-col items-center justify-end pb-14 md:justify-center md:pb-0 text-cream">
-            <div className="font-serif text-5xl md:text-6xl">Men</div>
-          </div>
+
+        <div className="max-w-6xl mx-auto px-6 md:px-12 mt-3 md:mt-4 grid grid-cols-3 gap-2 md:gap-3">
+          {SS26_LOOKS.map((src, i) => (
+            <div key={src} className="relative aspect-[2/3] overflow-hidden bg-sand">
+              <img
+                src={src}
+                alt={`Spring–Summer 2026 — look ${i + 1}`}
+                loading="lazy"
+                className="absolute inset-0 size-full object-cover"
+              />
+            </div>
+          ))}
         </div>
       </section>
 
