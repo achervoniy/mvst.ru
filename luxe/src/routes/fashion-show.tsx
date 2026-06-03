@@ -40,18 +40,6 @@ const podiumPhotos = [
   "/fashion-show/forbes/0822.jpg",
 ];
 
-const podiumPhotosSecondary = [
-  "/fashion-show/forbes/0002_1.jpg",
-  "/fashion-show/forbes/0005.jpg",
-  "/fashion-show/forbes/0005_1.jpg",
-  "/fashion-show/forbes/0025_2.jpg",
-  "/fashion-show/forbes/0051.jpg",
-  "/fashion-show/forbes/0053.jpg",
-  "/fashion-show/forbes/0066.jpg",
-  "/fashion-show/clothing/0023_1_crop.jpg",
-  "/fashion-show/clothing/0023_4_crop.jpg",
-];
-
 // 50 образов, равномерно разбросаны по всему показу (351 кадр).
 const fullLooks = [
   "0274", "0279", "0286", "0311", "0317", "0319", "0328", "0330", "0341", "0344",
@@ -63,18 +51,13 @@ const fullLooks = [
 
 const magazines: ReadonlyArray<{ title: string; subtitle: string; file: string }> = [
   {
-    title: "MVST FW 25–26",
-    subtitle: "Коллекция «Осень-зима 2025–2026»",
-    file: "/fashion-show/mvst-fw-25-26.pdf",
-  },
-  {
-    title: "Fashion Show MVST",
+    title: "FASHION SHOW ВЕСНА-ЛЕТО 2026",
     subtitle: "Журнал показа",
     file: "/fashion-show/fashion-show-mvst.pdf",
   },
   {
-    title: "Fashion Show MVST · 4",
-    subtitle: "Архив показов, выпуск 4",
+    title: "FW 25–26",
+    subtitle: "Осень-зима 2025–2026",
     file: "/fashion-show/fashion-show-mvst-4.pdf",
   },
 ];
@@ -197,24 +180,6 @@ function FashionShowPage() {
         </div>
       </section>
 
-      {/* SECONDARY GALLERY */}
-      <section className="bg-foreground/[0.04]">
-        <div className="px-6 md:px-12 py-20 md:py-28 max-w-7xl mx-auto">
-          <div className="text-center mb-12 md:mb-16">
-            <div className="eyebrow text-foreground/60 mb-3">Закулисье и подиум</div>
-            <h3 className="font-serif text-3xl md:text-5xl leading-tight">
-              Ещё кадры
-            </h3>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-3">
-            {podiumPhotosSecondary.map((src, i) => (
-              <PhotoTile key={src} src={src} alt={`Кадр ${i + 1}`} />
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* MAGAZINES */}
       <section className="bg-foreground text-background px-6 md:px-12 py-24 md:py-32">
         <div className="max-w-5xl mx-auto">
@@ -229,7 +194,7 @@ function FashionShowPage() {
             </p>
           </div>
 
-          <ul className="grid gap-3 md:gap-4 md:grid-cols-3">
+          <ul className="grid gap-3 md:gap-4 md:grid-cols-2 max-w-3xl mx-auto">
             {magazines.map((m) => (
               <li key={m.file}>
                 <a
