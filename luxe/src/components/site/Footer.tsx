@@ -1,7 +1,5 @@
 import { Link } from "@tanstack/react-router";
 import logoFull from "@/assets/icons/LogoFull.svg";
-import tgIcon from "@/assets/icons/Tg.svg";
-import vkIcon from "@/assets/icons/VK.svg";
 
 export function Footer() {
   return (
@@ -79,24 +77,6 @@ export function Footer() {
           <div className="eyebrow text-foreground/60 mb-4">Контакты</div>
           <ul className="space-y-2 text-sm">
             <li>
-              <a
-                className="inline-flex items-center gap-2 hover:text-accent"
-                href="#"
-                aria-label="Telegram"
-              >
-                <img src={tgIcon} alt="" className="size-5" /> Telegram
-              </a>
-            </li>
-            <li>
-              <a
-                className="inline-flex items-center gap-2 hover:text-accent"
-                href="#"
-                aria-label="VK"
-              >
-                <img src={vkIcon} alt="" className="size-5" /> VK
-              </a>
-            </li>
-            <li>
               <a className="hover:text-accent" href="mailto:client@mvst.ru">
                 client@mvst.ru
               </a>
@@ -108,7 +88,7 @@ export function Footer() {
       <div className="border-t hairline px-6 md:px-12 py-6 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-foreground/60">
         <img src={logoFull} alt="MVST" className="h-5 w-auto" />
         <div>© {new Date().getFullYear()} MVST. Все права защищены.</div>
-        <div className="eyebrow">Москва · Санкт-Петербург · Сочи</div>
+        <div className="eyebrow">Москва · Санкт-Петербург</div>
       </div>
     </footer>
   );

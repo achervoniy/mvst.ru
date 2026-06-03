@@ -93,9 +93,6 @@ function CollectionSS26() {
           <h1 className="font-serif text-5xl md:text-7xl font-light leading-[1.05]">
             Коллекция весна-лето 2026
           </h1>
-          <p className="mt-6 max-w-md text-sm md:text-base opacity-90">
-            {total} образов нового сезона: кожа, шелк, лен и японский деним.
-          </p>
           <button
             type="button"
             onClick={scrollToLooks}
@@ -125,11 +122,6 @@ function CollectionSS26() {
             что фото и товары ниже — один блок про выбранный образ. */}
         <div className="flex items-baseline justify-center md:justify-start gap-3 px-4 md:px-8 pt-6 md:pt-10 pb-3 max-w-[1360px] mx-auto">
           <div className="eyebrow text-foreground/60">Образ</div>
-          <div className="font-serif text-base md:text-lg tabular-nums text-foreground/70">
-            <span className="text-foreground">{String(active + 1).padStart(2, "0")}</span>
-            <span className="mx-2 text-foreground/30">/</span>
-            <span>{String(total).padStart(2, "0")}</span>
-          </div>
         </div>
 
         <LookStage
@@ -433,8 +425,8 @@ function MobileLookSwiper({
         <ChevronRight className="size-7" strokeWidth={1.25} />
       </button>
 
-      <div className="absolute bottom-3 right-3 z-10 font-serif text-xs tabular-nums text-cream bg-foreground/40 backdrop-blur px-2 py-1 rounded-full">
-        {String(curr.sort).padStart(2, "0")} / {String(total).padStart(2, "0")}
+      <div className="absolute bottom-3 right-3 z-10 eyebrow text-cream bg-foreground/40 backdrop-blur px-3 py-1 rounded-full">
+        Образ
       </div>
     </div>
   );
