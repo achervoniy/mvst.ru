@@ -27,7 +27,8 @@ const VIDEO_DESKTOP =
 const VIDEO_MOBILE =
   "https://st-cdn.tsum.com/static/upload/mvst_mobile_04_26.mov?u=1776854797";
 
-// Forbes — editorial-серия с показа. Делим на основной подиум и «ещё кадры».
+// Forbes — editorial-серия с показа. Делим на «подиум кадр за кадром» (8)
+// и «ещё кадры» (9). Двух Forbes не хватает на 9 — добавляем 2 детали из clothing.
 const podiumPhotos = [
   "/fashion-show/forbes/0001.jpg",
   "/fashion-show/forbes/0007.jpg",
@@ -35,6 +36,8 @@ const podiumPhotos = [
   "/fashion-show/forbes/0027.jpg",
   "/fashion-show/forbes/0028.jpg",
   "/fashion-show/forbes/0045.jpg",
+  "/fashion-show/forbes/0026.jpg",
+  "/fashion-show/forbes/0822.jpg",
 ];
 
 const podiumPhotosSecondary = [
@@ -42,20 +45,20 @@ const podiumPhotosSecondary = [
   "/fashion-show/forbes/0005.jpg",
   "/fashion-show/forbes/0005_1.jpg",
   "/fashion-show/forbes/0025_2.jpg",
-  "/fashion-show/forbes/0026.jpg",
   "/fashion-show/forbes/0051.jpg",
   "/fashion-show/forbes/0053.jpg",
   "/fashion-show/forbes/0066.jpg",
-  "/fashion-show/forbes/0822.jpg",
+  "/fashion-show/clothing/0023_1_crop.jpg",
+  "/fashion-show/clothing/0023_4_crop.jpg",
 ];
 
-// Полные образы с показа — для большой интерактивной галереи.
+// 50 образов, равномерно разбросаны по всему показу (351 кадр).
 const fullLooks = [
-  "0273", "0280", "0287", "0294", "0301", "0308", "0315", "0322", "0329", "0336",
-  "0343", "0350", "0357", "0364", "0371", "0378", "0385", "0392", "0399", "0406",
-  "0413", "0420", "0427", "0434", "0441", "0448", "0455", "0462", "0469", "0476",
-  "0483", "0490", "0497", "0504", "0511", "0518", "0525", "0532", "0539", "0546",
-  "0553", "0560", "0567", "0574", "0581", "0588", "0595", "0602", "0609", "0616",
+  "0274", "0279", "0286", "0311", "0317", "0319", "0328", "0330", "0341", "0344",
+  "0354", "0358", "0362", "0369", "0371", "0383", "0393", "0398", "0403", "0405",
+  "0416", "0418", "0420", "0423", "0444", "0451", "0452", "0457", "0476", "0482",
+  "0486", "0492", "0510", "0514", "0515", "0517", "0519", "0525", "0526", "0537",
+  "0539", "0550", "0553", "0557", "0575", "0582", "0589", "0593", "0597", "0612",
 ].map((n) => `/fashion-show/looks/${n}.jpg`);
 
 const magazines: ReadonlyArray<{ title: string; subtitle: string; file: string }> = [
@@ -139,6 +142,8 @@ function FashionShowPage() {
             Запись показа
           </div>
           <div className="relative aspect-video bg-foreground/10 overflow-hidden">
+            {/* Используем desktop-видео и на мобиле — у нас тут горизонтальный кадр,
+                мобильный вертикальный исходник в этом блоке смотрится плохо. */}
             <video
               poster={heroImg}
               autoPlay
@@ -147,21 +152,32 @@ function FashionShowPage() {
               controls
               playsInline
               preload="metadata"
-              className="hidden md:block absolute inset-0 size-full object-cover"
+              className="absolute inset-0 size-full object-cover"
               src={VIDEO_DESKTOP}
             />
-            <video
-              poster={heroImg}
-              autoPlay
-              muted
-              loop
-              controls
-              playsInline
-              preload="metadata"
-              className="md:hidden absolute inset-0 size-full object-cover"
-              src={VIDEO_MOBILE}
-            />
           </div>
+        </div>
+      </section>
+
+      {/* FULL LOOKS — интерактивная галерея */}
+      <section className="py-20 md:py-28">
+        <div className="px-6 md:px-12 max-w-7xl mx-auto text-center mb-12 md:mb-16">
+          <h3 className="font-serif text-3xl md:text-5xl leading-tight">Образы</h3>
+        </div>
+
+        {/* На мобиле — без боковых отступов, кадр на всю ширину.
+            На десктопе — в общий контейнер. */}
+        <div className="md:px-12 md:max-w-7xl md:mx-auto">
+          <LooksGallery images={fullLooks} />
+        </div>
+      </section>
+
+      {/* PULL QUOTE */}
+      <section className="bg-foreground/[0.04]">
+        <div className="px-6 py-24 md:py-32 max-w-3xl mx-auto text-center">
+          <p className="font-serif text-3xl md:text-4xl leading-[1.3] text-foreground/85">
+            «Подиум — это коллекция, услышанная вслух».
+          </p>
         </div>
       </section>
 
@@ -179,27 +195,6 @@ function FashionShowPage() {
             <PhotoTile key={src} src={src} alt={`Подиум — кадр ${i + 1}`} />
           ))}
         </div>
-      </section>
-
-      {/* PULL QUOTE */}
-      <section className="bg-foreground/[0.04]">
-        <div className="px-6 py-24 md:py-32 max-w-3xl mx-auto text-center">
-          <p className="font-serif text-3xl md:text-4xl leading-[1.3] text-foreground/85">
-            «Подиум — это коллекция, услышанная вслух».
-          </p>
-        </div>
-      </section>
-
-      {/* FULL LOOKS — интерактивная галерея */}
-      <section className="px-6 md:px-12 py-20 md:py-28 max-w-7xl mx-auto">
-        <div className="text-center mb-12 md:mb-16">
-          <div className="eyebrow text-foreground/60 mb-3">Образы</div>
-          <h3 className="font-serif text-3xl md:text-5xl leading-tight">
-            Образы целиком
-          </h3>
-        </div>
-
-        <LooksGallery images={fullLooks} />
       </section>
 
       {/* SECONDARY GALLERY */}
@@ -314,7 +309,7 @@ function LooksGallery({ images }: { images: string[] }) {
     <div>
       {/* Сцена */}
       <div
-        className="relative bg-cream overflow-hidden aspect-[3/4] md:aspect-[16/10] max-h-[78vh]"
+        className="relative bg-cream overflow-hidden aspect-[2/3] md:aspect-[16/10] md:max-h-[78vh]"
         onTouchStart={(e) => {
           touchStartX.current = e.touches[0].clientX;
         }}
