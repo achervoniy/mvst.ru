@@ -630,11 +630,9 @@ function ProductPage() {
                       key={i}
                       className="pl-0 basis-full flex items-center justify-center bg-background"
                     >
-                      <img
+                      <LightboxZoomImage
                         src={pickImage(img)}
                         alt={`${detail.title} — ${i + 1}`}
-                        className="max-h-[92vh] max-w-[92vw] object-contain mix-blend-multiply select-none"
-                        draggable={false}
                       />
                     </CarouselItem>
                   ))}
@@ -707,6 +705,76 @@ function ProductPage() {
         onOpenCart={() => cart.setOpen(true)}
       />
     </SiteLayout>
+  );
+}
+
+// Лайтбокс-картинка с «вторым» зумом по курсору на десктопе.
+// Мобилку не трогаем: на тач-устройствах (no hover) — обычный object-contain без зума.
+function LightboxZoomImage({ src, alt }: { src: string; alt: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [zoom, setZoom] = useState(false);
+  const [origin, setOrigin] = useState("50% 50%");
+  const [canZoom, setCanZoom] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+    const mq = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const update = () => setCanZoom(mq.matches);
+    update();
+    mq.addEventListener?.("change", update);
+    return () => mq.removeEventListener?.("change", update);
+  }, []);
+
+  const updateOrigin = (e: React.MouseEvent<HTMLDivElement>) => {
+    const el = ref.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const x = ((e.clientX - r.left) / r.width) * 100;
+    const y = ((e.clientY - r.top) / r.height) * 100;
+    setOrigin(`${x}% ${y}%`);
+  };
+
+  if (!canZoom) {
+    return (
+      <img
+        src={src}
+        alt={alt}
+        className="max-h-[92vh] max-w-[92vw] object-contain mix-blend-multiply select-none"
+        draggable={false}
+      />
+    );
+  }
+
+  return (
+    <div
+      ref={ref}
+      onMouseEnter={() => setZoom(true)}
+      onMouseLeave={() => setZoom(false)}
+      onMouseMove={(e) => {
+        if (zoom) updateOrigin(e);
+      }}
+      onClick={(e) => {
+        // блокируем закрытие лайтбокса по клику в карусели — клик = тогл зума
+        e.stopPropagation();
+        setZoom((v) => !v);
+      }}
+      className={cn(
+        "relative flex items-center justify-center max-h-[92vh] max-w-[92vw] overflow-hidden",
+        zoom ? "cursor-zoom-out" : "cursor-zoom-in",
+      )}
+    >
+      <img
+        src={src}
+        alt={alt}
+        draggable={false}
+        style={{
+          transform: zoom ? "scale(2.2)" : "scale(1)",
+          transformOrigin: origin,
+          transition: zoom ? "transform 80ms linear" : "transform 220ms ease-out",
+        }}
+        className="max-h-[92vh] max-w-[92vw] object-contain mix-blend-multiply select-none will-change-transform"
+      />
+    </div>
   );
 }
 
