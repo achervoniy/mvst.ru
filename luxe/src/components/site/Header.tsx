@@ -194,47 +194,61 @@ export function Header({ variant = "solid" }: { variant?: "transparent" | "solid
         </div>
       </header>
 
-      {/* Mobile nav — fixed overlay, completely outside header to avoid layout shifts */}
+      {/* Mobile nav — full-height drawer ниже шапки. Меню сверху, цитата
+          прибита к низу видимого вьюпорта, без скролла. */}
       <div
         className={cn(
-          "lg:hidden fixed inset-x-0 z-50 overflow-hidden bg-background transition-[max-height,visibility] duration-300",
-          open ? "visible max-h-96 border-b hairline" : "invisible max-h-0 border-0",
+          "lg:hidden fixed inset-x-0 bottom-0 z-50 bg-background overflow-hidden",
+          "transition-[transform,visibility] duration-300 ease-out",
+          open ? "visible translate-y-0" : "invisible -translate-y-2",
         )}
         style={{ top: "var(--header-h, 60px)" }}
       >
-        <nav className="flex flex-col px-6 py-5">
-          <Link
-            to={homeTo}
-            onClick={() => setOpen(false)}
-            className="font-serif text-xl py-3 border-b hairline text-foreground"
-          >
-            {d.nav.home}
-          </Link>
-          {nav.map((n) =>
-            n.kind === "catalog" ? (
-              <Link
-                key={`catalog-${n.gender}`}
-                to="/catalog/$gender"
-                params={{ gender: n.gender }}
-                preload="intent"
-                onClick={() => setOpen(false)}
-                className="font-serif text-xl py-3 border-b hairline last:border-0 text-foreground"
-              >
-                {n.label}
-              </Link>
-            ) : (
-              <Link
-                key={n.to}
-                to={n.to}
-                preload="intent"
-                onClick={() => setOpen(false)}
-                className="font-serif text-xl py-3 border-b hairline last:border-0 text-foreground"
-              >
-                {n.label}
-              </Link>
-            ),
+        <div
+          className={cn(
+            "h-full flex flex-col px-6 pt-2 pb-[max(1.25rem,env(safe-area-inset-bottom))]",
+            "transition-opacity duration-200",
+            open ? "opacity-100" : "opacity-0",
           )}
-        </nav>
+        >
+          <nav className="flex flex-col">
+            <Link
+              to={homeTo}
+              onClick={() => setOpen(false)}
+              className="font-serif text-xl py-3 border-b hairline text-foreground"
+            >
+              {d.nav.home}
+            </Link>
+            {nav.map((n) =>
+              n.kind === "catalog" ? (
+                <Link
+                  key={`catalog-${n.gender}`}
+                  to="/catalog/$gender"
+                  params={{ gender: n.gender }}
+                  preload="intent"
+                  onClick={() => setOpen(false)}
+                  className="font-serif text-xl py-3 border-b hairline text-foreground"
+                >
+                  {n.label}
+                </Link>
+              ) : (
+                <Link
+                  key={n.to}
+                  to={n.to}
+                  preload="intent"
+                  onClick={() => setOpen(false)}
+                  className="font-serif text-xl py-3 border-b hairline text-foreground"
+                >
+                  {n.label}
+                </Link>
+              ),
+            )}
+          </nav>
+
+          <p className="mt-auto pt-8 font-serif text-base leading-snug text-foreground/65 text-center">
+            {d.navQuote}
+          </p>
+        </div>
       </div>
     </>
   );

@@ -4,6 +4,7 @@ import { Plus } from "lucide-react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { cn } from "@/lib/utils";
 import heroImg from "@/assets/lookbook-hero.webp";
+import editorialImg from "@/assets/lookbook-craft.webp";
 
 // Фото блока «Мастерство» — кадр с показа MVST (см. public/fashion-show/clothing/).
 const craftImg = "/fashion-show/clothing/0023_3.jpg";
@@ -126,7 +127,7 @@ function AboutPage() {
       {/* EDITORIAL STRIP — между философией и материалами */}
       <section className="relative h-[60vh] min-h-[420px] md:h-[78vh] md:min-h-[600px] overflow-hidden">
         <img
-          src="/about/style-editorial.jpg"
+          src={editorialImg}
           alt=""
           loading="lazy"
           className="absolute inset-0 size-full object-cover object-[50%_25%]"

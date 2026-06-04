@@ -51,6 +51,7 @@ type Dict = {
     buildRoute: string;
     boutique: string;
   };
+  navQuote: string;
 };
 
 export const dict: Record<Lang, Dict> = {
@@ -81,6 +82,8 @@ export const dict: Record<Lang, Dict> = {
       buildRoute: "Построить маршрут",
       boutique: "Бутик",
     },
+    navQuote:
+      "Исключительность в каждой детали. Лаконичный крой, благородные материалы и безупречное исполнение для тех, чьи стандарты не знают компромиссов.",
   },
   en: {
     nav: {
@@ -109,6 +112,8 @@ export const dict: Record<Lang, Dict> = {
       buildRoute: "Get directions",
       boutique: "Boutique",
     },
+    navQuote:
+      "Exceptional in every detail. Considered cuts, noble materials and impeccable execution for those whose standards know no compromise.",
   },
 };
 
