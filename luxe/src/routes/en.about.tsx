@@ -4,8 +4,8 @@ import { Plus } from "lucide-react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { cn } from "@/lib/utils";
 import heroImg from "@/assets/lookbook-hero.webp";
-import editorialImg from "@/assets/lookbook-craft.webp";
 
+const editorialImg = "/about/style-editorial.jpg";
 const craftImg = "/fashion-show/clothing/0023_3.jpg";
 
 export const Route = createFileRoute("/en/about")({

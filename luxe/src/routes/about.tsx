@@ -4,9 +4,10 @@ import { Plus } from "lucide-react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { cn } from "@/lib/utils";
 import heroImg from "@/assets/lookbook-hero.webp";
-import editorialImg from "@/assets/lookbook-craft.webp";
 
-// Фото блока «Мастерство» — кадр с показа MVST (см. public/fashion-show/clothing/).
+// Editorial-фото и фото мастерства — кадры с показа, лежат в luxe/public/
+// (gitignored). Нужно положить руками на прод-сервер в ту же структуру.
+const editorialImg = "/about/style-editorial.jpg";
 const craftImg = "/fashion-show/clothing/0023_3.jpg";
 
 export const Route = createFileRoute("/about")({
