@@ -171,7 +171,7 @@ function EnAboutPage() {
             garment its character.
           </p>
         </div>
-        <div className="relative aspect-[3/4] md:aspect-[4/5] overflow-hidden order-1 md:order-2">
+        <div className="relative aspect-[3/4] md:aspect-[4/5] overflow-hidden bg-background order-1 md:order-2">
           <img
             src={craftImg}
             alt=""
