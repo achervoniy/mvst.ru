@@ -177,7 +177,7 @@ function AboutPage() {
         </div>
         {/* Фото с показа — 2:3, чтобы не обрезались голова и стопы.
             object-contain + sand-фон лучше, чем cover-кроп. */}
-        <div className="relative aspect-[3/4] md:aspect-[4/5] bg-sand overflow-hidden order-1 md:order-2">
+        <div className="relative aspect-[3/4] md:aspect-[4/5] overflow-hidden order-1 md:order-2">
           <img
             src={craftImg}
             alt=""

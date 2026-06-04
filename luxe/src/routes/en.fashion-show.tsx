@@ -1,11 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/site/SiteLayout";
-import { LookbookStage } from "@/components/site/LookbookStage";
-import looksData from "@/data/looks.json";
-import type { Collection } from "@/types/looks";
 import heroImg from "@/assets/lookbook-hero.webp";
-
-const collection = looksData as unknown as Collection;
 
 export const Route = createFileRoute("/en/fashion-show")({
   head: () => ({
@@ -112,11 +107,6 @@ function EnFashionShowPage() {
             />
           </div>
         </div>
-      </section>
-
-      {/* LOOKBOOK STAGE */}
-      <section className="bg-cream/60 border-y hairline">
-        <LookbookStage looks={collection.looks} labelText="Look" />
       </section>
 
       {/* PULL QUOTE */}
