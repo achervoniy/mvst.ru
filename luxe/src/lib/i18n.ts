@@ -56,7 +56,7 @@ type Dict = {
 export const dict: Record<Lang, Dict> = {
   ru: {
     nav: {
-      collection: "Коллекция весна-лето 2026",
+      collection: "Коллекция Весна-Лето 2026",
       forHer: "Для нее",
       forHim: "Для него",
       boutiques: "Бутики",

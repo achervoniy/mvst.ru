@@ -50,13 +50,13 @@ const wardrobeTabs: ReadonlyArray<{
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "MVST — Весна-лето 2026" },
+      { title: "MVST — Весна-Лето 2026" },
       {
         name: "description",
         content:
-          "Кашемир, шерсть, лен и кожа высочайшего качества. Откройте новую коллекцию MVST Весна-лето 2026.",
+          "Кашемир, шерсть, лен и кожа высочайшего качества. Откройте новую коллекцию MVST Весна-Лето 2026.",
       },
-      { property: "og:title", content: "MVST — Весна-лето 2026" },
+      { property: "og:title", content: "MVST — Весна-Лето 2026" },
       {
         property: "og:description",
         content: "Новая коллекция MVST. Тихий люкс ручной работы.",
@@ -96,7 +96,7 @@ function HomePage() {
       >
         <img
           src={homeHero}
-          alt="MVST Весна-лето 2026"
+          alt="MVST Весна-Лето 2026"
           fetchPriority="high"
           decoding="async"
           className="absolute inset-0 size-full object-cover object-[50%_16%] md:object-[50%_12%] xl:object-[50%_8%]"
@@ -104,7 +104,7 @@ function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-transparent to-black/35" />
         <div className="relative z-10 h-full flex flex-col items-center justify-end pb-16 md:pb-20 px-6 text-center text-cream">
           <h1 className="font-serif text-5xl md:text-7xl font-light leading-[1.05]">
-            Весна-лето 2026
+            Весна-Лето 2026
           </h1>
           <Link
             to="/collection-ss26"

@@ -1485,7 +1485,7 @@ function MobileFiltersDrawer({
             (() => {
               const tree = (categoryTree?.length ? categoryTree : filters.category.items) ?? [];
               return (
-                <div className="px-2">
+                <div className="px-5 pt-2">
                   <CategoryTree
                     nodes={tree}
                     gender={gender}
