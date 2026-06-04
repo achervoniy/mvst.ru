@@ -171,12 +171,14 @@ function EnAboutPage() {
             garment its character.
           </p>
         </div>
-        <img
-          src={craftImg}
-          alt=""
-          loading="lazy"
-          className="w-full h-full aspect-[4/5] object-cover order-1 md:order-2"
-        />
+        <div className="relative aspect-[3/4] md:aspect-[4/5] bg-sand overflow-hidden order-1 md:order-2">
+          <img
+            src={craftImg}
+            alt=""
+            loading="lazy"
+            className="absolute inset-0 size-full object-contain"
+          />
+        </div>
       </section>
 
       {/* LA NUVOLA */}

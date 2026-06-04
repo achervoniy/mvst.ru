@@ -760,8 +760,10 @@ function CategoryTree({
   };
   const back = () => setStack((s) => s.slice(0, -1));
 
+  // На мобиле px-5 переносим в строку — тогда нижний бордер divide-y тянется
+  // на всю ширину панели (как у блока «Сортировка»).
   const rowCls = mobile
-    ? "w-full flex items-center justify-between gap-3 py-3.5 text-left"
+    ? "w-full flex items-center justify-between gap-3 px-5 py-3.5 text-left"
     : "w-full flex items-center justify-between gap-3 py-2 text-left";
   const textCls = mobile ? "text-base" : "text-sm";
 
@@ -772,7 +774,7 @@ function CategoryTree({
         <div
           className={cn(
             "flex items-center gap-2 border-b hairline",
-            mobile ? "py-3" : "py-2.5",
+            mobile ? "px-5 py-3" : "py-2.5",
           )}
         >
           <button
@@ -1485,7 +1487,7 @@ function MobileFiltersDrawer({
             (() => {
               const tree = (categoryTree?.length ? categoryTree : filters.category.items) ?? [];
               return (
-                <div className="px-5 pt-2">
+                <div className="pt-2">
                   <CategoryTree
                     nodes={tree}
                     gender={gender}

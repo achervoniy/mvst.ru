@@ -125,7 +125,7 @@ export function Header({ variant = "solid" }: { variant?: "transparent" | "solid
               <img src={logoFull} alt="MVST" className="h-[25px] w-auto" />
             </Link>
 
-            <HeaderCartButton />
+            {lang === "en" ? <span className="size-10" aria-hidden /> : <HeaderCartButton />}
           </div>
 
           {/* Desktop: 3-col grid so logo + nav share one vertical center */}
@@ -188,7 +188,7 @@ export function Header({ variant = "solid" }: { variant?: "transparent" | "solid
               })}
             </nav>
             <div className="justify-self-end w-[85px] flex justify-end">
-              <HeaderCartButton dark={showGradient} />
+              {lang !== "en" && <HeaderCartButton dark={showGradient} />}
             </div>
           </div>
         </div>

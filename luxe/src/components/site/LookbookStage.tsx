@@ -3,6 +3,7 @@ import {
   useCallback,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
   type TransitionEvent,
@@ -129,6 +130,25 @@ function LookStage({
 }) {
   const look = looks[active];
 
+  // Сигнатура товаров — sorted ids. Если у соседних образов одинаковый
+  // набор товаров, key не меняется → блок справа не перемонтируется и
+  // не моргает (исчезает fade-in анимация).
+  const productsKey = useMemo(() => {
+    return look.products
+      .filter((p) => p.brand === "MVST")
+      .map((p) => p.itemId)
+      .sort((a, b) => a - b)
+      .join(",");
+  }, [look.products]);
+
+  // Кэшируем массив товаров по productsKey — чтобы reference оставался тем же
+  // при идентичном составе, и ProductsSlider не сбрасывал скролл.
+  const mvstProducts = useMemo(
+    () => look.products.filter((p) => p.brand === "MVST"),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [productsKey],
+  );
+
   return (
     <div className="relative max-w-[1360px] mx-auto md:px-6 pt-2 md:pt-0">
       <div className="grid grid-cols-1 gap-4 md:gap-4 md:flex md:items-stretch md:h-[64vh] md:max-h-[640px]">
@@ -147,12 +167,13 @@ function LookStage({
           />
         </div>
 
-        {/* Товары образа — показываем все MVST включая out-of-stock, прочее скрываем */}
+        {/* Товары образа. key = productsKey, не look.id — поэтому
+            при одинаковом составе блок переиспользуется без перемонтажа. */}
         <div
-          key={look.id}
+          key={productsKey}
           className="look-fade md:flex-1 md:h-full flex items-center min-w-0 px-2 md:px-0"
         >
-          <ProductsSlider products={look.products.filter((p) => p.brand === "MVST")} />
+          <ProductsSlider products={mvstProducts} />
         </div>
       </div>
     </div>

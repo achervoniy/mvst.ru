@@ -57,7 +57,7 @@ function EnFashionShowPage() {
           muted
           loop
           playsInline
-          preload="metadata"
+          preload="auto"
           className="hidden md:block absolute inset-0 size-full object-cover opacity-90"
         />
         <video
@@ -67,7 +67,7 @@ function EnFashionShowPage() {
           muted
           loop
           playsInline
-          preload="metadata"
+          preload="auto"
           className="md:hidden absolute inset-0 size-full object-cover opacity-90"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/15 to-black/55" />

@@ -77,7 +77,7 @@ function EnHome() {
               muted
               loop
               playsInline
-              preload="metadata"
+              preload="auto"
               className="absolute inset-0 size-full object-cover"
             />
           </div>
