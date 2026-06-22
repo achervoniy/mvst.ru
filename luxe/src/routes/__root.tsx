@@ -32,6 +32,10 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
+      // Сайт пока закрыт от индексации — продакшен-релиз ещё не объявлен.
+      { name: "robots", content: "noindex, nofollow, noarchive" },
+      { name: "googlebot", content: "noindex, nofollow" },
+      { name: "yandex", content: "noindex, nofollow" },
       { title: "MVST — итальянское мастерство" },
       {
         name: "description",
