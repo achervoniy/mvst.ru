@@ -4,7 +4,6 @@ import { cn } from "@/lib/utils";
 import logoFull from "@/assets/icons/LogoFull.svg";
 import navIcon from "@/assets/icons/NavIcon.svg";
 import closeIcon from "@/assets/icons/CloseIcon.svg";
-import { HeaderCartButton } from "@/components/site/HeaderCartButton";
 import { useLang, useDict } from "@/lib/i18n";
 
 type NavItem =
@@ -125,7 +124,8 @@ export function Header({ variant = "solid" }: { variant?: "transparent" | "solid
               <img src={logoFull} alt="MVST" className="h-[25px] w-auto" />
             </Link>
 
-            {lang === "en" ? <span className="size-10" aria-hidden /> : <HeaderCartButton />}
+            <span className="size-10" aria-hidden />
+            {/* корзина скрыта — на MVST она сейчас не используется */}
           </div>
 
           {/* Desktop: 3-col grid so logo + nav share one vertical center */}
@@ -187,9 +187,8 @@ export function Header({ variant = "solid" }: { variant?: "transparent" | "solid
                 );
               })}
             </nav>
-            <div className="justify-self-end w-[85px] flex justify-end">
-              {lang !== "en" && <HeaderCartButton dark={showGradient} />}
-            </div>
+            {/* корзина скрыта — на MVST она сейчас не используется */}
+            <div className="justify-self-end w-[85px]" aria-hidden />
           </div>
         </div>
       </header>

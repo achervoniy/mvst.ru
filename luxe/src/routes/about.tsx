@@ -17,13 +17,13 @@ export const Route = createFileRoute("/about")({
       {
         name: "description",
         content:
-          "Идеальный капсульный гардероб для тех, кто выбирает лучшее. Лаконичный крой, благородные материалы и безупречное исполнение MVST.",
+          "MVST — итальянский современный бренд сегмента luxury, основанный в 2023 году. Философия сдержанной роскоши, приглашённые дизайнеры мирового уровня и материалы ведущих итальянских мануфактур.",
       },
       { property: "og:title", content: "О бренде — MVST" },
       {
         property: "og:description",
         content:
-          "Архитектура личного стиля: лучшие мануфактуры мира, ручной труд итальянских фабрик и авторская технология La Nuvola.",
+          "Итальянский люкс-бренд MVST: приглашённые дизайнеры Алессандро Дель Аква и Патрик Хельманн, ткани Loro Piana, Colombo, Zegna, Piacenza и других мировых мануфактур.",
       },
       { property: "og:image", content: heroImg },
     ],
@@ -41,53 +41,71 @@ const materials: ReadonlyArray<{
   {
     name: "Кашемир",
     description:
-      "Тончайшее монгольское и итальянское волокно. Лёгкость, тепло, способность держать форму годами.",
+      "Одно из самых редких и ценных природных волокон — непревзойдённая мягкость, тепло и лёгкость. MVST использует различные виды кашемировых тканей и трикотажа ведущих итальянских мануфактур.",
     mills: [
-      { name: "Loro Piana", note: "флагман люкс-волокна" },
-      { name: "Cariaggi", note: "пряжа высшей крутки" },
+      { name: "Loro Piana", note: "Baby Cashmere®, The Gift of Kings®" },
+      { name: "Colombo", note: "кашемир, викунья, редкие волокна" },
+      { name: "Piacenza 1733", note: "техника начёса с репейником" },
     ],
   },
   {
     name: "Шерсть",
     description:
-      "Меринос superfine, костюмные ткани с двойным кручением и плотной диагональной структурой.",
+      "Тончайшие шерстяные волокна — за мягкость, лёгкость и способность держать комфортный микроклимат. Меринос superfine, альпака, викунья.",
     mills: [
-      { name: "Vitale Barberis Canonico", note: "меринос" },
-      { name: "Reda 1865", note: "костюмные ткани" },
+      { name: "Zegna", note: "меринос, кашемир, викунья, мохер" },
       { name: "Loro Piana", note: "шерсть с шёлком" },
     ],
   },
   {
     name: "Шёлк",
     description:
-      "Mulberry-шёлк глубокого блеска. В подкладках и в основных тканях, где важна благородная тяжесть.",
-    mills: [{ name: "Loro Piana" }],
+      "Шелка, жаккарды и декоративные ткани с благородным блеском, глубиной цвета и выразительной фактурой — от исторических текстильных домов Италии.",
+    mills: [
+      { name: "Gentili Mosconi", note: "fil coupé, вышивки, регион Комо" },
+      { name: "Serica 1870", note: "поставщик тканей для Ватикана" },
+      { name: "Centro Seta", note: "смесовые шелка, регион Комо" },
+    ],
   },
   {
-    name: "Викунья и альпака",
+    name: "Кожа",
     description:
-      "Раритетные волокна Анд. Самые мягкие из существующих, лимитированный объём в год.",
-    mills: [{ name: "Colombo", note: "историческая мануфактура в Боргосезии" }],
+      "Ключевой материал бренда. Редкие экзотические кожи и лучшие образцы традиционного кожевенного мастерства — Porosus, кожа питона, оленья кожа, Nappa, Plongé, Baby Calf, замша и перфорированная замша.",
+    mills: [
+      { name: "Porosus" },
+      { name: "Baby Calf" },
+      { name: "Nappa · Plongé" },
+    ],
   },
   {
-    name: "Лён и хлопок",
+    name: "Мех",
     description:
-      "Итальянский лён длинного волокна и египетский хлопок Giza. Для летних коллекций и сорочек.",
-    mills: [{ name: "Olmetex" }],
+      "Тщательно отобранные виды меха. Особое место занимает соболь — MVST закупает шкурки на аукционах «Союзпушнины», крупнейшего мирового аукционного дома промыслового соболя.",
+    mills: [
+      { name: "Соболь" },
+      { name: "Норка · Свакара · Шиншилла" },
+      { name: "Рысь · Монгольская овчина" },
+    ],
   },
   {
-    name: "Деним",
+    name: "Технические ткани",
     description:
-      "Сэлвидж-деним из Италии и Японии. Плотная саржа, природная индиго-окраска, благородный износ.",
-    mills: [{ name: "Candiani", note: "родина селвиджа в Европе" }],
+      "Для верхней одежды — высокотехнологичные ткани: водонепроницаемые, непродуваемые, ламинированные, эластичные. Лидерство в разработке начиная с 1950-х.",
+    mills: [{ name: "Olmetex", note: "семейная мануфактура, регион Комо" }],
+  },
+  {
+    name: "Трикотаж",
+    description:
+      "Джерси, интерлоки, жаккарды и сложные конструкции — мягкость, комфорт и безупречная посадка. Итальянская мануфактура в составе Ermenegildo Zegna.",
+    mills: [{ name: "Gruppo Dondi (Dondi Jersey)" }],
   },
 ];
 
 const facts: ReadonlyArray<{ label: string; value: string }> = [
+  { label: "Основание бренда", value: "2023" },
   { label: "Страна производства", value: "Италия" },
-  { label: "Ведущих мануфактур-партнеров", value: "6+" },
-  { label: "Авторская технология", value: "La Nuvola" },
-  { label: "Исключительное качество", value: "Роскошные материалы" },
+  { label: "Мануфактур-партнёров", value: "10+" },
+  { label: "Стандарт исполнения", value: "Тихая роскошь" },
 ];
 
 function AboutPage() {
@@ -104,10 +122,11 @@ function AboutPage() {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/45" />
         <div className="relative z-10 h-full flex flex-col items-center justify-end pb-16 md:pb-20 px-6 text-center text-cream">
-          <div className="eyebrow-lg mb-6 opacity-90">О бренде</div>
+          <div className="eyebrow-lg mb-6 opacity-90">О бренде · с 2023</div>
           <h1 className="font-serif text-6xl md:text-8xl font-light leading-[1.05]">MVST</h1>
           <p className="mt-8 max-w-2xl text-base md:text-lg leading-relaxed opacity-90">
-            Идеальный капсульный гардероб для тех, кто выбирает лучшее.
+            Итальянский современный бренд сегмента luxury. Философия
+            уверенного, сдержанного и интеллектуального подхода к роскоши.
           </p>
         </div>
       </section>
@@ -116,16 +135,46 @@ function AboutPage() {
       <section className="px-6 py-14 md:py-32 max-w-3xl mx-auto text-center">
         <div className="eyebrow text-foreground/60 mb-6">Философия</div>
         <h2 className="font-serif text-4xl md:text-5xl leading-tight mb-10">
-          Архитектура личного стиля
+          Роскошь как ощущение
         </h2>
         <p className="text-foreground/75 leading-relaxed text-lg">
-          Исключительность в каждой детали. Лаконичный крой, благородные материалы,
-          сдержанная палитра и безупречное исполнение для тех, чьи стандарты
-          не знают компромиссов.
+          Для MVST роскошь — это не демонстративность, а безупречное качество,
+          которое ощущается в деталях: в мягкости кашемира, точности силуэта,
+          глубине оттенков и естественной элегантности материалов.
+        </p>
+        <p className="mt-6 text-foreground/70 leading-relaxed">
+          Бренд создаёт одежду для клиента, который ценит безупречное качество,
+          тактильные ощущения и вещи, остающиеся актуальными вне времени.
         </p>
       </section>
 
-      {/* EDITORIAL STRIP — между философией и материалами */}
+      {/* DNA — 3 колонки */}
+      <section className="bg-foreground/[0.04]">
+        <div className="px-6 md:px-12 py-20 md:py-28 max-w-6xl mx-auto">
+          <div className="text-center mb-12 md:mb-16">
+            <div className="eyebrow text-foreground/60 mb-4">ДНК бренда</div>
+            <h3 className="font-serif text-4xl md:text-5xl leading-tight">
+              Эстетика тихой уверенности
+            </h3>
+          </div>
+          <div className="grid md:grid-cols-3 gap-10 md:gap-14">
+            <DnaCard
+              title="Материал и посадка"
+              text="Главную роль играют качество волокна, безупречная посадка и выразительный силуэт. Ценность раскрывается через ощущения — мягкость кашемира, глубину оттенков, чистоту линий."
+            />
+            <DnaCard
+              title="Изделия вне времени"
+              text="MVST строит коллекции вокруг натуральных материалов, благородных фактур и интеллектуального дизайна — современный люкс-гардероб, где нет места случайным трендам."
+            />
+            <DnaCard
+              title="Естественная элегантность"
+              text="Спокойная уверенность и интеллектуальная элегантность без демонстративности. Одежда для клиента, который ценит качество, комфорт и сдержанную утончённость."
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* EDITORIAL STRIP */}
       <section className="relative h-[60vh] min-h-[420px] md:h-[78vh] md:min-h-[600px] overflow-hidden">
         <img
           src={editorialImg}
@@ -138,6 +187,80 @@ function AboutPage() {
           <p className="font-serif text-xl md:text-2xl text-cream/95 max-w-md leading-snug">
             Стиль начинается с материала.
           </p>
+        </div>
+      </section>
+
+      {/* DESIGNERS */}
+      <section className="px-6 md:px-12 py-20 md:py-28 max-w-5xl mx-auto">
+        <div className="text-center mb-12 md:mb-16">
+          <div className="eyebrow text-foreground/60 mb-4">Дизайнеры</div>
+          <h3 className="font-serif text-4xl md:text-5xl leading-tight">
+            Приглашённые авторы
+          </h3>
+          <p className="mt-6 text-foreground/70 leading-relaxed max-w-2xl mx-auto">
+            Для разработки коллекций MVST сотрудничает с международными
+            дизайнерами и креативными командами, обладающими многолетним
+            опытом работы с ведущими мировыми luxury-брендами.
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-10 md:gap-16 border-t hairline pt-12 md:pt-16">
+          <div>
+            <div className="eyebrow text-foreground/55 mb-3">Женская линия</div>
+            <h4 className="font-serif text-3xl md:text-4xl leading-tight mb-6">
+              Алессандро Дель Аква
+            </h4>
+            <p className="text-foreground/75 leading-relaxed">
+              Дизайнер с международной репутацией. В портфолио — работа с
+              Giorgio Armani и Dolce&nbsp;&&nbsp;Gabbana, а также собственный
+              бренд N°21, признанный на мировой модной сцене. Формирует женское
+              направление MVST.
+            </p>
+          </div>
+          <div>
+            <div className="eyebrow text-foreground/55 mb-3">У истоков</div>
+            <h4 className="font-serif text-3xl md:text-4xl leading-tight mb-6">
+              Патрик Хельманн
+            </h4>
+            <p className="text-foreground/75 leading-relaxed">
+              Внёс существенный вклад в становление и развитие бренда,
+              принимал участие в создании первых коллекций MVST.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* LINES — М/Ж */}
+      <section className="bg-foreground/[0.04]">
+        <div className="px-6 md:px-12 py-20 md:py-28 max-w-6xl mx-auto">
+          <div className="text-center mb-12 md:mb-16">
+            <div className="eyebrow text-foreground/60 mb-4">Линии</div>
+            <h3 className="font-serif text-4xl md:text-5xl leading-tight">
+              Женская и мужская эстетика
+            </h3>
+          </div>
+          <div className="grid md:grid-cols-2 gap-12 md:gap-16">
+            <LineBlock
+              title="Женская линия"
+              intro="Мягкая элегантность, свободный силуэт и благородная простота — спокойная уверенность и ощущение естественной роскоши."
+              points={[
+                "Пастельная и природная палитра",
+                "Флюидные ткани",
+                "Расслабленные силуэты",
+                "Минимализм без холодности",
+              ]}
+            />
+            <LineBlock
+              title="Мужская линия"
+              intro="Современная классика, комфорт и архитектурная точность силуэта — люкс-гардероб для клиента, который ценит сдержанную утончённость."
+              points={[
+                "Современная мягкая классика",
+                "Благородные фактуры",
+                "Многослойность",
+                "Функциональная элегантность",
+              ]}
+            />
+          </div>
         </div>
       </section>
 
@@ -157,28 +280,21 @@ function AboutPage() {
         <div className="px-6 md:px-12 pb-20 md:pb-28 max-w-6xl mx-auto">
           <MaterialsList />
         </div>
-
-        <div className="border-t hairline px-6 md:px-12 py-14 md:py-16 max-w-3xl mx-auto text-foreground/70 leading-relaxed text-center">
-          В верхней одежде — драгоценный мех, испанская овчина, технологичные
-          нейлон и утеплитель Thermore. Игру контрастов создают сочетания
-          гладкой кожи с фактурной замшей и каракульчой.
-        </div>
       </section>
 
-      {/* CRAFT */}
+      {/* CRAFT — Сделано в Италии */}
       <section id="craft" className="scroll-mt-24 grid md:grid-cols-2 gap-px bg-foreground/10">
         <div className="p-10 md:p-16 flex flex-col justify-center bg-background order-2 md:order-1">
           <div className="eyebrow text-foreground/60 mb-4">Мастерство</div>
           <h3 className="font-serif text-3xl md:text-4xl mb-6">Сделано в Италии</h3>
           <p className="text-foreground/75 leading-relaxed">
-            MVST доверяет производство коллекций старейшим итальянским фабрикам.
-            Наследие портновского мастерства проявляется в деталях, требующих
-            ручного труда: филигранной обработке лацканов, идеальной линии плеча
-            и бережной финальной отделке, придающей вещи ее характер.
+            Коллекции бренда производятся на итальянских фабриках с
+            использованием тканей и материалов ведущих текстильных домов —
+            Loro&nbsp;Piana, Colombo, Zegna, Piacenza, Gentili&nbsp;Mosconi
+            и других. Каждое изделие создаётся с вниманием к качеству
+            волокна, пластике ткани и комфорту в носке.
           </p>
         </div>
-        {/* Фото с показа — 2:3, чтобы не обрезались голова и стопы.
-            object-contain + sand-фон лучше, чем cover-кроп. */}
         <div className="relative aspect-[3/4] md:aspect-[4/5] overflow-hidden bg-background order-1 md:order-2">
           <img
             src={craftImg}
@@ -186,21 +302,6 @@ function AboutPage() {
             loading="lazy"
             className="absolute inset-0 size-full object-contain"
           />
-        </div>
-      </section>
-
-      {/* LA NUVOLA */}
-      <section className="bg-foreground text-background px-6 py-28 md:py-36">
-        <div className="max-w-3xl mx-auto text-center">
-          <div className="eyebrow text-background/55 mb-8">Технологии</div>
-          <h3 className="font-serif text-5xl md:text-7xl leading-[1.05] mb-10">
-            La&nbsp;Nuvola
-          </h3>
-          <p className="text-background/80 leading-relaxed text-lg">
-            Помимо классической вязки, MVST использует передовую технологию
-            «Облако» — кашемир в этой обработке получается невероятно воздушным
-            и почти невесомым.
-          </p>
         </div>
       </section>
 
@@ -212,7 +313,7 @@ function AboutPage() {
               key={f.label}
               className="flex items-center justify-between gap-6 py-5 md:py-6"
             >
-              <span className="eyebrow text-foreground/55 max-w-[18ch]">{f.label}</span>
+              <span className="eyebrow text-foreground/55 max-w-[20ch]">{f.label}</span>
               <span className="font-serif text-2xl md:text-3xl text-foreground text-right">
                 {f.value}
               </span>
@@ -221,23 +322,59 @@ function AboutPage() {
         </ul>
       </section>
 
-      {/* SUSTAINABILITY */}
+      {/* CLOSING */}
       <section
         id="sustainability"
         className="scroll-mt-24 px-6 pt-4 pb-20 md:pt-8 md:pb-28 max-w-3xl mx-auto text-center"
       >
-        <div className="eyebrow text-foreground/60 mb-6">Устойчивое развитие</div>
+        <div className="eyebrow text-foreground/60 mb-6">Резюме</div>
         <h2 className="font-serif text-4xl md:text-5xl leading-tight mb-8">
-          Рациональный гардероб
+          Роскошь в современной интерпретации
         </h2>
         <p className="text-foreground/75 leading-relaxed text-lg">
-          MVST создает коллекции, которые не конкурируют, а дополняют и продолжают
-          друг друга. Безупречная сочетаемость новых моделей с вещами прошлых
-          сезонов и качество материалов и исполнения обеспечивают вашему гардеробу
-          долголетие, делая моду осознанным выбором.
+          MVST создаёт одежду для клиента, который ценит качество, комфорт
+          и интеллектуальную элегантность вне времени. Тихая роскошь,
+          натуральные материалы, изделия, которые остаются актуальными
+          сезон за сезоном.
         </p>
       </section>
     </SiteLayout>
+  );
+}
+
+function DnaCard({ title, text }: { title: string; text: string }) {
+  return (
+    <div className="border-t hairline pt-6">
+      <div className="font-serif text-xl md:text-2xl mb-3 leading-tight">{title}</div>
+      <p className="text-foreground/70 leading-relaxed text-sm md:text-base">{text}</p>
+    </div>
+  );
+}
+
+function LineBlock({
+  title,
+  intro,
+  points,
+}: {
+  title: string;
+  intro: string;
+  points: ReadonlyArray<string>;
+}) {
+  return (
+    <div className="border-t hairline pt-8">
+      <div className="eyebrow text-foreground/55 mb-3">{title}</div>
+      <p className="font-serif text-2xl md:text-3xl leading-tight mb-6">{intro}</p>
+      <ul className="space-y-2 text-foreground/75">
+        {points.map((p) => (
+          <li key={p} className="flex items-baseline gap-3">
+            <span className="text-foreground/40" aria-hidden>
+              ·
+            </span>
+            <span>{p}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
@@ -278,8 +415,7 @@ function MaterialsList() {
               </span>
             </button>
 
-            {/* Мобильный текст-описание — всегда видим под заголовком,
-                чтобы не прятать суть за раскрытием. */}
+            {/* Мобильный текст-описание — всегда видим под заголовком */}
             <div className="md:hidden -mt-2 pb-1 text-foreground/55 text-sm leading-relaxed">
               {m.description}
             </div>

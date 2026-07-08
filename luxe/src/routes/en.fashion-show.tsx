@@ -118,7 +118,8 @@ function EnFashionShowPage() {
         </div>
       </section>
 
-      {/* PODIUM grid */}
+      {/* PODIUM grid — temporarily hidden, will be brought back later */}
+      {/*
       <section className="px-6 md:px-12 py-20 md:py-28 max-w-7xl mx-auto">
         <div className="text-center mb-12 md:mb-16">
           <div className="eyebrow text-foreground/60 mb-3">Editorial</div>
@@ -133,6 +134,7 @@ function EnFashionShowPage() {
           ))}
         </div>
       </section>
+      */}
     </SiteLayout>
   );
 }

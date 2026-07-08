@@ -1,8 +1,6 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
-import { FittingCartProvider } from "@/lib/fitting-cart";
-import { FittingCartDialog } from "@/components/site/FittingCartDialog";
 import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
@@ -92,10 +90,9 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   return (
-    <FittingCartProvider>
+    <>
       <Outlet />
-      <FittingCartDialog />
       <Toaster />
-    </FittingCartProvider>
+    </>
   );
 }

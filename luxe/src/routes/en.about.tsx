@@ -15,9 +15,14 @@ export const Route = createFileRoute("/en/about")({
       {
         name: "description",
         content:
-          "MVST — a capsule wardrobe of quiet luxury. Italian craftsmanship and the finest natural fibres.",
+          "MVST — a contemporary Italian luxury house founded in 2023. Quiet luxury, invited designers of world renown and the finest Italian mills.",
       },
       { property: "og:title", content: "About — MVST" },
+      {
+        property: "og:description",
+        content:
+          "MVST Italian luxury house — designers Alessandro Dell’Acqua and Patrick Hellmann, fabrics by Loro Piana, Colombo, Zegna, Piacenza and other world-leading mills.",
+      },
       { property: "og:image", content: heroImg },
     ],
   }),
@@ -32,50 +37,70 @@ const materials: ReadonlyArray<{
   {
     name: "Cashmere",
     description:
-      "Mongolian and Italian fibres of exceptional fineness. Light, warm, holding shape for years.",
+      "One of the rarest and most precious natural fibres — softness, warmth and lightness. MVST uses cashmere fabrics and knitwear from the leading Italian mills.",
     mills: [
-      { name: "Loro Piana", note: "the flagship of luxury fibres" },
-      { name: "Cariaggi", note: "high-twist yarn" },
+      { name: "Loro Piana", note: "Baby Cashmere®, The Gift of Kings®" },
+      { name: "Colombo", note: "cashmere, vicuña, rare fibres" },
+      { name: "Piacenza 1733", note: "burdock napping technique" },
     ],
   },
   {
     name: "Wool",
     description:
-      "Superfine merino and suiting fabrics with a dense diagonal weave.",
+      "The finest wool fibres — for softness, lightness and the ability to hold a comfortable microclimate. Superfine merino, alpaca, vicuña.",
     mills: [
-      { name: "Vitale Barberis Canonico", note: "merino" },
-      { name: "Reda 1865", note: "suiting fabrics" },
+      { name: "Zegna", note: "merino, cashmere, vicuña, mohair" },
       { name: "Loro Piana", note: "wool with silk" },
     ],
   },
   {
     name: "Silk",
     description:
-      "Mulberry silk with a deep, restrained lustre. In linings and in fabrics where noble weight matters.",
-    mills: [{ name: "Loro Piana" }],
+      "Silks, jacquards and decorative fabrics with noble lustre, depth of colour and expressive texture — from Italy’s historic textile houses.",
+    mills: [
+      { name: "Gentili Mosconi", note: "fil coupé, embroidery, Como region" },
+      { name: "Serica 1870", note: "supplier to the Vatican" },
+      { name: "Centro Seta", note: "blended silks, Como region" },
+    ],
   },
   {
-    name: "Vicuña & alpaca",
-    description: "Rare Andean fibres. Among the softest in existence.",
-    mills: [{ name: "Colombo", note: "the historic mill in Borgosesia" }],
-  },
-  {
-    name: "Linen & cotton",
-    description: "Long-staple Italian linen and Egyptian Giza cotton.",
-    mills: [{ name: "Olmetex" }],
-  },
-  {
-    name: "Denim",
+    name: "Leather",
     description:
-      "Selvedge denim from Italy and Japan. Tight twill, natural indigo, noble wear.",
-    mills: [{ name: "Candiani", note: "the home of European selvedge" }],
+      "A key material of the house. Rare exotic hides and the finest examples of traditional tannery craft — Porosus, python, deerskin, Nappa, Plongé, Baby Calf, suede and perforated suede.",
+    mills: [
+      { name: "Porosus" },
+      { name: "Baby Calf" },
+      { name: "Nappa · Plongé" },
+    ],
+  },
+  {
+    name: "Fur",
+    description:
+      "Carefully selected furs. Sable holds a special place — MVST sources pelts at the auctions of Soyuzpushnina, the world’s largest auction house for wild sable.",
+    mills: [
+      { name: "Sable" },
+      { name: "Mink · Swakara · Chinchilla" },
+      { name: "Lynx · Mongolian shearling" },
+    ],
+  },
+  {
+    name: "Technical fabrics",
+    description:
+      "For outerwear — high-tech fabrics: waterproof, windproof, laminated, elastic. Leadership in the field since the 1950s.",
+    mills: [{ name: "Olmetex", note: "family mill, Como region" }],
+  },
+  {
+    name: "Jersey & knits",
+    description:
+      "Jersey, interlock, jacquard and complex constructions — softness, comfort and a flawless drape. Italian mill within the Ermenegildo Zegna group.",
+    mills: [{ name: "Gruppo Dondi (Dondi Jersey)" }],
   },
 ];
 
 const facts: ReadonlyArray<{ label: string; value: string }> = [
+  { label: "Founded", value: "2023" },
   { label: "Country of production", value: "Italy" },
-  { label: "Leading mill partners", value: "6+" },
-  { label: "Proprietary technique", value: "La Nuvola" },
+  { label: "Mill partners", value: "10+" },
   { label: "Standard of make", value: "Quiet luxury" },
 ];
 
@@ -96,10 +121,11 @@ function EnAboutPage() {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/45" />
         <div className="relative z-10 h-full flex flex-col items-center justify-end pb-16 md:pb-20 px-6 text-center text-cream">
-          <div className="eyebrow-lg mb-6 opacity-90">About the house</div>
+          <div className="eyebrow-lg mb-6 opacity-90">About the house · Est. 2023</div>
           <h1 className="font-serif text-6xl md:text-8xl font-light leading-[1.05]">MVST</h1>
           <p className="mt-8 max-w-2xl text-base md:text-lg leading-relaxed opacity-90">
-            A capsule wardrobe for those who choose the very best.
+            A contemporary Italian luxury house. A philosophy of confident,
+            restrained and intelligent approach to luxury.
           </p>
         </div>
       </section>
@@ -108,16 +134,46 @@ function EnAboutPage() {
       <section className="px-6 py-14 md:py-32 max-w-3xl mx-auto text-center">
         <div className="eyebrow text-foreground/60 mb-6">Philosophy</div>
         <h2 className="font-serif text-4xl md:text-5xl leading-tight mb-10">
-          Architecture of personal style
+          Luxury as sensation
         </h2>
         <p className="text-foreground/75 leading-relaxed text-lg">
-          Exceptional in every detail. Considered cuts, noble materials, a restrained
-          palette and impeccable execution for those whose standards know no
-          compromise.
+          For MVST, luxury is not display but flawless quality felt in the
+          details — the softness of cashmere, the precision of the silhouette,
+          the depth of colour and the natural elegance of the materials.
+        </p>
+        <p className="mt-6 text-foreground/70 leading-relaxed">
+          MVST creates clothing for the client who values impeccable quality,
+          tactile pleasure and pieces that remain relevant beyond time.
         </p>
       </section>
 
-      {/* EDITORIAL STRIP — between philosophy and materials */}
+      {/* DNA */}
+      <section className="bg-foreground/[0.04]">
+        <div className="px-6 md:px-12 py-20 md:py-28 max-w-6xl mx-auto">
+          <div className="text-center mb-12 md:mb-16">
+            <div className="eyebrow text-foreground/60 mb-4">Brand DNA</div>
+            <h3 className="font-serif text-4xl md:text-5xl leading-tight">
+              The aesthetic of quiet confidence
+            </h3>
+          </div>
+          <div className="grid md:grid-cols-3 gap-10 md:gap-14">
+            <DnaCard
+              title="Material and fit"
+              text="The leading roles belong to fibre quality, an impeccable fit and an expressive silhouette. Value reveals itself through sensation — softness of cashmere, depth of colour, purity of line."
+            />
+            <DnaCard
+              title="Pieces beyond time"
+              text="MVST builds collections around natural materials, noble textures and intelligent design — a modern luxury wardrobe with no room for passing trends."
+            />
+            <DnaCard
+              title="Natural elegance"
+              text="Quiet confidence and intelligent elegance without display. Clothing for the client who values quality, comfort and restrained refinement."
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* EDITORIAL STRIP */}
       <section className="relative h-[60vh] min-h-[420px] md:h-[78vh] md:min-h-[600px] overflow-hidden">
         <img
           src={editorialImg}
@@ -133,6 +189,81 @@ function EnAboutPage() {
         </div>
       </section>
 
+      {/* DESIGNERS */}
+      <section className="px-6 md:px-12 py-20 md:py-28 max-w-5xl mx-auto">
+        <div className="text-center mb-12 md:mb-16">
+          <div className="eyebrow text-foreground/60 mb-4">Designers</div>
+          <h3 className="font-serif text-4xl md:text-5xl leading-tight">
+            Invited authors
+          </h3>
+          <p className="mt-6 text-foreground/70 leading-relaxed max-w-2xl mx-auto">
+            MVST develops its collections with invited international designers
+            and creative teams whose careers were shaped alongside the
+            leading luxury houses of the world.
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-10 md:gap-16 border-t hairline pt-12 md:pt-16">
+          <div>
+            <div className="eyebrow text-foreground/55 mb-3">Women’s line</div>
+            <h4 className="font-serif text-3xl md:text-4xl leading-tight mb-6">
+              Alessandro Dell’Acqua
+            </h4>
+            <p className="text-foreground/75 leading-relaxed">
+              A designer of international reputation. His portfolio includes
+              work with Giorgio Armani and Dolce&nbsp;&&nbsp;Gabbana, and his
+              own brand N°21, recognised on the world stage. He shapes the
+              women’s direction of MVST.
+            </p>
+          </div>
+          <div>
+            <div className="eyebrow text-foreground/55 mb-3">At the origins</div>
+            <h4 className="font-serif text-3xl md:text-4xl leading-tight mb-6">
+              Patrick Hellmann
+            </h4>
+            <p className="text-foreground/75 leading-relaxed">
+              A significant contribution to the founding and development of the
+              house — Patrick Hellmann took part in creating the first MVST
+              collections.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* LINES */}
+      <section className="bg-foreground/[0.04]">
+        <div className="px-6 md:px-12 py-20 md:py-28 max-w-6xl mx-auto">
+          <div className="text-center mb-12 md:mb-16">
+            <div className="eyebrow text-foreground/60 mb-4">Lines</div>
+            <h3 className="font-serif text-4xl md:text-5xl leading-tight">
+              Women’s and men’s aesthetics
+            </h3>
+          </div>
+          <div className="grid md:grid-cols-2 gap-12 md:gap-16">
+            <LineBlock
+              title="Women"
+              intro="Soft elegance, a fluid silhouette and noble simplicity — quiet confidence and the feeling of natural luxury."
+              points={[
+                "Pastel and natural palette",
+                "Fluid fabrics",
+                "Relaxed silhouettes",
+                "Minimalism without coldness",
+              ]}
+            />
+            <LineBlock
+              title="Men"
+              intro="Modern classics, comfort and architectural precision of silhouette — a luxury wardrobe for those who value restrained refinement."
+              points={[
+                "Modern soft tailoring",
+                "Noble textures",
+                "Layering",
+                "Functional elegance",
+              ]}
+            />
+          </div>
+        </div>
+      </section>
+
       {/* MATERIALS */}
       <section className="bg-background">
         <div className="px-6 md:px-12 pt-20 md:pt-28 pb-6 max-w-6xl mx-auto text-center">
@@ -141,19 +272,13 @@ function EnAboutPage() {
             It all begins with the fibre
           </h3>
           <p className="text-foreground/70 leading-relaxed max-w-2xl mx-auto">
-            Every MVST fabric is chosen for its character. The mills we work with are
-            a consequence of that choice — not its cause.
+            Every MVST fabric is chosen for its character. The mills we work
+            with are a consequence of that choice — not its cause.
           </p>
         </div>
 
         <div className="px-6 md:px-12 pb-20 md:pb-28 max-w-6xl mx-auto">
           <MaterialsList />
-        </div>
-
-        <div className="border-t hairline px-6 md:px-12 py-14 md:py-16 max-w-3xl mx-auto text-foreground/70 leading-relaxed text-center">
-          In outerwear — precious fur, Spanish shearling, technical nylon and Thermore
-          insulation. Contrast plays out between smooth leather, textured suede and
-          karakulcha.
         </div>
       </section>
 
@@ -166,10 +291,11 @@ function EnAboutPage() {
           <div className="eyebrow text-foreground/60 mb-4">Craft</div>
           <h3 className="font-serif text-3xl md:text-4xl mb-6">Made in Italy</h3>
           <p className="text-foreground/75 leading-relaxed">
-            MVST collections are entrusted to historic Italian ateliers. The legacy
-            of tailoring lives in the details that demand hand work: the filigree of
-            lapels, the perfect shoulder, the gentle final finish that gives a
-            garment its character.
+            Collections are produced in Italian ateliers using fabrics and
+            materials from the world’s leading textile houses —
+            Loro&nbsp;Piana, Colombo, Zegna, Piacenza, Gentili&nbsp;Mosconi and
+            others. Each piece is made with attention to fibre quality, drape
+            and comfort in wear.
           </p>
         </div>
         <div className="relative aspect-[3/4] md:aspect-[4/5] overflow-hidden bg-background order-1 md:order-2">
@@ -179,20 +305,6 @@ function EnAboutPage() {
             loading="lazy"
             className="absolute inset-0 size-full object-contain"
           />
-        </div>
-      </section>
-
-      {/* LA NUVOLA */}
-      <section className="bg-foreground text-background px-6 py-28 md:py-36">
-        <div className="max-w-3xl mx-auto text-center">
-          <div className="eyebrow text-background/55 mb-8">Technology</div>
-          <h3 className="font-serif text-5xl md:text-7xl leading-[1.05] mb-10">
-            La&nbsp;Nuvola
-          </h3>
-          <p className="text-background/80 leading-relaxed text-lg">
-            Beyond classic knitting, MVST employs the proprietary “Nuvola” technique
-            — cashmere of an almost weightless softness.
-          </p>
         </div>
       </section>
 
@@ -213,23 +325,58 @@ function EnAboutPage() {
         </ul>
       </section>
 
-      {/* SUSTAINABILITY */}
+      {/* CLOSING */}
       <section
         id="sustainability"
         className="scroll-mt-24 px-6 pt-4 pb-20 md:pt-8 md:pb-28 max-w-3xl mx-auto text-center"
       >
-        <div className="eyebrow text-foreground/60 mb-6">Sustainability</div>
+        <div className="eyebrow text-foreground/60 mb-6">In a word</div>
         <h2 className="font-serif text-4xl md:text-5xl leading-tight mb-8">
-          A considered wardrobe
+          Luxury in a contemporary key
         </h2>
         <p className="text-foreground/75 leading-relaxed text-lg">
-          MVST creates collections that do not compete but complement and continue
-          one another. The perfect compatibility of new pieces with those of seasons
-          past — combined with the quality of materials and execution — gives your
-          wardrobe longevity and makes fashion a conscious choice.
+          MVST makes clothing for the client who values quality, comfort and
+          intelligent elegance beyond time. Quiet luxury, natural materials,
+          pieces that remain relevant season after season.
         </p>
       </section>
     </SiteLayout>
+  );
+}
+
+function DnaCard({ title, text }: { title: string; text: string }) {
+  return (
+    <div className="border-t hairline pt-6">
+      <div className="font-serif text-xl md:text-2xl mb-3 leading-tight">{title}</div>
+      <p className="text-foreground/70 leading-relaxed text-sm md:text-base">{text}</p>
+    </div>
+  );
+}
+
+function LineBlock({
+  title,
+  intro,
+  points,
+}: {
+  title: string;
+  intro: string;
+  points: ReadonlyArray<string>;
+}) {
+  return (
+    <div className="border-t hairline pt-8">
+      <div className="eyebrow text-foreground/55 mb-3">{title}</div>
+      <p className="font-serif text-2xl md:text-3xl leading-tight mb-6">{intro}</p>
+      <ul className="space-y-2 text-foreground/75">
+        {points.map((p) => (
+          <li key={p} className="flex items-baseline gap-3">
+            <span className="text-foreground/40" aria-hidden>
+              ·
+            </span>
+            <span>{p}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 

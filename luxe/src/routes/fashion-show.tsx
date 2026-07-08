@@ -144,7 +144,8 @@ function FashionShowPage() {
         </div>
       </section>
 
-      {/* PODIUM grid */}
+      {/* PODIUM grid — временно скрыт, вернём позже */}
+      {/*
       <section className="px-6 md:px-12 py-20 md:py-28 max-w-7xl mx-auto">
         <div className="text-center mb-12 md:mb-16">
           <div className="eyebrow text-foreground/60 mb-3">Editorial</div>
@@ -159,6 +160,7 @@ function FashionShowPage() {
           ))}
         </div>
       </section>
+      */}
 
       {/* MAGAZINES */}
       <section className="bg-foreground text-background px-6 md:px-12 py-24 md:py-32">
