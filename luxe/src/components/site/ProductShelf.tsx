@@ -129,7 +129,7 @@ function ShelfCard({ item, variant = "scroll" }: { item: ShelfItem; variant?: "s
           : "w-full",
       )}
     >
-      <div className="relative aspect-[3/4]">
+      <div className="relative aspect-[3/4] bg-background isolate">
         <img
           src={item.image}
           alt={item.title}

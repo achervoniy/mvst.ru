@@ -1,7 +1,8 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+﻿import { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { SiteLayout } from "@/components/site/SiteLayout";
+import { ProductGalleryVideo } from "@/components/site/ProductGalleryVideo";
 import { ProductShelf } from "@/components/site/ProductShelf";
 import { OutfitShelf } from "@/components/site/OutfitShelf";
 import { getLookOutfitsByItemId } from "@/lib/look-recommendations";
@@ -28,8 +29,6 @@ import type { TsumImage, TsumOffer, TsumInformationSection, TsumProductVariant }
 import type { ShelfItem } from "@/components/site/ProductShelf";
 import { formatRub } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import { useFittingCart } from "@/lib/fitting-cart";
-import { toast } from "sonner";
 
 export const Route = createFileRoute("/product/$slug")({
   loader: async ({ params }) => {
@@ -117,15 +116,15 @@ async function loadSimilarProducts(args: {
   }
 }
 
-// Кнопка-размер: сверху брендовый размер, снизу российский. Брендовая строка
-// рисуется только когда у API есть label (IT/FR/INT/...) и vendorSize !== russianSize.
+// Кнопка-размер: сверху брендовый размер, снизу российский. Дубликаты значений
+// не схлопываем — для обуви IT и RU часто совпадают, но мы всё равно показываем
+// обе строки, чтобы вид кнопок был одинаковый в мужских и женских товарах.
 // Расшифровка лейблов выносится в заголовок селектора (см. sizeTitleSuffix).
 function SizeLabels({ size }: { size: TsumOffer["size"] }) {
   const vendorLabel = size.vendorLabel?.trim();
   const vendorSize = size.vendorSize?.trim();
   const russianSize = size.russianSize?.trim();
-  const showVendor =
-    !!vendorLabel && !!vendorSize && vendorSize !== russianSize;
+  const showVendor = !!vendorLabel && !!vendorSize;
   const primary = russianSize || vendorSize || "—";
   return (
     <span className="flex flex-col items-center justify-center leading-none gap-0.5">
@@ -144,8 +143,7 @@ function sizeTitleSuffix(offers: TsumOffer[]): string {
   for (const o of offers) {
     const vl = o.size.vendorLabel?.trim();
     const vs = o.size.vendorSize?.trim();
-    const rs = o.size.russianSize?.trim();
-    if (vl && vs && vs !== rs) labels.add(vl);
+    if (vl && vs) labels.add(vl);
   }
   if (labels.size !== 1) return "";
   const [label] = labels;
@@ -154,17 +152,20 @@ function sizeTitleSuffix(offers: TsumOffer[]): string {
 
 function ProductPage() {
   const { detail, gender, outfits, similar } = Route.useLoaderData();
-  const [selectedOfferId, setSelectedOfferId] = useState<number | null>(null);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
   const [carouselIndex, setCarouselIndex] = useState(0);
-  const [sizePickerOpen, setSizePickerOpen] = useState(false);
+  const [lightboxApi, setLightboxApi] = useState<CarouselApi | null>(null);
+  const [lightboxSlide, setLightboxSlide] = useState(0);
   const offers: TsumOffer[] = detail.offers ?? [];
   // Берём только товарные фото (макс. 5). Иногда ЦУМ-API подмешивает
   // лукбук-кадры с другими вещами в самом конце массива — отсекаем.
   const images = ((detail.images ?? []) as TsumImage[]).slice(0, 5);
+  const video = detail.video?.trim() || null;
+  const videoSlideIndex = video ? images.length : -1;
+  const totalSlides = images.length + (video ? 1 : 0);
+  const videoPoster = images[0] ? pickImage(images[0]) : undefined;
   const variants: TsumProductVariant[] = detail.products ?? [];
-  const buyableOffers = offers.filter((o) => o.quantity > 0 && o.isBuyable !== false);
   const showSizes = offers.length > 0 && offers[0].size?.russianSize;
   const prices = offers.map((o) => o.price.priceWithDiscount).filter((n: number) => n > 0);
   const originals = offers.map((o) => o.price.originalPrice).filter((n: number) => n > 0);
@@ -177,65 +178,45 @@ function ProductPage() {
 
   const tsumUrl = `https://www.tsum.ru/product/${detail.modelExtId}-${detail.slug.replace(/^\d+-/, "")}/`;
 
-  // Корзина для примерки
-  const cart = useFittingCart();
-  // Если размер один — не требуем явного выбора
-  const autoOffer = buyableOffers.length === 1 ? buyableOffers[0] : null;
-  const effectiveOfferId = selectedOfferId ?? autoOffer?.id ?? null;
-  const effectiveOffer = offers.find((o) => o.id === effectiveOfferId) ?? null;
-  const inCart = effectiveOffer ? cart.hasItem(effectiveOffer.id) : false;
-
-  const addOfferToFitting = (offer: TsumOffer) => {
-    if (cart.hasItem(offer.id)) return;
-    const thumb =
-      images[0]?.w400 ?? images[0]?.w400x2 ?? images[0]?.w200x2 ?? images[0]?.w200 ?? "";
-    cart.add({
-      skuId: offer.id,
-      productSlug: detail.slug,
-      title: detail.title,
-      color: detail.color.title,
-      size: offer.size.russianSize,
-      price: offer.price.priceWithDiscount,
-      image: thumb,
-    });
-  };
-
-  const handleAddToFitting = () => {
-    if (effectiveOffer) {
-      if (cart.hasItem(effectiveOffer.id)) {
-        cart.setOpen(true);
-        return;
-      }
-      addOfferToFitting(effectiveOffer);
-      return;
-    }
-    if (showSizes && buyableOffers.length > 0) {
-      setSizePickerOpen(true);
-      return;
-    }
-    toast.error("Выберите размер");
-  };
-
   // Информационные секции из API (без "О бренде" — у нас один бренд)
   const info: TsumInformationSection[] = detail.information ?? [];
   const findSection = (id: string): TsumInformationSection | undefined =>
     info.find((s) => s.id === id);
-  const productSection = findSection("product");
+  const rawProductSection = findSection("product");
+  // Скрываем строку «Бренд» из характеристик — MVST на всём каталоге, дублирование лишнее.
+  const productSection = rawProductSection
+    ? {
+        ...rawProductSection,
+        properties: (rawProductSection.properties ?? []).filter(
+          (p) => p.label?.trim().toLowerCase() !== "бренд",
+        ),
+      }
+    : undefined;
   const sizesSection = findSection("sizes");
 
   // Клавиатурная навигация по лайтбоксу
   useEffect(() => {
-    if (lightboxIndex === null) return;
+    if (lightboxIndex === null || !lightboxApi) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft") {
-        setLightboxIndex((i) => (i === null ? i : (i - 1 + images.length) % images.length));
-      } else if (e.key === "ArrowRight") {
-        setLightboxIndex((i) => (i === null ? i : (i + 1) % images.length));
-      }
+      if (e.key === "ArrowLeft") lightboxApi.scrollPrev();
+      else if (e.key === "ArrowRight") lightboxApi.scrollNext();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [lightboxIndex, images.length]);
+  }, [lightboxIndex, lightboxApi]);
+
+  // Синхронизация счётчика лайтбокса
+  useEffect(() => {
+    if (!lightboxApi) return;
+    const onSelect = () => setLightboxSlide(lightboxApi.selectedScrollSnap());
+    onSelect();
+    lightboxApi.on("select", onSelect);
+    lightboxApi.on("reInit", onSelect);
+    return () => {
+      lightboxApi.off("select", onSelect);
+      lightboxApi.off("reInit", onSelect);
+    };
+  }, [lightboxApi]);
 
   // Счётчик для мобильной карусели
   useEffect(() => {
@@ -269,7 +250,7 @@ function ProductPage() {
 
   return (
     <SiteLayout>
-      <div className="px-6 md:px-12 pt-8 eyebrow text-foreground/60">
+      <div className="hidden md:block px-6 md:px-12 pt-8 eyebrow text-foreground/60">
         <Link to="/" className="hover:text-accent">
           Главная
         </Link>
@@ -281,7 +262,7 @@ function ProductPage() {
         <span className="text-foreground">{detail.title}</span>
       </div>
 
-      <div className="grid md:grid-cols-[1.4fr_1fr] gap-10 md:gap-16 px-6 md:px-12 py-10 pb-28 md:pb-10">
+      <div className="grid md:grid-cols-[1.4fr_1fr] gap-4 md:gap-16 px-6 md:px-12 pb-10 md:py-10">
         {/* Gallery — мобильная карусель */}
         <div className="md:hidden -mx-6">
           <Carousel
@@ -307,14 +288,26 @@ function ProductPage() {
                   </button>
                 </CarouselItem>
               ))}
+              {video && (
+                <CarouselItem key="video" className="pl-0 basis-full">
+                  <button
+                    type="button"
+                    onClick={() => setLightboxIndex(videoSlideIndex)}
+                    className="relative block w-full h-[62vh] max-h-[560px] cursor-zoom-in bg-background"
+                    aria-label="Открыть видео"
+                  >
+                    <ProductGalleryVideo src={video} poster={videoPoster} mode="card" />
+                  </button>
+                </CarouselItem>
+              )}
             </CarouselContent>
           </Carousel>
-          {images.length > 1 && (
+          {totalSlides > 1 && (
             <div
               className="mt-2 text-center eyebrow text-foreground/55"
               aria-live="polite"
             >
-              {carouselIndex + 1} / {images.length}
+              {carouselIndex + 1} / {totalSlides}
             </div>
           )}
         </div>
@@ -337,13 +330,29 @@ function ProductPage() {
               />
             </button>
           ))}
+          {video && (
+            <button
+              key="video"
+              type="button"
+              onClick={() => setLightboxIndex(videoSlideIndex)}
+              className="relative aspect-[3/4] cursor-zoom-in group bg-background"
+              aria-label="Открыть видео"
+            >
+              <ProductGalleryVideo
+                src={video}
+                poster={videoPoster}
+                mode="card"
+                videoClassName="group-hover:opacity-90"
+              />
+            </button>
+          )}
         </div>
 
         {/* Info */}
-        <div className="md:sticky md:top-6 md:self-start space-y-8 pt-2">
+        <div className="md:sticky md:top-6 md:self-start space-y-8 md:pt-2">
           <div>
             <h1 className="font-serif text-3xl md:text-4xl leading-tight">{detail.title}</h1>
-            <div className="mt-4 flex items-baseline gap-3">
+            <div className="mt-3 flex items-baseline gap-3">
               <div className="text-lg">{formatRub(minPrice)}</div>
               {hasDiscount && (
                 <>
@@ -402,32 +411,23 @@ function ProductPage() {
               <div className="eyebrow text-foreground/60 mb-3">
                 Размер{sizeTitleSuffix(offers)}
               </div>
-              <div className="flex flex-wrap gap-2">
+              {/* Размеры — только визуальные ярлыки, без выбора. Покупка идёт на tsum.ru. */}
+              <div className="flex flex-wrap gap-2" aria-label="Доступные размеры">
                 {offers.map((o: TsumOffer) => {
-                  const disabled = o.quantity === 0 || o.isBuyable === false;
-                  const active = selectedOfferId === o.id;
+                  const outOfStock = o.quantity === 0 || o.isBuyable === false;
                   return (
-                    <button
+                    <span
                       key={o.id}
-                      onClick={() => !disabled && setSelectedOfferId(o.id)}
-                      disabled={disabled}
                       className={cn(
-                        "min-w-14 h-12 px-3 border transition-colors",
-                        active
-                          ? "border-foreground bg-foreground text-primary-foreground"
-                          : "border-foreground/30 hover:border-foreground",
-                        disabled &&
-                          "opacity-30 line-through cursor-not-allowed hover:border-foreground/30",
+                        "min-w-14 h-12 px-3 border border-foreground/30 flex items-center justify-center",
+                        outOfStock && "opacity-30 line-through",
                       )}
                     >
                       <SizeLabels size={o.size} />
-                    </button>
+                    </span>
                   );
                 })}
               </div>
-              {buyableOffers.length === 0 && (
-                <div className="mt-2 text-xs text-foreground/60">Все размеры распроданы</div>
-              )}
             </div>
           )}
 
@@ -436,18 +436,10 @@ function ProductPage() {
               href={tsumUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="grow basis-56 h-12 border border-foreground text-foreground eyebrow-lg hover:bg-foreground hover:text-primary-foreground transition-colors text-center leading-[3rem]"
+              className="grow basis-56 h-12 bg-foreground text-primary-foreground eyebrow-lg hover:bg-accent transition-colors text-center leading-[3rem]"
             >
               Купить в ЦУМе
             </a>
-            <button
-              type="button"
-              onClick={handleAddToFitting}
-              disabled={buyableOffers.length === 0}
-              className="grow basis-56 h-12 bg-foreground text-primary-foreground eyebrow-lg hover:bg-accent transition-colors disabled:opacity-50 disabled:hover:bg-foreground"
-            >
-              {inCart ? "В корзине ✓" : "Примерить в бутике"}
-            </button>
           </div>
 
           <Accordion type="single" collapsible className="border-t hairline">
@@ -529,24 +521,30 @@ function ProductPage() {
         </div>
       )}
 
-      {/* Sticky CTA на мобильных */}
-      <div className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-background/95 backdrop-blur border-t hairline px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] grid grid-cols-2 gap-2">
+      {/* Хлебные крошки — мобильный вариант, в самом низу страницы */}
+      <div className="md:hidden px-6 pt-8 pb-8 eyebrow text-foreground/60">
+        <Link to="/" className="hover:text-accent">
+          Главная
+        </Link>
+        <span className="mx-2">·</span>
+        <Link to="/catalog/$gender" params={{ gender }} className="hover:text-accent">
+          {gender === "women" ? "Для нее" : "Для него"}
+        </Link>
+        <span className="mx-2">·</span>
+        <span className="text-foreground">{detail.title}</span>
+      </div>
+
+      {/* Sticky CTA на мобильных: pinned к низу вьюпорта, на самом низу
+          страницы «отстёгивается» — встаёт под крошками, дальше идёт footer. */}
+      <div className="md:hidden sticky bottom-0 z-40 bg-background/95 backdrop-blur border-t hairline px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
         <a
           href={tsumUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="block w-full h-12 border border-foreground text-foreground text-[10px] tracking-[0.14em] uppercase font-medium text-center leading-[3rem]"
+          className="block w-full h-12 bg-foreground text-primary-foreground text-[10px] tracking-[0.14em] uppercase font-medium text-center leading-[3rem] hover:bg-accent transition-colors"
         >
           Купить в ЦУМе
         </a>
-        <button
-          type="button"
-          onClick={handleAddToFitting}
-          disabled={buyableOffers.length === 0}
-          className="w-full h-12 bg-foreground text-primary-foreground text-[10px] tracking-[0.14em] uppercase font-medium hover:bg-accent transition-colors disabled:opacity-50"
-        >
-          {inCart ? "В корзине ✓" : "Примерить в бутике"}
-        </button>
       </div>
 
       {/* Лайтбокс */}
@@ -556,29 +554,50 @@ function ProductPage() {
           <DialogPrimitive.Content
             className="fixed inset-0 z-50 flex items-center justify-center bg-background outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
             aria-describedby={undefined}
+            onOpenAutoFocus={(e) => e.preventDefault()}
           >
             <DialogPrimitive.Title className="sr-only">{detail.title}</DialogPrimitive.Title>
 
-            {lightboxIndex !== null && images[lightboxIndex] && (
-              <img
-                src={pickImage(images[lightboxIndex])}
-                alt={`${detail.title} — ${lightboxIndex + 1}`}
-                className="max-h-[92vh] max-w-[92vw] object-contain mix-blend-multiply"
-              />
+            {lightboxIndex !== null && (
+              <Carousel
+                opts={{ loop: true, startIndex: lightboxIndex }}
+                setApi={setLightboxApi}
+                className="w-full h-full"
+              >
+                <CarouselContent className="ml-0 h-[100dvh]">
+                  {images.map((img: TsumImage, i: number) => (
+                    <CarouselItem
+                      key={i}
+                      className="pl-0 basis-full flex items-center justify-center bg-background"
+                    >
+                      <LightboxZoomImage
+                        src={pickImage(img)}
+                        alt={`${detail.title} — ${i + 1}`}
+                      />
+                    </CarouselItem>
+                  ))}
+                  {video && (
+                    <CarouselItem
+                      key="video"
+                      className="pl-0 basis-full flex items-center justify-center bg-background"
+                    >
+                      <ProductGalleryVideo src={video} poster={videoPoster} mode="lightbox" />
+                    </CarouselItem>
+                  )}
+                </CarouselContent>
+              </Carousel>
             )}
 
-            {images.length > 1 && (
+            {totalSlides > 1 && (
               <>
                 <button
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
-                    setLightboxIndex((i) =>
-                      i === null ? i : (i - 1 + images.length) % images.length,
-                    );
+                    lightboxApi?.scrollPrev();
                   }}
-                  className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 size-12 flex items-center justify-center text-foreground/70 hover:text-foreground transition-colors"
-                  aria-label="Предыдущее фото"
+                  className="hidden md:flex absolute left-4 md:left-8 top-1/2 -translate-y-1/2 size-12 items-center justify-center text-foreground/70 hover:text-foreground transition-colors"
+                  aria-label="Предыдущий слайд"
                 >
                   <ChevronLeft className="size-8" />
                 </button>
@@ -586,10 +605,10 @@ function ProductPage() {
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
-                    setLightboxIndex((i) => (i === null ? i : (i + 1) % images.length));
+                    lightboxApi?.scrollNext();
                   }}
-                  className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 size-12 flex items-center justify-center text-foreground/70 hover:text-foreground transition-colors"
-                  aria-label="Следующее фото"
+                  className="hidden md:flex absolute right-4 md:right-8 top-1/2 -translate-y-1/2 size-12 items-center justify-center text-foreground/70 hover:text-foreground transition-colors"
+                  aria-label="Следующий слайд"
                 >
                   <ChevronRight className="size-8" />
                 </button>
@@ -603,255 +622,86 @@ function ProductPage() {
               <X className="size-7" />
             </DialogPrimitive.Close>
 
-            {lightboxIndex !== null && images.length > 1 && (
+            {lightboxIndex !== null && totalSlides > 1 && (
               <div className="absolute bottom-6 left-1/2 -translate-x-1/2 eyebrow text-foreground/60">
-                {lightboxIndex + 1} / {images.length}
+                {lightboxSlide + 1} / {totalSlides}
               </div>
             )}
           </DialogPrimitive.Content>
         </DialogPortal>
       </Dialog>
 
-      <SizePickerDialog
-        open={sizePickerOpen}
-        onOpenChange={setSizePickerOpen}
-        offers={offers}
-        buyableOffers={buyableOffers}
-        tsumUrl={tsumUrl}
-        hasItem={cart.hasItem}
-        onConfirm={(offer) => {
-          setSelectedOfferId(offer.id);
-          addOfferToFitting(offer);
-        }}
-        onOpenCart={() => cart.setOpen(true)}
-      />
     </SiteLayout>
   );
 }
 
-function SizePickerDialog({
-  open,
-  onOpenChange,
-  offers,
-  buyableOffers,
-  tsumUrl,
-  hasItem,
-  onConfirm,
-  onOpenCart,
-}: {
-  open: boolean;
-  onOpenChange: (v: boolean) => void;
-  offers: TsumOffer[];
-  buyableOffers: TsumOffer[];
-  tsumUrl: string;
-  hasItem: (id: number) => boolean;
-  onConfirm: (offer: TsumOffer) => void;
-  onOpenCart: () => void;
-}) {
-  const [localId, setLocalId] = useState<number | null>(null);
-  const mobileScrollRef = useRef<HTMLDivElement>(null);
+// Лайтбокс-картинка с «вторым» зумом по курсору на десктопе.
+// Мобилку не трогаем: на тач-устройствах (no hover) — обычный object-contain без зума.
+function LightboxZoomImage({ src, alt }: { src: string; alt: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [zoom, setZoom] = useState(false);
+  const [origin, setOrigin] = useState("50% 50%");
+  const [canZoom, setCanZoom] = useState(false);
 
-  // Сбрасываем локальный выбор после закрытия
   useEffect(() => {
-    if (!open) {
-      const t = setTimeout(() => setLocalId(null), 250);
-      return () => clearTimeout(t);
-    }
-  }, [open]);
+    if (typeof window === "undefined" || !window.matchMedia) return;
+    const mq = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const update = () => setCanZoom(mq.matches);
+    update();
+    mq.addEventListener?.("change", update);
+    return () => mq.removeEventListener?.("change", update);
+  }, []);
 
-  // Когда модалка открыта и кнопки размеров переполняют контейнер,
-  // подгоняем margin-right у скролл-контейнера так, чтобы крайняя видимая
-  // кнопка обрезалась примерно наполовину. Левая кромка ряда (первая кнопка)
-  // при этом остаётся на одной линии с тайтлом и CTA.
-  useLayoutEffect(() => {
-    if (!open) return;
-
-    const adjust = () => {
-      const container = mobileScrollRef.current;
-      if (!container) return;
-
-      // Сброс перед замером
-      container.style.marginRight = "";
-
-      const cw = container.clientWidth;
-      if (container.scrollWidth <= cw) return;
-
-      const inner = container.firstElementChild as HTMLElement | null;
-      if (!inner) return;
-      const buttons = Array.from(
-        inner.querySelectorAll<HTMLButtonElement>(":scope > button"),
-      );
-      if (buttons.length === 0) return;
-
-      const cLeft = container.getBoundingClientRect().left;
-
-      // Первая кнопка, чей правый край выходит за контейнер
-      let cutIdx = -1;
-      for (let i = 0; i < buttons.length; i++) {
-        const r = buttons[i].getBoundingClientRect();
-        if (r.right - cLeft > cw) {
-          cutIdx = i;
-          break;
-        }
-      }
-      if (cutIdx === -1) return;
-
-      const cr = buttons[cutIdx].getBoundingClientRect();
-      const relLeft = cr.left - cLeft;
-      const w = cr.width;
-      const visible = (cw - relLeft) / w;
-
-      // В норме — ничего не делаем
-      if (visible >= 0.25 && visible <= 0.75) return;
-
-      // Если кнопка слишком хорошо видна — режем её саму до ~55%.
-      // Если слишком плохо — двигаем срез к предыдущей.
-      let targetIdx: number;
-      if (visible > 0.75) {
-        targetIdx = cutIdx;
-      } else {
-        if (cutIdx === 0) return;
-        targetIdx = cutIdx - 1;
-      }
-
-      const tr = buttons[targetIdx].getBoundingClientRect();
-      const tRelLeft = tr.left - cLeft;
-      const tW = tr.width;
-      const newCut = tRelLeft + tW * 0.55;
-      if (newCut <= 0 || newCut >= cw) return;
-
-      const margin = Math.max(0, Math.min(96, cw - newCut));
-      container.style.marginRight = `${margin}px`;
-    };
-
-    const raf = requestAnimationFrame(adjust);
-
-    // Наблюдаем за родителем, а не за самим контейнером — иначе наша же
-    // правка margin-right триггерила бы ResizeObserver и вызвала бы цикл.
-    let ro: ResizeObserver | null = null;
-    const parent = mobileScrollRef.current?.parentElement;
-    if (parent && typeof ResizeObserver !== "undefined") {
-      ro = new ResizeObserver(() => adjust());
-      ro.observe(parent);
-    }
-
-    return () => {
-      cancelAnimationFrame(raf);
-      ro?.disconnect();
-    };
-  }, [open, offers.length]);
-
-  const selected = offers.find((o) => o.id === localId) ?? null;
-  const inCart = selected ? hasItem(selected.id) : false;
-
-  const renderSize = (o: TsumOffer) => {
-    const disabled = o.quantity === 0 || o.isBuyable === false;
-    const active = localId === o.id;
-    return (
-      <button
-        key={o.id}
-        type="button"
-        onClick={() => !disabled && setLocalId(o.id)}
-        disabled={disabled}
-        className={cn(
-          "shrink-0 min-w-14 h-12 px-3 border transition-colors",
-          active
-            ? "border-foreground bg-foreground text-primary-foreground"
-            : "border-foreground/30 hover:border-foreground",
-          disabled &&
-            "opacity-30 line-through cursor-not-allowed hover:border-foreground/30",
-        )}
-      >
-        <SizeLabels size={o.size} />
-      </button>
-    );
+  const updateOrigin = (e: React.MouseEvent<HTMLDivElement>) => {
+    const el = ref.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const x = ((e.clientX - r.left) / r.width) * 100;
+    const y = ((e.clientY - r.top) / r.height) * 100;
+    setOrigin(`${x}% ${y}%`);
   };
 
+  if (!canZoom) {
+    return (
+      <img
+        src={src}
+        alt={alt}
+        className="max-h-[92vh] max-w-[92vw] object-contain mix-blend-multiply select-none"
+        draggable={false}
+      />
+    );
+  }
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogPortal>
-        <DialogOverlay className="bg-black/40" />
-        <DialogPrimitive.Content
-          aria-describedby={undefined}
-          className={cn(
-            "fixed z-50 bg-background outline-none flex flex-col shadow-lg",
-            // Mobile: bottom-anchored, full width
-            "inset-x-0 bottom-0 max-h-[85vh] border-t hairline",
-            // Desktop: centered modal
-            "md:inset-auto md:bottom-auto md:left-[50%] md:top-[50%] md:translate-x-[-50%] md:translate-y-[-50%] md:w-full md:max-w-md md:max-h-[80vh] md:border md:rounded-lg",
-            // Animation
-            "data-[state=open]:animate-in data-[state=closed]:animate-out duration-300",
-            "data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0",
-            // Mobile: slide from bottom
-            "data-[state=open]:slide-in-from-bottom data-[state=closed]:slide-out-to-bottom",
-            // Desktop: cancel slide, use zoom
-            "md:data-[state=open]:slide-in-from-bottom-0 md:data-[state=closed]:slide-out-to-bottom-0",
-            "md:data-[state=open]:zoom-in-95 md:data-[state=closed]:zoom-out-95",
-          )}
-        >
-          <DialogPrimitive.Title className="sr-only">Выберите размер</DialogPrimitive.Title>
-
-          <div className="px-6 pt-5 pb-4 border-b hairline flex items-center justify-between">
-            <div className="eyebrow text-foreground">
-              Выберите размер{sizeTitleSuffix(offers)}
-            </div>
-            <DialogPrimitive.Close
-              className="-mr-2 p-2 text-foreground/55 hover:text-foreground focus:outline-none focus-visible:outline-none"
-              aria-label="Закрыть"
-            >
-              <X className="size-4" />
-            </DialogPrimitive.Close>
-          </div>
-
-          <div className="flex-1 overflow-y-auto py-5">
-            {/* Mobile: горизонтальный скролл с fade-маской справа */}
-            <div
-              ref={mobileScrollRef}
-              className="md:hidden overflow-x-auto scrollbar-none [mask-image:linear-gradient(to_right,black_calc(100%-32px),transparent)] [-webkit-mask-image:linear-gradient(to_right,black_calc(100%-32px),transparent)]"
-            >
-              <div className="flex gap-2 w-max pl-6 pr-6">
-                {offers.map(renderSize)}
-              </div>
-            </div>
-            {/* Desktop: перенос строк */}
-            <div className="hidden md:flex md:flex-wrap gap-2 px-6">
-              {offers.map(renderSize)}
-            </div>
-            {buyableOffers.length === 0 && (
-              <div className="mt-3 px-6 text-xs text-foreground/60">Все размеры распроданы</div>
-            )}
-          </div>
-
-          <div className="border-t hairline px-6 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] grid grid-cols-2 gap-2 bg-background md:pb-5">
-            <a
-              href={tsumUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => onOpenChange(false)}
-              className="block w-full h-12 border border-foreground text-foreground text-[10px] tracking-[0.14em] uppercase font-medium text-center leading-[3rem] md:eyebrow-lg md:hover:bg-foreground md:hover:text-primary-foreground md:transition-colors"
-            >
-              Купить в ЦУМе
-            </a>
-            <button
-              type="button"
-              onClick={() => {
-                if (!selected) return;
-                if (inCart) {
-                  onOpenChange(false);
-                  onOpenCart();
-                  return;
-                }
-                onConfirm(selected);
-                onOpenChange(false);
-              }}
-              disabled={!selected || buyableOffers.length === 0}
-              className="w-full h-12 bg-foreground text-primary-foreground text-[10px] tracking-[0.14em] uppercase font-medium hover:bg-accent transition-colors disabled:opacity-50 disabled:hover:bg-foreground md:eyebrow-lg"
-            >
-              {inCart ? "В корзине ✓" : "Примерить в бутике"}
-            </button>
-          </div>
-        </DialogPrimitive.Content>
-      </DialogPortal>
-    </Dialog>
+    <div
+      ref={ref}
+      onMouseEnter={() => setZoom(true)}
+      onMouseLeave={() => setZoom(false)}
+      onMouseMove={(e) => {
+        if (zoom) updateOrigin(e);
+      }}
+      onClick={(e) => {
+        // блокируем закрытие лайтбокса по клику в карусели — клик = тогл зума
+        e.stopPropagation();
+        setZoom((v) => !v);
+      }}
+      className={cn(
+        "relative flex items-center justify-center max-h-[92vh] max-w-[92vw] overflow-hidden",
+        zoom ? "cursor-zoom-out" : "cursor-zoom-in",
+      )}
+    >
+      <img
+        src={src}
+        alt={alt}
+        draggable={false}
+        style={{
+          transform: zoom ? "scale(2.2)" : "scale(1)",
+          transformOrigin: origin,
+          transition: zoom ? "transform 80ms linear" : "transform 220ms ease-out",
+        }}
+        className="max-h-[92vh] max-w-[92vw] object-contain mix-blend-multiply select-none will-change-transform"
+      />
+    </div>
   );
 }
+

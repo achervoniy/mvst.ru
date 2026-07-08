@@ -11,12 +11,17 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WomenRouteImport } from './routes/women'
 import { Route as MenRouteImport } from './routes/men'
+import { Route as FashionShowRouteImport } from './routes/fashion-show'
 import { Route as ContactsRouteImport } from './routes/contacts'
 import { Route as CollectionSs26RouteImport } from './routes/collection-ss26'
 import { Route as BoutiquesRouteImport } from './routes/boutiques'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as EnIndexRouteImport } from './routes/en.index'
 import { Route as ProductSlugRouteImport } from './routes/product.$slug'
+import { Route as EnFashionShowRouteImport } from './routes/en.fashion-show'
+import { Route as EnBoutiquesRouteImport } from './routes/en.boutiques'
+import { Route as EnAboutRouteImport } from './routes/en.about'
 import { Route as CatalogGenderRouteImport } from './routes/catalog.$gender'
 import { Route as CatalogGenderSectionRouteImport } from './routes/catalog.$gender_.$section'
 
@@ -28,6 +33,11 @@ const WomenRoute = WomenRouteImport.update({
 const MenRoute = MenRouteImport.update({
   id: '/men',
   path: '/men',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FashionShowRoute = FashionShowRouteImport.update({
+  id: '/fashion-show',
+  path: '/fashion-show',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactsRoute = ContactsRouteImport.update({
@@ -55,9 +65,29 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EnIndexRoute = EnIndexRouteImport.update({
+  id: '/en/',
+  path: '/en/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProductSlugRoute = ProductSlugRouteImport.update({
   id: '/product/$slug',
   path: '/product/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EnFashionShowRoute = EnFashionShowRouteImport.update({
+  id: '/en/fashion-show',
+  path: '/en/fashion-show',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EnBoutiquesRoute = EnBoutiquesRouteImport.update({
+  id: '/en/boutiques',
+  path: '/en/boutiques',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EnAboutRoute = EnAboutRouteImport.update({
+  id: '/en/about',
+  path: '/en/about',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CatalogGenderRoute = CatalogGenderRouteImport.update({
@@ -77,10 +107,15 @@ export interface FileRoutesByFullPath {
   '/boutiques': typeof BoutiquesRoute
   '/collection-ss26': typeof CollectionSs26Route
   '/contacts': typeof ContactsRoute
+  '/fashion-show': typeof FashionShowRoute
   '/men': typeof MenRoute
   '/women': typeof WomenRoute
   '/catalog/$gender': typeof CatalogGenderRoute
+  '/en/about': typeof EnAboutRoute
+  '/en/boutiques': typeof EnBoutiquesRoute
+  '/en/fashion-show': typeof EnFashionShowRoute
   '/product/$slug': typeof ProductSlugRoute
+  '/en/': typeof EnIndexRoute
   '/catalog/$gender/$section': typeof CatalogGenderSectionRoute
 }
 export interface FileRoutesByTo {
@@ -89,10 +124,15 @@ export interface FileRoutesByTo {
   '/boutiques': typeof BoutiquesRoute
   '/collection-ss26': typeof CollectionSs26Route
   '/contacts': typeof ContactsRoute
+  '/fashion-show': typeof FashionShowRoute
   '/men': typeof MenRoute
   '/women': typeof WomenRoute
   '/catalog/$gender': typeof CatalogGenderRoute
+  '/en/about': typeof EnAboutRoute
+  '/en/boutiques': typeof EnBoutiquesRoute
+  '/en/fashion-show': typeof EnFashionShowRoute
   '/product/$slug': typeof ProductSlugRoute
+  '/en': typeof EnIndexRoute
   '/catalog/$gender/$section': typeof CatalogGenderSectionRoute
 }
 export interface FileRoutesById {
@@ -102,10 +142,15 @@ export interface FileRoutesById {
   '/boutiques': typeof BoutiquesRoute
   '/collection-ss26': typeof CollectionSs26Route
   '/contacts': typeof ContactsRoute
+  '/fashion-show': typeof FashionShowRoute
   '/men': typeof MenRoute
   '/women': typeof WomenRoute
   '/catalog/$gender': typeof CatalogGenderRoute
+  '/en/about': typeof EnAboutRoute
+  '/en/boutiques': typeof EnBoutiquesRoute
+  '/en/fashion-show': typeof EnFashionShowRoute
   '/product/$slug': typeof ProductSlugRoute
+  '/en/': typeof EnIndexRoute
   '/catalog/$gender_/$section': typeof CatalogGenderSectionRoute
 }
 export interface FileRouteTypes {
@@ -116,10 +161,15 @@ export interface FileRouteTypes {
     | '/boutiques'
     | '/collection-ss26'
     | '/contacts'
+    | '/fashion-show'
     | '/men'
     | '/women'
     | '/catalog/$gender'
+    | '/en/about'
+    | '/en/boutiques'
+    | '/en/fashion-show'
     | '/product/$slug'
+    | '/en/'
     | '/catalog/$gender/$section'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -128,10 +178,15 @@ export interface FileRouteTypes {
     | '/boutiques'
     | '/collection-ss26'
     | '/contacts'
+    | '/fashion-show'
     | '/men'
     | '/women'
     | '/catalog/$gender'
+    | '/en/about'
+    | '/en/boutiques'
+    | '/en/fashion-show'
     | '/product/$slug'
+    | '/en'
     | '/catalog/$gender/$section'
   id:
     | '__root__'
@@ -140,10 +195,15 @@ export interface FileRouteTypes {
     | '/boutiques'
     | '/collection-ss26'
     | '/contacts'
+    | '/fashion-show'
     | '/men'
     | '/women'
     | '/catalog/$gender'
+    | '/en/about'
+    | '/en/boutiques'
+    | '/en/fashion-show'
     | '/product/$slug'
+    | '/en/'
     | '/catalog/$gender_/$section'
   fileRoutesById: FileRoutesById
 }
@@ -153,10 +213,15 @@ export interface RootRouteChildren {
   BoutiquesRoute: typeof BoutiquesRoute
   CollectionSs26Route: typeof CollectionSs26Route
   ContactsRoute: typeof ContactsRoute
+  FashionShowRoute: typeof FashionShowRoute
   MenRoute: typeof MenRoute
   WomenRoute: typeof WomenRoute
   CatalogGenderRoute: typeof CatalogGenderRoute
+  EnAboutRoute: typeof EnAboutRoute
+  EnBoutiquesRoute: typeof EnBoutiquesRoute
+  EnFashionShowRoute: typeof EnFashionShowRoute
   ProductSlugRoute: typeof ProductSlugRoute
+  EnIndexRoute: typeof EnIndexRoute
   CatalogGenderSectionRoute: typeof CatalogGenderSectionRoute
 }
 
@@ -174,6 +239,13 @@ declare module '@tanstack/react-router' {
       path: '/men'
       fullPath: '/men'
       preLoaderRoute: typeof MenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fashion-show': {
+      id: '/fashion-show'
+      path: '/fashion-show'
+      fullPath: '/fashion-show'
+      preLoaderRoute: typeof FashionShowRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contacts': {
@@ -211,11 +283,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/en/': {
+      id: '/en/'
+      path: '/en'
+      fullPath: '/en/'
+      preLoaderRoute: typeof EnIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/product/$slug': {
       id: '/product/$slug'
       path: '/product/$slug'
       fullPath: '/product/$slug'
       preLoaderRoute: typeof ProductSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/en/fashion-show': {
+      id: '/en/fashion-show'
+      path: '/en/fashion-show'
+      fullPath: '/en/fashion-show'
+      preLoaderRoute: typeof EnFashionShowRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/en/boutiques': {
+      id: '/en/boutiques'
+      path: '/en/boutiques'
+      fullPath: '/en/boutiques'
+      preLoaderRoute: typeof EnBoutiquesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/en/about': {
+      id: '/en/about'
+      path: '/en/about'
+      fullPath: '/en/about'
+      preLoaderRoute: typeof EnAboutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/catalog/$gender': {
@@ -241,10 +341,15 @@ const rootRouteChildren: RootRouteChildren = {
   BoutiquesRoute: BoutiquesRoute,
   CollectionSs26Route: CollectionSs26Route,
   ContactsRoute: ContactsRoute,
+  FashionShowRoute: FashionShowRoute,
   MenRoute: MenRoute,
   WomenRoute: WomenRoute,
   CatalogGenderRoute: CatalogGenderRoute,
+  EnAboutRoute: EnAboutRoute,
+  EnBoutiquesRoute: EnBoutiquesRoute,
+  EnFashionShowRoute: EnFashionShowRoute,
   ProductSlugRoute: ProductSlugRoute,
+  EnIndexRoute: EnIndexRoute,
   CatalogGenderSectionRoute: CatalogGenderSectionRoute,
 }
 export const routeTree = rootRouteImport

@@ -4,18 +4,37 @@ import { cn } from "@/lib/utils";
 import logoFull from "@/assets/icons/LogoFull.svg";
 import navIcon from "@/assets/icons/NavIcon.svg";
 import closeIcon from "@/assets/icons/CloseIcon.svg";
-import { HeaderCartButton } from "@/components/site/HeaderCartButton";
+import { useLang, useDict } from "@/lib/i18n";
 
-const nav = [
-  { to: "/collection-ss26", label: "Коллекция весна-лето 2026" },
-  { to: "/catalog/$gender", label: "Для нее", params: { gender: "women" as const } },
-  { to: "/catalog/$gender", label: "Для него", params: { gender: "men" as const } },
-  { to: "/boutiques", label: "Бутики" },
-  { to: "/about", label: "О бренде" },
-] as const;
+type NavItem =
+  | { kind: "link"; to: string; label: string }
+  | { kind: "catalog"; gender: "women" | "men"; label: string };
+
+function buildNav(lang: "ru" | "en", d: ReturnType<typeof useDict>): ReadonlyArray<NavItem> {
+  if (lang === "en") {
+    // EN: Fashion Show + Boutiques + About
+    return [
+      { kind: "link", to: "/en/fashion-show", label: d.nav.fashionShow },
+      { kind: "link", to: "/en/boutiques", label: d.nav.boutiques },
+      { kind: "link", to: "/en/about", label: d.nav.about },
+    ];
+  }
+  return [
+    { kind: "link", to: "/collection-ss26", label: d.nav.collection },
+    { kind: "catalog", gender: "women", label: d.nav.forHer },
+    { kind: "catalog", gender: "men", label: d.nav.forHim },
+    { kind: "link", to: "/fashion-show", label: d.nav.fashionShow },
+    { kind: "link", to: "/boutiques", label: d.nav.boutiques },
+    { kind: "link", to: "/about", label: d.nav.about },
+  ];
+}
 
 export function Header({ variant = "solid" }: { variant?: "transparent" | "solid" }) {
   const transparentVariant = variant === "transparent";
+  const lang = useLang();
+  const d = useDict();
+  const nav = buildNav(lang, d);
+  const homeTo = lang === "en" ? "/en" : "/";
   const [open, setOpen] = useState(false);
   // Scrolled past hero — only relevant for transparent variant. Starts false on
   // both server and client to avoid hydration mismatch / first-paint flash.
@@ -101,21 +120,22 @@ export function Header({ variant = "solid" }: { variant?: "transparent" | "solid
               <img src={open ? closeIcon : navIcon} alt="" className="size-6" />
             </button>
 
-            <Link to="/" aria-label="MVST" className="block">
-              <img src={logoFull} alt="MVST" className="h-5 w-auto" />
+            <Link to={homeTo} aria-label="MVST" className="block">
+              <img src={logoFull} alt="MVST" className="h-[25px] w-auto" />
             </Link>
 
-            <HeaderCartButton />
+            <span className="size-10" aria-hidden />
+            {/* корзина скрыта — на MVST она сейчас не используется */}
           </div>
 
           {/* Desktop: 3-col grid so logo + nav share one vertical center */}
           <div className="hidden lg:grid lg:grid-cols-[auto_1fr_auto] lg:items-center lg:gap-10 lg:px-10 lg:py-7">
-            <Link to="/" aria-label="MVST" className="block shrink-0 justify-self-start">
+            <Link to={homeTo} aria-label="MVST" className="block shrink-0 justify-self-start">
               <img
                 src={logoFull}
                 alt="MVST"
                 className={cn(
-                  "h-5 w-auto transition-[filter] duration-[280ms] ease-out",
+                  "h-[25px] w-auto transition-[filter] duration-[280ms] ease-out",
                   showGradient && "brightness-0 invert",
                 )}
               />
@@ -139,12 +159,12 @@ export function Header({ variant = "solid" }: { variant?: "transparent" | "solid
                   ),
                 };
 
-                if (n.to === "/catalog/$gender") {
+                if (n.kind === "catalog") {
                   return (
                     <Link
-                      key={`${n.to}-${n.params.gender}`}
+                      key={`catalog-${n.gender}`}
                       to="/catalog/$gender"
-                      params={n.params}
+                      params={{ gender: n.gender }}
                       preload="intent"
                       className={className}
                       activeProps={activeProps}
@@ -167,54 +187,67 @@ export function Header({ variant = "solid" }: { variant?: "transparent" | "solid
                 );
               })}
             </nav>
-            <div className="justify-self-end w-[85px] flex justify-end">
-              <HeaderCartButton dark={showGradient} />
-            </div>
+            {/* корзина скрыта — на MVST она сейчас не используется */}
+            <div className="justify-self-end w-[85px]" aria-hidden />
           </div>
         </div>
       </header>
 
-      {/* Mobile nav — fixed overlay, completely outside header to avoid layout shifts */}
+      {/* Mobile nav — full-height drawer ниже шапки. Меню сверху, цитата
+          прибита к низу видимого вьюпорта, без скролла. */}
       <div
         className={cn(
-          "lg:hidden fixed inset-x-0 z-50 overflow-hidden bg-background transition-[max-height,visibility] duration-300",
-          open ? "visible max-h-96 border-b hairline" : "invisible max-h-0 border-0",
+          "lg:hidden fixed inset-x-0 bottom-0 z-50 bg-background overflow-hidden",
+          "transition-[transform,visibility] duration-300 ease-out",
+          open ? "visible translate-y-0" : "invisible -translate-y-2",
         )}
         style={{ top: "var(--header-h, 60px)" }}
       >
-        <nav className="flex flex-col px-6 py-5">
-          <Link
-            to="/"
-            onClick={() => setOpen(false)}
-            className="font-serif text-xl py-3 border-b hairline text-foreground"
-          >
-            Главная
-          </Link>
-          {nav.map((n) =>
-            n.to === "/catalog/$gender" ? (
-              <Link
-                key={`${n.to}-${n.params.gender}`}
-                to="/catalog/$gender"
-                params={n.params}
-                preload="intent"
-                onClick={() => setOpen(false)}
-                className="font-serif text-xl py-3 border-b hairline last:border-0 text-foreground"
-              >
-                {n.label}
-              </Link>
-            ) : (
-              <Link
-                key={n.to}
-                to={n.to}
-                preload="intent"
-                onClick={() => setOpen(false)}
-                className="font-serif text-xl py-3 border-b hairline last:border-0 text-foreground"
-              >
-                {n.label}
-              </Link>
-            ),
+        <div
+          className={cn(
+            "h-full flex flex-col px-6 pt-2 pb-[max(1.25rem,env(safe-area-inset-bottom))]",
+            "transition-opacity duration-200",
+            open ? "opacity-100" : "opacity-0",
           )}
-        </nav>
+        >
+          <nav className="flex flex-col">
+            <Link
+              to={homeTo}
+              onClick={() => setOpen(false)}
+              className="font-serif text-xl py-3 border-b hairline text-foreground"
+            >
+              {d.nav.home}
+            </Link>
+            {nav.map((n) =>
+              n.kind === "catalog" ? (
+                <Link
+                  key={`catalog-${n.gender}`}
+                  to="/catalog/$gender"
+                  params={{ gender: n.gender }}
+                  preload="intent"
+                  onClick={() => setOpen(false)}
+                  className="font-serif text-xl py-3 border-b hairline text-foreground"
+                >
+                  {n.label}
+                </Link>
+              ) : (
+                <Link
+                  key={n.to}
+                  to={n.to}
+                  preload="intent"
+                  onClick={() => setOpen(false)}
+                  className="font-serif text-xl py-3 border-b hairline text-foreground"
+                >
+                  {n.label}
+                </Link>
+              ),
+            )}
+          </nav>
+
+          <p className="mt-auto pt-8 font-serif text-base leading-snug text-foreground/65 text-center">
+            {d.navQuote}
+          </p>
+        </div>
       </div>
     </>
   );

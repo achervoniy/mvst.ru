@@ -50,13 +50,13 @@ const wardrobeTabs: ReadonlyArray<{
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "MVST — Весна-лето 2026" },
+      { title: "MVST — Весна-Лето 2026" },
       {
         name: "description",
         content:
-          "Кашемир, шерсть, лен и кожа высочайшего качества. Откройте новую коллекцию MVST Весна-лето 2026.",
+          "Кашемир, шерсть, лен и кожа высочайшего качества. Откройте новую коллекцию MVST Весна-Лето 2026.",
       },
-      { property: "og:title", content: "MVST — Весна-лето 2026" },
+      { property: "og:title", content: "MVST — Весна-Лето 2026" },
       {
         property: "og:description",
         content: "Новая коллекция MVST. Тихий люкс ручной работы.",
@@ -96,7 +96,7 @@ function HomePage() {
       >
         <img
           src={homeHero}
-          alt="MVST Весна-лето 2026"
+          alt="MVST Весна-Лето 2026"
           fetchPriority="high"
           decoding="async"
           className="absolute inset-0 size-full object-cover object-[50%_16%] md:object-[50%_12%] xl:object-[50%_8%]"
@@ -104,12 +104,12 @@ function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-transparent to-black/35" />
         <div className="relative z-10 h-full flex flex-col items-center justify-end pb-16 md:pb-20 px-6 text-center text-cream">
           <h1 className="font-serif text-5xl md:text-7xl font-light leading-[1.05]">
-            Весна-лето 2026
+            Весна-Лето 2026
           </h1>
           <Link
             to="/collection-ss26"
             preload="intent"
-            className="mt-8 md:mt-10 inline-block eyebrow-lg border-b border-cream/70 pb-2 hover:border-cream"
+            className="mt-5 md:mt-6 inline-block eyebrow-lg leading-none border-b border-cream/70 pb-1 hover:border-cream"
           >
             Перейти к коллекции
           </Link>
@@ -136,9 +136,9 @@ function HomePage() {
               className="absolute inset-0 size-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.02] motion-reduce:transition-none motion-reduce:transform-none"
             />
             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors" />
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-cream">
+            <div className="absolute inset-0 flex flex-col items-center justify-end pb-14 md:justify-center md:pb-0 text-cream">
               <div className="font-serif text-5xl md:text-6xl">{s.label}</div>
-              <div className="mt-8 eyebrow border-b border-cream/70 pb-1">Открыть каталог</div>
+              <div className="mt-5 eyebrow leading-none border-b border-cream/70 pb-1">Открыть каталог</div>
             </div>
           </Link>
         ))}
@@ -214,7 +214,7 @@ function HomePage() {
           <Link
             to="/about"
             preload="intent"
-            className="eyebrow border-b border-foreground pb-1 hover:text-accent hover:border-accent"
+            className="eyebrow leading-none border-b border-foreground pb-1 hover:text-accent hover:border-accent"
           >
             О бренде
           </Link>
@@ -231,7 +231,7 @@ function HomePage() {
           <Link
             to="/boutiques"
             preload="intent"
-            className="hidden md:inline-block eyebrow border-b border-foreground pb-1 hover:text-accent hover:border-accent"
+            className="hidden md:inline-block eyebrow leading-none border-b border-foreground pb-1 hover:text-accent hover:border-accent"
           >
             Все бутики
           </Link>

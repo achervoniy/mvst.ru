@@ -1,8 +1,6 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
-import { FittingCartProvider } from "@/lib/fitting-cart";
-import { FittingCartDialog } from "@/components/site/FittingCartDialog";
 import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
@@ -32,6 +30,10 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
+      // Сайт пока закрыт от индексации — продакшен-релиз ещё не объявлен.
+      { name: "robots", content: "noindex, nofollow, noarchive" },
+      { name: "googlebot", content: "noindex, nofollow" },
+      { name: "yandex", content: "noindex, nofollow" },
       { title: "MVST — итальянское мастерство" },
       {
         name: "description",
@@ -88,10 +90,9 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   return (
-    <FittingCartProvider>
+    <>
       <Outlet />
-      <FittingCartDialog />
       <Toaster />
-    </FittingCartProvider>
+    </>
   );
 }
