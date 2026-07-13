@@ -4,19 +4,19 @@ import { useEffect, useState } from 'react';
 
 import type { Boutique } from './data';
 
-let cache: Boutique[] | null = null;
+// Дедупим только параллельные запросы в пределах одного пейнта — постоянный
+// кэш держать не хочется, иначе после правки в админке SPA-навигация
+// продолжает показывать старое до полной перезагрузки вкладки.
 let inflight: Promise<Boutique[]> | null = null;
 
 async function load(): Promise<Boutique[]> {
-  if (cache) return cache;
   if (inflight) return inflight;
   inflight = (async () => {
     try {
       const res = await fetch('/api/boutiques', { cache: 'no-store' });
       if (!res.ok) return [];
       const data = (await res.json()) as { boutiques: Boutique[] };
-      cache = data.boutiques ?? [];
-      return cache;
+      return data.boutiques ?? [];
     } catch {
       return [];
     } finally {
@@ -27,8 +27,8 @@ async function load(): Promise<Boutique[]> {
 }
 
 export function useBoutiques(): { boutiques: Boutique[]; loading: boolean } {
-  const [boutiques, setBoutiques] = useState<Boutique[]>(cache ?? []);
-  const [loading, setLoading] = useState(!cache);
+  const [boutiques, setBoutiques] = useState<Boutique[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let alive = true;

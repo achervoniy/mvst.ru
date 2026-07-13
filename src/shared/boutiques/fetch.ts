@@ -4,9 +4,8 @@ const CRM_URL = process.env.CRM_URL ?? process.env.SSR_API_DOMAIN ?? 'http://loc
 
 export async function fetchBoutiquesServer(): Promise<Boutique[]> {
   try {
-    const res = await fetch(`${CRM_URL}/api/public/boutiques`, {
-      next: { revalidate: 30, tags: ['boutiques'] },
-    });
+    // Не кэшируем — правки в админке должны появляться на сайте сразу.
+    const res = await fetch(`${CRM_URL}/api/public/boutiques`, { cache: 'no-store' });
     if (!res.ok) return [];
     const data = (await res.json()) as { boutiques: Boutique[] };
     return data.boutiques ?? [];

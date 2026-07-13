@@ -10,7 +10,8 @@ export async function GET() {
     const data = await res.json().catch(() => ({ boutiques: [] }));
     return NextResponse.json(data, {
       status: res.ok ? 200 : 502,
-      headers: { 'Cache-Control': 'public, max-age=30, stale-while-revalidate=120' },
+      // Не кэшируем — админ должен видеть свои правки сразу.
+      headers: { 'Cache-Control': 'no-store, must-revalidate' },
     });
   } catch (e) {
     console.error('[boutiques proxy] error', e);

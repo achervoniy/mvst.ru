@@ -138,6 +138,7 @@ const getBoutiques = createServerFn({ method: "GET" }).handler(async (): Promise
     const res = await fetch(`${CRM_URL}/api/public/boutiques`, {
       signal: ctrl.signal,
       headers: { Accept: "application/json" },
+      cache: "no-store",
     });
     clearTimeout(timeout);
     if (!res.ok) throw new Error(`crm ${res.status}`);
@@ -176,7 +177,8 @@ export const Route = createFileRoute("/boutiques")({
     ],
   }),
   loader: async () => ({ boutiques: await getBoutiques() }),
-  staleTime: 30 * 1000,
+  // 0 — правки в админке появляются на сайте на первой же навигации.
+  staleTime: 0,
   component: BoutiquesPage,
 });
 
